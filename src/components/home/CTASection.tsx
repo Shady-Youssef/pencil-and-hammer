@@ -2,6 +2,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import MagneticButton from "@/components/MagneticButton";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 export default function CTASection() {
   return (
@@ -34,15 +35,16 @@ export default function CTASection() {
           <MagneticButton className="inline-block">
             <Link
               to="/contact"
-              className="group relative inline-block bg-gradient-gold font-body text-sm tracking-widest uppercase px-14 py-5 text-charcoal font-medium overflow-hidden"
+              className="group relative inline-flex items-center gap-3 border border-accent/40 font-body text-sm tracking-[0.2em] uppercase px-14 py-5 text-foreground font-medium overflow-hidden hover:border-accent transition-all duration-700"
             >
-              <span className="relative z-10">Start Your Project</span>
+              <span className="relative z-10 group-hover:text-background transition-colors duration-500">Get in Touch</span>
+              <ArrowRight size={16} className="relative z-10 group-hover:text-background group-hover:translate-x-1 transition-all duration-500" />
               <motion.span
-                className="absolute inset-0 bg-foreground"
+                className="absolute inset-0 bg-accent"
                 initial={{ scaleX: 0 }}
                 whileHover={{ scaleX: 1 }}
                 style={{ transformOrigin: "left" }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               />
             </Link>
           </MagneticButton>
