@@ -109,6 +109,13 @@ export default function Dashboard() {
               </button>
             </div>
             <nav className="py-4">
+              <Link
+                to="/"
+                className="w-full flex items-center gap-3 px-6 py-3 font-body text-sm text-warm-gray hover:text-gold transition-colors"
+              >
+                <Home size={18} strokeWidth={1.5} />
+                Home
+              </Link>
               {sidebarLinks.map((link) => (
                 <button
                   key={link.id}
