@@ -81,7 +81,11 @@ export default function Dashboard() {
             </button>
           ))}
         </nav>
-        <div className="p-6 border-t border-charcoal-light">
+        <div className="p-6 border-t border-charcoal-light space-y-3">
+          <Link to="/" className="flex items-center gap-3 text-warm-gray hover:text-gold transition-colors font-body text-sm">
+            <Home size={18} strokeWidth={1.5} />
+            Back to Home
+          </Link>
           <button className="flex items-center gap-3 text-warm-gray hover:text-cream transition-colors font-body text-sm">
             <LogOut size={18} strokeWidth={1.5} />
             Sign Out
