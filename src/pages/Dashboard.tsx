@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, FolderOpen, Users, MessageSquare, Settings, BarChart3,
   TrendingUp, DollarSign, Clock, CheckCircle2, AlertCircle, ChevronRight,
-  Menu, X, LogOut, Bell
+  Menu, X, LogOut, Bell, Home
 } from "lucide-react";
 
 const sidebarLinks = [
