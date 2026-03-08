@@ -12,35 +12,40 @@ interface Props {
 
 export default function AnimatedSection({ children, className = "", delay = 0, direction = "up", scale = false }: Props) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
-  const variants = {
-    hidden: {
-      opacity: 0,
-      y: direction === "up" ? 60 : 0,
-      x: direction === "left" ? -60 : direction === "right" ? 60 : 0,
-      scale: scale ? 0.95 : 1,
-      filter: "blur(8px)",
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      x: 0,
-      scale: 1,
-      filter: "blur(0px)",
-    },
-  };
+  const y = direction === "up" ? 40 : 0;
+  const x = direction === "left" ? -40 : direction === "right" ? 40 : 0;
 
   return (
     <motion.div
       ref={ref}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={variants}
+      initial={{
+        opacity: 0,
+        y,
+        x,
+        scale: scale ? 0.97 : 1,
+        clipPath: direction === "up"
+          ? "inset(8% 0% 0% 0%)"
+          : direction === "left"
+          ? "inset(0% 0% 0% 8%)"
+          : direction === "right"
+          ? "inset(0% 8% 0% 0%)"
+          : "inset(4% 4% 4% 4%)",
+      }}
+      animate={isInView ? {
+        opacity: 1,
+        y: 0,
+        x: 0,
+        scale: 1,
+        clipPath: "inset(0% 0% 0% 0%)",
+      } : undefined}
       transition={{
-        duration: 0.9,
+        duration: 1,
         delay,
-        ease: [0.22, 1, 0.36, 1],
+        ease: [0.16, 1, 0.3, 1],
+        clipPath: { duration: 1.2, delay, ease: [0.16, 1, 0.3, 1] },
+        opacity: { duration: 0.6, delay },
       }}
       className={className}
     >
