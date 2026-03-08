@@ -39,13 +39,7 @@ export default function CTASection() {
             >
               <span className="relative z-10 group-hover:text-background transition-colors duration-500">Get in Touch</span>
               <ArrowRight size={16} className="relative z-10 group-hover:text-background group-hover:translate-x-1 transition-all duration-500" />
-              <motion.span
-                className="absolute inset-0 bg-accent"
-                initial={{ scaleX: 0 }}
-                whileHover={{ scaleX: 1 }}
-                style={{ transformOrigin: "left" }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              />
+              <span className="absolute inset-0 bg-accent origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" />
             </Link>
           </MagneticButton>
         </AnimatedSection>
