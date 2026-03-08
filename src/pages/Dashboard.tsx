@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, FolderOpen, Users, MessageSquare, Settings, BarChart3,
   TrendingUp, DollarSign, Clock, CheckCircle2, AlertCircle, ChevronRight,
-  Menu, X, LogOut, Bell
+  Menu, X, LogOut, Bell, Home
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -80,7 +81,11 @@ export default function Dashboard() {
             </button>
           ))}
         </nav>
-        <div className="p-6 border-t border-charcoal-light">
+        <div className="p-6 border-t border-charcoal-light space-y-3">
+          <Link to="/" className="flex items-center gap-3 text-warm-gray hover:text-gold transition-colors font-body text-sm">
+            <Home size={18} strokeWidth={1.5} />
+            Back to Home
+          </Link>
           <button className="flex items-center gap-3 text-warm-gray hover:text-cream transition-colors font-body text-sm">
             <LogOut size={18} strokeWidth={1.5} />
             Sign Out
@@ -104,6 +109,13 @@ export default function Dashboard() {
               </button>
             </div>
             <nav className="py-4">
+              <Link
+                to="/"
+                className="w-full flex items-center gap-3 px-6 py-3 font-body text-sm text-warm-gray hover:text-gold transition-colors"
+              >
+                <Home size={18} strokeWidth={1.5} />
+                Home
+              </Link>
               {sidebarLinks.map((link) => (
                 <button
                   key={link.id}
