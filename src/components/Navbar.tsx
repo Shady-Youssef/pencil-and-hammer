@@ -58,6 +58,7 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
+          <ThemeToggle />
         </div>
 
         {/* Mobile toggle */}
