@@ -1,86 +1,138 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import heroImg from "@/assets/hero-interior.jpg";
+import MagneticButton from "@/components/MagneticButton";
+import TextReveal from "@/components/TextReveal";
+import { useRef } from "react";
 
 export default function HeroSection() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
+
   return (
-    <section className="relative h-screen w-full overflow-hidden">
-      {/* Background image */}
-      <div className="absolute inset-0">
+    <section ref={ref} className="relative h-screen w-full overflow-hidden">
+      {/* Parallax background */}
+      <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale }}>
         <img src={heroImg} alt="Luxury interior design" className="w-full h-full object-cover" />
-        <div className="overlay-dark absolute inset-0" />
+      </motion.div>
+      <div className="overlay-dark absolute inset-0" />
+
+      {/* Floating orbs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute w-64 h-64 rounded-full"
+          style={{ background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.08), transparent 70%)", top: "20%", right: "10%" }}
+          animate={{ y: [-20, 20, -20], x: [-10, 10, -10] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-96 h-96 rounded-full"
+          style={{ background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.05), transparent 70%)", bottom: "10%", left: "5%" }}
+          animate={{ y: [15, -15, 15], x: [10, -10, 10] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
+      <motion.div
+        style={{ opacity: contentOpacity, y: contentY }}
+        className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6"
+      >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3 }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="mb-6"
         >
-          <div className="line-accent mx-auto mb-8" />
-          <p className="font-body text-sm tracking-[0.3em] uppercase text-gold-light mb-4">
+          <motion.div
+            className="line-accent mx-auto mb-8"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          />
+          <p className="font-body text-sm tracking-[0.4em] uppercase text-gold-light mb-4">
             Interior Design Studio
           </p>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="font-display text-5xl md:text-7xl lg:text-8xl font-light text-cream leading-[1.1] max-w-5xl"
-        >
-          Crafting Spaces
+        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-light text-cream leading-[1.05] max-w-6xl">
+          <TextReveal delay={0.5}>Crafting Spaces</TextReveal>
           <br />
-          <span className="italic font-light">That Inspire</span>
-        </motion.h1>
+          <span className="italic">
+            <TextReveal delay={0.7}>That Inspire</TextReveal>
+          </span>
+        </h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.8 }}
-          className="font-body text-warm-gray text-base md:text-lg mt-8 max-w-xl leading-relaxed"
+          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 1, delay: 1 }}
+          className="font-body text-warm-gray text-base md:text-lg mt-10 max-w-xl leading-relaxed"
         >
           Where timeless elegance meets modern sophistication.
           We transform your vision into breathtaking reality.
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.2 }}
-          className="mt-12 flex gap-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.3 }}
+          className="mt-14 flex gap-6 flex-wrap justify-center"
         >
-          <a
-            href="/portfolio"
-            className="bg-gradient-gold font-body text-sm tracking-widest uppercase px-10 py-4 text-charcoal font-medium hover:opacity-90 transition-opacity"
-          >
-            View Our Work
-          </a>
-          <a
-            href="/contact"
-            className="border border-cream/30 font-body text-sm tracking-widest uppercase px-10 py-4 text-cream hover:bg-cream/10 transition-colors"
-          >
-            Get in Touch
-          </a>
+          <MagneticButton>
+            <a
+              href="/portfolio"
+              className="group relative inline-block bg-gradient-gold font-body text-sm tracking-widest uppercase px-10 py-4 text-charcoal font-medium overflow-hidden"
+            >
+              <span className="relative z-10">View Our Work</span>
+              <motion.span
+                className="absolute inset-0 bg-cream"
+                initial={{ x: "-100%" }}
+                whileHover={{ x: "0%" }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </a>
+          </MagneticButton>
+          <MagneticButton>
+            <a
+              href="/contact"
+              className="group relative border border-cream/30 font-body text-sm tracking-widest uppercase px-10 py-4 text-cream overflow-hidden"
+            >
+              <span className="relative z-10 group-hover:text-charcoal transition-colors duration-500">Get in Touch</span>
+              <motion.span
+                className="absolute inset-0 bg-cream"
+                initial={{ y: "100%" }}
+                whileHover={{ y: "0%" }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </a>
+          </MagneticButton>
         </motion.div>
 
         {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
+          transition={{ delay: 2 }}
           className="absolute bottom-10"
         >
           <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+            className="flex flex-col items-center gap-3"
           >
-            <ArrowDown size={20} className="text-cream/50" />
+            <span className="font-body text-[10px] tracking-[0.3em] uppercase text-cream/40">Scroll</span>
+            <ArrowDown size={16} className="text-cream/40" />
           </motion.div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

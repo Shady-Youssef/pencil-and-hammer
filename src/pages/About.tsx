@@ -1,8 +1,11 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimatedSection from "@/components/AnimatedSection";
+import ScrollProgress from "@/components/ScrollProgress";
+import ParallaxImage from "@/components/ParallaxImage";
 import aboutTeam from "@/assets/about-team.jpg";
 import { Award, Users, Clock, Globe } from "lucide-react";
+import { motion } from "framer-motion";
 
 const stats = [
   { icon: Award, value: "150+", label: "Projects Completed" },
@@ -21,23 +24,32 @@ const team = [
 export default function About() {
   return (
     <>
+      <ScrollProgress />
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="relative h-[60vh] overflow-hidden">
-          <img src={aboutTeam} alt="MBM Design Studio" className="w-full h-full object-cover" />
+        <section className="relative h-[70vh] overflow-hidden">
+          <ParallaxImage src={aboutTeam} alt="MBM Design Studio" className="absolute inset-0 h-full" speed={0.2} />
           <div className="overlay-dark absolute inset-0" />
           <div className="absolute inset-0 flex items-center justify-center">
             <AnimatedSection className="text-center">
               <div className="line-accent mx-auto mb-6" />
-              <h1 className="font-display text-5xl md:text-7xl font-light text-cream">About Us</h1>
+              <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-light text-cream">About Us</h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="font-body text-warm-gray mt-4 text-base tracking-wide"
+              >
+                The story behind the spaces
+              </motion.p>
             </AnimatedSection>
           </div>
         </section>
 
         {/* Story */}
         <section className="section-padding bg-background">
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
             <AnimatedSection direction="left">
               <div className="line-accent mb-6" />
               <h2 className="font-display text-4xl md:text-5xl font-light text-foreground mb-6">
@@ -52,14 +64,27 @@ export default function About() {
             </AnimatedSection>
             <AnimatedSection direction="right">
               <div className="grid grid-cols-2 gap-4">
-                {stats.map((stat) => (
-                  <div key={stat.label} className="bg-card p-6 rounded-sm border border-border text-center">
+                {stats.map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    whileHover={{ y: -4 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="bg-card p-6 rounded-sm border border-border neo-border text-center"
+                  >
                     <stat.icon size={24} strokeWidth={1.2} className="text-accent mx-auto mb-3" />
-                    <p className="font-display text-3xl text-foreground">{stat.value}</p>
+                    <motion.p
+                      className="font-display text-3xl text-foreground"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 + i * 0.1, duration: 0.6 }}
+                    >
+                      {stat.value}
+                    </motion.p>
                     <p className="font-body text-xs text-muted-foreground tracking-wider uppercase mt-1">
                       {stat.label}
                     </p>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </AnimatedSection>
@@ -67,8 +92,15 @@ export default function About() {
         </section>
 
         {/* Philosophy */}
-        <section className="section-padding bg-charcoal">
-          <div className="max-w-4xl mx-auto text-center">
+        <section className="section-padding bg-charcoal relative overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <motion.div
+              className="w-[400px] h-[400px] rounded-full border border-gold/5"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+            />
+          </div>
+          <div className="max-w-4xl mx-auto text-center relative">
             <AnimatedSection>
               <div className="line-accent mx-auto mb-8" />
               <h2 className="font-display text-4xl md:text-5xl font-light text-cream mb-8">
@@ -87,16 +119,20 @@ export default function About() {
         {/* Team */}
         <section className="section-padding bg-background">
           <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center mb-16">
+            <AnimatedSection className="text-center mb-20">
               <div className="line-accent mx-auto mb-6" />
               <h2 className="font-display text-4xl md:text-5xl font-light text-foreground">Our Team</h2>
             </AnimatedSection>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {team.map((member, i) => (
-                <AnimatedSection key={member.name} delay={i * 0.1}>
-                  <div className="text-center group">
-                    <div className="w-32 h-32 mx-auto mb-5 rounded-full bg-secondary flex items-center justify-center border border-border group-hover:border-accent transition-colors duration-300">
-                      <span className="font-display text-2xl text-muted-foreground group-hover:text-accent transition-colors">
+                <AnimatedSection key={member.name} delay={i * 0.1} scale>
+                  <motion.div
+                    whileHover={{ y: -6 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="text-center group cursor-pointer"
+                  >
+                    <div className="w-32 h-32 mx-auto mb-5 rounded-full bg-secondary flex items-center justify-center border border-border group-hover:border-accent group-hover:shadow-[0_0_30px_hsla(38,60%,52%,0.15)] transition-all duration-500">
+                      <span className="font-display text-2xl text-muted-foreground group-hover:text-accent transition-colors duration-300">
                         {member.initials}
                       </span>
                     </div>
@@ -104,7 +140,7 @@ export default function About() {
                     <p className="font-body text-xs text-muted-foreground tracking-wider uppercase mt-1">
                       {member.role}
                     </p>
-                  </div>
+                  </motion.div>
                 </AnimatedSection>
               ))}
             </div>
