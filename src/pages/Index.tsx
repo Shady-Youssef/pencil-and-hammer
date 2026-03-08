@@ -5,11 +5,13 @@ import ServicesSection from "@/components/home/ServicesSection";
 import FeaturedWork from "@/components/home/FeaturedWork";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import CTASection from "@/components/home/CTASection";
+import ScrollProgress from "@/components/ScrollProgress";
 
 const Index = () => (
   <>
+    <ScrollProgress />
     <Navbar />
-    <main>
+    <main className="grain-overlay">
       <HeroSection />
       <ServicesSection />
       <FeaturedWork />

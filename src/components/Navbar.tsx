@@ -29,12 +29,12 @@ export default function Navbar() {
 
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
         scrolled
-          ? "bg-background/90 backdrop-blur-lg shadow-sm border-b border-border"
+          ? "bg-background/80 backdrop-blur-2xl shadow-sm border-b border-border/50"
           : "bg-transparent"
       }`}
     >
@@ -45,18 +45,31 @@ export default function Navbar() {
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-10">
-          {navLinks.map((link) => (
-            <Link
+          {navLinks.map((link, i) => (
+            <motion.div
               key={link.path}
-              to={link.path}
-              className={`font-body text-sm tracking-widest uppercase transition-colors duration-300 ${
-                location.pathname === link.path
-                  ? "text-accent"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.05, duration: 0.5 }}
             >
-              {link.name}
-            </Link>
+              <Link
+                to={link.path}
+                className={`relative font-body text-sm tracking-widest uppercase transition-colors duration-300 ${
+                  location.pathname === link.path
+                    ? "text-accent"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {link.name}
+                {location.pathname === link.path && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute -bottom-1 left-0 right-0 h-[2px] bg-accent"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+              </Link>
+            </motion.div>
           ))}
           <ThemeToggle />
         </div>
@@ -68,7 +81,17 @@ export default function Navbar() {
             className="text-foreground p-2"
             aria-label="Toggle menu"
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            <AnimatePresence mode="wait">
+              {isOpen ? (
+                <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <X size={24} />
+                </motion.div>
+              ) : (
+                <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <Menu size={24} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </button>
         </div>
       </div>
@@ -77,18 +100,19 @@ export default function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background/95 backdrop-blur-lg border-b border-border overflow-hidden"
+            initial={{ opacity: 0, height: 0, filter: "blur(10px)" }}
+            animate={{ opacity: 1, height: "auto", filter: "blur(0px)" }}
+            exit={{ opacity: 0, height: 0, filter: "blur(10px)" }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="md:hidden bg-background/95 backdrop-blur-2xl border-b border-border overflow-hidden"
           >
             <div className="flex flex-col gap-1 px-6 py-6">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.path}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <Link
                     to={link.path}
