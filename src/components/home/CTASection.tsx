@@ -1,8 +1,7 @@
 import AnimatedSection from "@/components/AnimatedSection";
-import MagneticButton from "@/components/MagneticButton";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import heroImg from "@/assets/hero-interior.jpg";
 
 export default function CTASection() {
@@ -39,15 +38,16 @@ export default function CTASection() {
           <p className="font-body text-muted-foreground max-w-lg mx-auto mb-12 text-base">
             Let's create something extraordinary together. Schedule a consultation to begin your design journey.
           </p>
-          <MagneticButton className="inline-block">
+
+          <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.25 }} className="inline-block">
             <Link
               to="/contact"
-              className="group relative inline-flex items-center gap-3 border border-accent font-body text-sm tracking-[0.2em] uppercase px-14 py-5 text-accent font-medium transition-all duration-500 hover:bg-accent hover:text-background"
+              className="inline-flex items-center gap-3 rounded-full border border-border bg-card/90 px-10 py-4 font-body text-xs tracking-[0.28em] uppercase text-foreground shadow-[0_8px_30px_hsl(var(--background)/0.45)] transition-all duration-300 hover:border-accent hover:text-accent"
             >
-              <span>Get in Touch</span>
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-500" />
+              <Sparkles size={14} className="text-accent" />
+              Book Private Consultation
             </Link>
-          </MagneticButton>
+          </motion.div>
         </AnimatedSection>
       </div>
     </section>
