@@ -103,15 +103,9 @@ export default function HeroSection() {
           <MagneticButton>
             <a
               href="/contact"
-              className="group relative border border-cream/30 font-body text-sm tracking-widest uppercase px-10 py-4 text-cream overflow-hidden"
+              className="inline-flex items-center justify-center border border-cream/40 bg-background/30 backdrop-blur-sm font-body text-sm tracking-widest uppercase px-10 py-4 text-cream hover:border-accent hover:text-accent transition-all duration-300"
             >
-              <span className="relative z-10 group-hover:text-charcoal transition-colors duration-500">Get in Touch</span>
-              <motion.span
-                className="absolute inset-0 bg-cream"
-                initial={{ y: "100%" }}
-                whileHover={{ y: "0%" }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              />
+              Get in Touch
             </a>
           </MagneticButton>
         </motion.div>
