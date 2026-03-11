@@ -8,11 +8,68 @@ const imageSize = {
   height: 630,
 };
 
+const supportedOgLogoTypes = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/svg+xml",
+  "image/gif",
+]);
+
+function toBase64(buffer: ArrayBuffer) {
+  let binary = "";
+  const bytes = new Uint8Array(buffer);
+
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+
+  return btoa(binary);
+}
+
+async function resolveOgLogoDataUrl(logoUrl: string, siteUrl: string) {
+  const assetUrl = logoUrl.startsWith("http")
+    ? logoUrl
+    : absoluteUrl(logoUrl, siteUrl);
+
+  try {
+    const response = await fetch(assetUrl, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const contentType = response.headers.get("content-type")?.split(";")[0]?.trim();
+
+    if (!contentType || !supportedOgLogoTypes.has(contentType)) {
+      return null;
+    }
+
+    const buffer = await response.arrayBuffer();
+
+    if (!buffer.byteLength) {
+      return null;
+    }
+
+    return `data:${contentType};base64,${toBase64(buffer)}`;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET() {
   const settings = await getSiteSettings();
-  const logoUrl = settings.logoUrl.startsWith("http")
-    ? settings.logoUrl
-    : absoluteUrl(settings.logoUrl, settings.siteUrl);
+  const ogLogoDataUrl = settings.logoUrl
+    ? await resolveOgLogoDataUrl(settings.logoUrl, settings.siteUrl)
+    : null;
+  const initials = settings.siteName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
 
   return new ImageResponse(
     (
@@ -50,26 +107,49 @@ export async function GET() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "18px",
+              gap: "22px",
               fontSize: 28,
               letterSpacing: "0.35em",
               textTransform: "uppercase",
               color: "#d2a24a",
             }}
           >
-            {settings.logoUrl ? (
+            {ogLogoDataUrl ? (
               <img
-                src={logoUrl}
+                src={ogLogoDataUrl}
                 alt=""
-                width="70"
-                height="70"
+                width="74"
+                height="74"
                 style={{
-                  borderRadius: "999px",
+                  display: "flex",
+                  borderRadius: 18,
                   objectFit: "cover",
                   border: "1px solid rgba(244, 237, 229, 0.12)",
+                  background: "rgba(255,255,255,0.02)",
                 }}
               />
-            ) : null}
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 74,
+                  height: 74,
+                  borderRadius: 18,
+                  border: "1px solid rgba(244, 237, 229, 0.12)",
+                  background:
+                    "linear-gradient(180deg, rgba(210,162,74,0.26) 0%, rgba(210,162,74,0.08) 100%)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
+                  color: "#f4ede5",
+                  fontSize: 30,
+                  fontWeight: 700,
+                  letterSpacing: "0.12em",
+                }}
+              >
+                {initials}
+              </div>
+            )}
             <div style={{ display: "flex" }}>{settings.ogKicker}</div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
