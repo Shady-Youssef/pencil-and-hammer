@@ -97,6 +97,24 @@ function normalizeSiteUrl(value?: string | null) {
   }
 }
 
+function normalizeBrandAssetUrl(
+  value: string | null | undefined,
+  fallback: string,
+  legacyPaths: string[],
+) {
+  const candidate = value?.trim();
+
+  if (!candidate) {
+    return fallback;
+  }
+
+  if (legacyPaths.includes(candidate)) {
+    return fallback;
+  }
+
+  return candidate;
+}
+
 export const defaultSiteSettings: SiteSettings = {
   id: siteSettingsRecordId,
   siteName: "MBM Designs",
@@ -128,9 +146,9 @@ export const defaultSiteSettings: SiteSettings = {
     "High-end residential, hospitality, and commercial interior design with warmth, precision, and a refined editorial point of view.",
   ogKicker: "Interior Design Studio",
   ogTagline: "Luxury. Warmth. Precision.",
-  logoUrl: "/MBM-logo.webp",
+  logoUrl: "/MBM-logo.png",
   logoStoragePath: null,
-  faviconUrl: "/icon.svg",
+  faviconUrl: "/MBM-logo.png",
   faviconStoragePath: null,
 };
 
@@ -171,10 +189,17 @@ export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSetting
       row?.og_description?.trim() || defaultSiteSettings.ogDescription,
     ogKicker: row?.og_kicker?.trim() || defaultSiteSettings.ogKicker,
     ogTagline: row?.og_tagline?.trim() || defaultSiteSettings.ogTagline,
-    logoUrl: row?.logo_url?.trim() || defaultSiteSettings.logoUrl,
+    logoUrl: normalizeBrandAssetUrl(row?.logo_url, defaultSiteSettings.logoUrl, [
+      "/MBM-logo.webp",
+      "/MBM-logo.svg",
+      "/icon.svg",
+    ]),
     logoStoragePath: row?.logo_storage_path ?? null,
-    faviconUrl:
-      row?.favicon_url?.trim() || defaultSiteSettings.faviconUrl,
+    faviconUrl: normalizeBrandAssetUrl(
+      row?.favicon_url,
+      defaultSiteSettings.faviconUrl,
+      ["/icon.svg", "/MBM-logo.webp", "/MBM-logo.svg"],
+    ),
     faviconStoragePath: row?.favicon_storage_path ?? null,
   };
 }

@@ -116,6 +116,10 @@ async function resolveOgLogoDataUrl(logoUrl: string, siteUrl: string) {
   }
 
   try {
+    if (logoUrl.startsWith("data:image/")) {
+      return logoUrl;
+    }
+
     if (logoUrl.startsWith("/")) {
       return await readLocalAssetDataUrl(logoUrl);
     }
