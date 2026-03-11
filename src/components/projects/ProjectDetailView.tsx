@@ -236,11 +236,11 @@ export default function ProjectDetailView({
                     <AnimatedSection direction="left">
                       <div>
                         <p className="font-body text-xs uppercase tracking-[0.32em] text-gold-light">
-                          Project Narrative
+                          {project.narrativeEyebrow}
                         </p>
                         <h2 className="mt-4 font-display text-3xl font-light text-foreground sm:text-4xl md:mt-5 md:text-5xl">
-                          Designed with atmosphere,
-                          <span className="text-gradient-gold"> clarity, and detail.</span>
+                          {project.narrativeTitle}
+                          <span className="text-gradient-gold"> {project.narrativeHighlight}</span>
                         </h2>
                       </div>
                     </AnimatedSection>
@@ -255,14 +255,13 @@ export default function ProjectDetailView({
                           className="rounded-[1.25rem] border border-border/70 bg-secondary/35 p-5 sm:rounded-[1.5rem] sm:p-6"
                         >
                           <p className="font-body text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                            Project Status
+                            {project.detailStatusLabel}
                           </p>
                           <p className="mt-3 font-display text-2xl text-foreground">
-                            {project.status}
+                            {project.detailStatusTitle}
                           </p>
                           <p className="mt-3 font-body text-sm leading-relaxed text-muted-foreground">
-                            This page is structured to support full galleries, descriptive storytelling,
-                            and premium project presentation for both editorial browsing and client review.
+                            {project.detailStatusDescription}
                           </p>
                         </motion.div>
                       </div>
@@ -376,11 +375,11 @@ export default function ProjectDetailView({
                 <AnimatedSection direction="left">
                   <div>
                     <p className="font-body text-xs uppercase tracking-[0.32em] text-gold-light">
-                      Project Narrative
+                      {project.narrativeEyebrow}
                     </p>
                     <h2 className="mt-4 font-display text-3xl font-light text-foreground sm:text-4xl md:mt-5 md:text-5xl">
-                      Designed with atmosphere,
-                      <span className="text-gradient-gold"> clarity, and detail.</span>
+                      {project.narrativeTitle}
+                      <span className="text-gradient-gold"> {project.narrativeHighlight}</span>
                     </h2>
                   </div>
                 </AnimatedSection>
@@ -395,14 +394,13 @@ export default function ProjectDetailView({
                       className="rounded-[1.25rem] border border-border/70 bg-secondary/35 p-5 sm:rounded-[1.5rem] sm:p-6"
                     >
                       <p className="font-body text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                        Project Status
+                        {project.detailStatusLabel}
                       </p>
                       <p className="mt-3 font-display text-2xl text-foreground">
-                        {project.status}
+                        {project.detailStatusTitle}
                       </p>
                       <p className="mt-3 font-body text-sm leading-relaxed text-muted-foreground">
-                        This page is structured to support full galleries, descriptive storytelling,
-                        and premium project presentation for both editorial browsing and client review.
+                        {project.detailStatusDescription}
                       </p>
                     </motion.div>
                   </div>

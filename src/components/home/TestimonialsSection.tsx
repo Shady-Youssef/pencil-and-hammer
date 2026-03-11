@@ -3,29 +3,13 @@
 import AnimatedSection from "@/components/AnimatedSection";
 import { Star, Quote } from "lucide-react";
 import { motion } from "framer-motion";
+import type { TestimonialRecord } from "@/lib/testimonials/data";
 
-const testimonials = [
-  {
-    name: "Sarah Mitchell",
-    role: "Homeowner",
-    text: "MBM Designs transformed our home beyond anything we imagined. Every detail was considered with such care and precision.",
-    initials: "SM",
-  },
-  {
-    name: "James Chen",
-    role: "CEO, Luxe Hotels",
-    text: "Their understanding of luxury hospitality design is unparalleled. Our guests consistently praise the ambiance they created.",
-    initials: "JC",
-  },
-  {
-    name: "Olivia Park",
-    role: "Real Estate Developer",
-    text: "Working with MBM elevated our properties' value significantly. Their designs are both timeless and market-savvy.",
-    initials: "OP",
-  },
-];
+type TestimonialsSectionProps = {
+  testimonials: TestimonialRecord[];
+};
 
-export default function TestimonialsSection() {
+export default function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
   return (
     <section className="section-padding bg-charcoal relative overflow-hidden">
       {/* Decorative orb */}
@@ -42,8 +26,8 @@ export default function TestimonialsSection() {
         </AnimatedSection>
 
         <div className="grid gap-6 md:grid-cols-3 md:gap-8">
-          {testimonials.map((t, i) => (
-            <AnimatedSection key={t.name} delay={i * 0.15} scale>
+          {testimonials.map((testimonial, i) => (
+            <AnimatedSection key={testimonial.id} delay={i * 0.15} scale>
               <motion.div
                 whileHover={{ y: -6 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -51,7 +35,7 @@ export default function TestimonialsSection() {
               >
                 <Quote size={28} className="text-gold/20 mb-4" />
                 <div className="flex gap-1 mb-6">
-                  {Array.from({ length: 5 }).map((_, j) => (
+                  {Array.from({ length: testimonial.rating }).map((_, j) => (
                     <motion.div
                       key={j}
                       initial={{ y: 6, scale: 0.82 }}
@@ -64,15 +48,15 @@ export default function TestimonialsSection() {
                   ))}
                 </div>
                 <p className="font-body text-sm text-warm-gray leading-relaxed mb-8 italic">
-                  "{t.text}"
+                  "{testimonial.quote}"
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                    <span className="font-body text-xs font-medium text-gold">{t.initials}</span>
+                    <span className="font-body text-xs font-medium text-gold">{testimonial.initials}</span>
                   </div>
                   <div>
-                    <p className="font-display text-lg text-cream">{t.name}</p>
-                    <p className="font-body text-xs text-warm-gray tracking-wider uppercase">{t.role}</p>
+                    <p className="font-display text-lg text-cream">{testimonial.name}</p>
+                    <p className="font-body text-xs text-warm-gray tracking-wider uppercase">{testimonial.role}</p>
                   </div>
                 </div>
               </motion.div>

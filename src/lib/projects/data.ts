@@ -46,6 +46,12 @@ export type ProjectRecord = {
   clientName: string;
   summary: string;
   description: string;
+  narrativeEyebrow: string;
+  narrativeTitle: string;
+  narrativeHighlight: string;
+  detailStatusLabel: string;
+  detailStatusTitle: string;
+  detailStatusDescription: string;
   completionYear: number;
   status: ProjectStatus;
   featured: boolean;
@@ -58,6 +64,13 @@ export type ProjectRecord = {
 export function resolveProjectImageUrl(source: ProjectImageSource) {
   return typeof source === "string" ? source : source.src;
 }
+
+export const defaultProjectNarrativeEyebrow = "Project Narrative";
+export const defaultProjectNarrativeTitle = "Designed with atmosphere,";
+export const defaultProjectNarrativeHighlight = "clarity, and detail.";
+export const defaultProjectDetailStatusLabel = "Project Status";
+export const defaultProjectDetailStatusDescription =
+  "This page is structured to support full galleries, descriptive storytelling, and premium project presentation for both editorial browsing and client review.";
 
 function sortImages(images: ProjectImage[]) {
   return [...images].sort((left, right) => {
@@ -84,6 +97,13 @@ function withImages(
 
   return {
     ...project,
+    narrativeEyebrow: project.narrativeEyebrow || defaultProjectNarrativeEyebrow,
+    narrativeTitle: project.narrativeTitle || defaultProjectNarrativeTitle,
+    narrativeHighlight: project.narrativeHighlight || defaultProjectNarrativeHighlight,
+    detailStatusLabel: project.detailStatusLabel || defaultProjectDetailStatusLabel,
+    detailStatusTitle: project.detailStatusTitle || project.status,
+    detailStatusDescription:
+      project.detailStatusDescription || defaultProjectDetailStatusDescription,
     coverImageUrl,
     images,
   };
@@ -101,6 +121,13 @@ export const fallbackProjects: ProjectRecord[] = [
       "A dark, cocooning bedroom suite layered with bronze lighting, custom millwork, and tactile natural finishes.",
     description:
       "Serene Retreat was conceived as a private sanctuary above the rhythm of Manhattan. MBM Designs reworked the suite around a restrained architectural palette, balancing smoked oak, matte plaster, aged brass, and low-glow lighting to create a quiet sense of depth. The result is intimate, editorial, and deeply livable, with every surface calibrated for calm.",
+    narrativeEyebrow: "Project Narrative",
+    narrativeTitle: "Designed with atmosphere,",
+    narrativeHighlight: "clarity, and detail.",
+    detailStatusLabel: "Project Status",
+    detailStatusTitle: "Completed",
+    detailStatusDescription:
+      "A layered private suite resolved around quiet luxury, warm metals, and a fully composed residential experience.",
     completionYear: 2025,
     status: "Completed",
     featured: true,
@@ -147,6 +174,13 @@ export const fallbackProjects: ProjectRecord[] = [
       "A refined kitchen defined by veined stone, satin brass accents, and a cinematic lighting composition.",
     description:
       "Modern Elegance transforms the kitchen into a social and sculptural centerpiece. MBM Designs paired monolithic stone surfaces with softened lighting and precision cabinetry, producing a space that feels both dramatic and effortless. Every detail was tuned for hospitality at home, from the pendants' warm glow to the disciplined material rhythm across the island and back wall.",
+    narrativeEyebrow: "Project Narrative",
+    narrativeTitle: "Composed with restraint,",
+    narrativeHighlight: "warmth, and precision.",
+    detailStatusLabel: "Project Status",
+    detailStatusTitle: "Completed",
+    detailStatusDescription:
+      "A residential kitchen and dining sequence calibrated for social flow, hospitality, and sculptural clarity.",
     completionYear: 2024,
     status: "Completed",
     featured: true,
@@ -193,6 +227,13 @@ export const fallbackProjects: ProjectRecord[] = [
       "A spa-like bathing room grounded in stone, candlelight, and a highly atmospheric hospitality mood.",
     description:
       "Warm Sanctuary brings hospitality-grade immersion into a private wellness setting. MBM Designs used textured stone, smoked bronze fixtures, and carefully concealed lighting to produce a space that feels restorative and cinematic. The room was designed to slow time down, with every proportion, reflection, and accent light calibrated for ritual rather than routine.",
+    narrativeEyebrow: "Project Narrative",
+    narrativeTitle: "Built for ritual,",
+    narrativeHighlight: "immersion, and calm.",
+    detailStatusLabel: "Project Status",
+    detailStatusTitle: "Completed",
+    detailStatusDescription:
+      "A wellness-focused interior shaped around stillness, tactile stonework, and a cinematic low-light atmosphere.",
     completionYear: 2025,
     status: "Completed",
     featured: true,
@@ -239,6 +280,13 @@ export const fallbackProjects: ProjectRecord[] = [
       "A restrained executive environment blending tailored comfort with gallery-like material clarity.",
     description:
       "Executive Suite was designed for a client who wanted precision without coldness. MBM Designs treated the space as a sequence of calm, high-performing zones, balancing architectural discipline with tactile finishes and discreet warm lighting. The result feels authoritative, polished, and highly usable for both focused work and client hosting.",
+    narrativeEyebrow: "Project Narrative",
+    narrativeTitle: "Shaped for focus,",
+    narrativeHighlight: "authority, and ease.",
+    detailStatusLabel: "Project Status",
+    detailStatusTitle: "Completed",
+    detailStatusDescription:
+      "A commercial environment designed to support concentrated work, client hosting, and a refined executive presence.",
     completionYear: 2024,
     status: "Completed",
     featured: false,
@@ -285,6 +333,13 @@ export const fallbackProjects: ProjectRecord[] = [
       "A richly layered dining environment designed around intimacy, glow, and high-end guest flow.",
     description:
       "Grand Dining is built around contrast: shadow and warmth, solidity and softness, spectacle and comfort. MBM Designs choreographed the room to feel immersive from arrival through service, using low ambient light, reflective bronze notes, and sculptural furniture placement to heighten the guest journey while preserving visual calm.",
+    narrativeEyebrow: "Project Narrative",
+    narrativeTitle: "Created for intimacy,",
+    narrativeHighlight: "glow, and rhythm.",
+    detailStatusLabel: "Project Status",
+    detailStatusTitle: "Completed",
+    detailStatusDescription:
+      "A hospitality project engineered around guest flow, ambient drama, and a memorable arrival-to-service journey.",
     completionYear: 2025,
     status: "Completed",
     featured: false,
@@ -331,6 +386,13 @@ export const fallbackProjects: ProjectRecord[] = [
       "A social club interior mixing crafted stone, bronze highlights, and softly theatrical evening light.",
     description:
       "Artisan Lounge rethinks the members club as an edited, hospitality-driven social space. MBM Designs built the interior around conversation zones, long sightlines, and intimate pools of light. Materially, the space leans into stone, smoked glass, and warm metal to create a setting that feels curated rather than crowded.",
+    narrativeEyebrow: "Project Narrative",
+    narrativeTitle: "Curated for connection,",
+    narrativeHighlight: "tone, and depth.",
+    detailStatusLabel: "Project Status",
+    detailStatusTitle: "Completed",
+    detailStatusDescription:
+      "A members-space concept balancing social energy with editorial restraint and materially rich hospitality cues.",
     completionYear: 2024,
     status: "Completed",
     featured: false,

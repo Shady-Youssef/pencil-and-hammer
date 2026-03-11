@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { Loader2, Plus, Save, Trash2, Upload, ImagePlus, Star } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { useAuth } from "@/components/auth/auth-context";
@@ -10,10 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  defaultProjectDetailStatusDescription,
+  defaultProjectDetailStatusLabel,
+  defaultProjectNarrativeEyebrow,
+  defaultProjectNarrativeHighlight,
+  defaultProjectNarrativeTitle,
   fallbackProjects,
   projectCategories,
   projectMediaBucket,
@@ -34,6 +37,12 @@ const projectSelect = `
   client_name,
   summary,
   description,
+  narrative_eyebrow,
+  narrative_title,
+  narrative_highlight,
+  detail_status_label,
+  detail_status_title,
+  detail_status_description,
   completion_year,
   status,
   featured,
@@ -70,6 +79,12 @@ type ProjectDraft = {
   clientName: string;
   summary: string;
   description: string;
+  narrativeEyebrow: string;
+  narrativeTitle: string;
+  narrativeHighlight: string;
+  detailStatusLabel: string;
+  detailStatusTitle: string;
+  detailStatusDescription: string;
   completionYear: string;
   status: ProjectStatus;
   featured: boolean;
@@ -103,6 +118,12 @@ type ProjectRow = {
   client_name: string | null;
   summary: string | null;
   description: string | null;
+  narrative_eyebrow: string | null;
+  narrative_title: string | null;
+  narrative_highlight: string | null;
+  detail_status_label: string | null;
+  detail_status_title: string | null;
+  detail_status_description: string | null;
   completion_year: number | null;
   status: string | null;
   featured: boolean | null;
@@ -142,6 +163,17 @@ function normalizeProject(row: ProjectRow): ProjectRecord {
     clientName: row.client_name ?? "",
     summary: row.summary ?? "",
     description: row.description ?? "",
+    narrativeEyebrow: row.narrative_eyebrow ?? defaultProjectNarrativeEyebrow,
+    narrativeTitle: row.narrative_title ?? defaultProjectNarrativeTitle,
+    narrativeHighlight: row.narrative_highlight ?? defaultProjectNarrativeHighlight,
+    detailStatusLabel: row.detail_status_label ?? defaultProjectDetailStatusLabel,
+    detailStatusTitle:
+      row.detail_status_title ??
+      (projectStatusOptions.includes(row.status as ProjectStatus)
+        ? (row.status as ProjectStatus)
+        : "Completed"),
+    detailStatusDescription:
+      row.detail_status_description ?? defaultProjectDetailStatusDescription,
     completionYear: row.completion_year ?? new Date().getFullYear(),
     status: projectStatusOptions.includes(row.status as ProjectStatus)
       ? (row.status as ProjectStatus)
@@ -173,7 +205,11 @@ function isFallbackProjectId(id: string | null) {
   return !!id && id.startsWith("fallback-");
 }
 
-function createEmptyDraft(): ProjectDraft {
+function getNextProjectSortOrder(projects: ProjectRecord[]) {
+  return String((projects.length ? Math.max(...projects.map((project) => project.sortOrder)) : 0) + 10);
+}
+
+function createEmptyDraft(sortOrder = "100"): ProjectDraft {
   return {
     id: null,
     slug: "",
@@ -183,11 +219,17 @@ function createEmptyDraft(): ProjectDraft {
     clientName: "",
     summary: "",
     description: "",
+    narrativeEyebrow: defaultProjectNarrativeEyebrow,
+    narrativeTitle: defaultProjectNarrativeTitle,
+    narrativeHighlight: defaultProjectNarrativeHighlight,
+    detailStatusLabel: defaultProjectDetailStatusLabel,
+    detailStatusTitle: "Completed",
+    detailStatusDescription: defaultProjectDetailStatusDescription,
     completionYear: String(new Date().getFullYear()),
     status: "Completed",
     featured: false,
     published: true,
-    sortOrder: "100",
+    sortOrder,
     coverImageUrl: "",
     images: [],
   };
@@ -203,6 +245,12 @@ function toDraft(project: ProjectRecord): ProjectDraft {
     clientName: project.clientName,
     summary: project.summary,
     description: project.description,
+    narrativeEyebrow: project.narrativeEyebrow,
+    narrativeTitle: project.narrativeTitle,
+    narrativeHighlight: project.narrativeHighlight,
+    detailStatusLabel: project.detailStatusLabel,
+    detailStatusTitle: project.detailStatusTitle,
+    detailStatusDescription: project.detailStatusDescription,
     completionYear: String(project.completionYear),
     status: project.status,
     featured: project.featured,
@@ -252,13 +300,15 @@ export default function ProjectManager({
     starterProjects[0]?.id ?? null,
   );
   const [draft, setDraft] = useState<ProjectDraft>(
-    starterProjects[0] ? toDraft(starterProjects[0]) : createEmptyDraft(),
+    starterProjects[0] ? toDraft(starterProjects[0]) : createEmptyDraft(getNextProjectSortOrder(starterProjects)),
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(initialError);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadTargetId, setUploadTargetId] = useState<string | "new" | null>(null);
+  const [hasAttemptedSeed, setHasAttemptedSeed] = useState(initialProjects.length > 0);
   const [removedImages, setRemovedImages] = useState<ProjectImageDraft[]>([]);
   const hasPersistedProjects = useMemo(
     () => projects.some((project) => !isFallbackProjectId(project.id)),
@@ -274,7 +324,7 @@ export default function ProjectManager({
     [projects],
   );
 
-  async function refreshProjects(nextSelectedId?: string | null) {
+  const refreshProjects = useCallback(async (nextSelectedId?: string | null) => {
     const { data, error } = await client.from("projects").select(projectSelect);
 
     if (error) {
@@ -297,7 +347,7 @@ export default function ProjectManager({
     setSelectedProjectId(resolvedSelectedId);
 
     if (!resolvedSelectedId) {
-      setDraft(createEmptyDraft());
+      setDraft(createEmptyDraft(getNextProjectSortOrder(nextProjects)));
       setRemovedImages([]);
       return;
     }
@@ -308,9 +358,9 @@ export default function ProjectManager({
       setDraft(toDraft(project));
       setRemovedImages([]);
     }
-  }
+  }, [client, selectedProjectId]);
 
-  async function importFallbackPortfolio() {
+  const importFallbackPortfolio = useCallback(async () => {
     const { data: existingProjects, error: existingProjectsError } = await client
       .from("projects")
       .select("id, slug");
@@ -336,6 +386,12 @@ export default function ProjectManager({
         client_name: project.clientName,
         summary: project.summary,
         description: project.description,
+        narrative_eyebrow: project.narrativeEyebrow,
+        narrative_title: project.narrativeTitle,
+        narrative_highlight: project.narrativeHighlight,
+        detail_status_label: project.detailStatusLabel,
+        detail_status_title: project.detailStatusTitle,
+        detail_status_description: project.detailStatusDescription,
         completion_year: project.completionYear,
         status: project.status,
         featured: project.featured,
@@ -387,21 +443,43 @@ export default function ProjectManager({
     }
 
     return slugToProjectId;
-  }
+  }, [client]);
 
-  async function handleImportDemoPortfolio() {
+  const handleImportDemoPortfolio = useCallback(async (fallbackId: string | null = draft.id) => {
     setIsImporting(true);
 
     try {
-      await importFallbackPortfolio();
-      await refreshProjects();
-      toast.success("Demo portfolio imported.");
+      const selectedFallback = isFallbackProjectId(fallbackId)
+        ? fallbackProjects.find((project) => project.id === fallbackId) ?? null
+        : null;
+      const slugMap = await importFallbackPortfolio();
+      await refreshProjects(selectedFallback ? (slugMap.get(selectedFallback.slug) ?? null) : null);
+      toast.success("Portfolio synced to Supabase.");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Unable to import demo portfolio.");
+      toast.error(error instanceof Error ? error.message : "Unable to sync portfolio to Supabase.");
     } finally {
       setIsImporting(false);
     }
-  }
+  }, [draft.id, importFallbackPortfolio, refreshProjects]);
+
+  useEffect(() => {
+    if (errorMessage || hasPersistedProjects || hasAttemptedSeed) {
+      return;
+    }
+
+    setHasAttemptedSeed(true);
+    void handleImportDemoPortfolio();
+  }, [errorMessage, handleImportDemoPortfolio, hasPersistedProjects, hasAttemptedSeed]);
+
+  useEffect(() => {
+    if (!selectedProjectId) {
+      return;
+    }
+
+    document
+      .getElementById(`project-item-${selectedProjectId}`)
+      ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [projects.length, selectedProjectId]);
 
   function selectProject(project: ProjectRecord) {
     setSelectedProjectId(project.id);
@@ -411,7 +489,7 @@ export default function ProjectManager({
 
   function createNewProject() {
     setSelectedProjectId(null);
-    setDraft(createEmptyDraft());
+    setDraft(createEmptyDraft(getNextProjectSortOrder(projects)));
     setRemovedImages([]);
   }
 
@@ -488,9 +566,7 @@ export default function ProjectManager({
     });
   }
 
-  async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(event.target.files ?? []);
-
+  async function uploadImages(files: File[], imageId?: string) {
     if (!files.length) {
       return;
     }
@@ -499,14 +575,27 @@ export default function ProjectManager({
 
     if (!nextSlug) {
       toast.error("Enter a title first so uploaded images can be organized.");
-      event.target.value = "";
       return;
     }
 
     setIsUploading(true);
+    setUploadTargetId(imageId ?? "new");
 
     try {
+      const imageToReplace = imageId
+        ? draft.images.find((image) => image.id === imageId) ?? null
+        : null;
       const uploadedImages: ProjectImageDraft[] = [];
+      const baselineSortOrder = imageToReplace
+        ? Math.max(
+            0,
+            ...draft.images
+              .filter((image) => image.id !== imageToReplace.id)
+              .map((image) => image.sortOrder),
+          )
+        : draft.images.length
+          ? Math.max(...draft.images.map((image) => image.sortOrder))
+          : 0;
 
       for (const file of files) {
         const path = `${nextSlug}/${Date.now()}-${sanitizeFileName(file.name)}`;
@@ -526,36 +615,73 @@ export default function ProjectManager({
         } = client.storage.from(projectMediaBucket).getPublicUrl(path);
 
         uploadedImages.push({
-          id: `temp-${crypto.randomUUID()}`,
+          id: imageToReplace?.id ?? `temp-${crypto.randomUUID()}`,
           imageUrl: publicUrl,
-          altText: draft.title || file.name,
-          caption: "",
+          altText: imageToReplace?.altText || draft.title || file.name,
+          caption: imageToReplace?.caption ?? "",
           sortOrder:
-            (draft.images.length
-              ? Math.max(...draft.images.map((image) => image.sortOrder))
-              : 0) +
-            uploadedImages.length * 10 +
-            10,
-          isCover: draft.images.length === 0 && uploadedImages.length === 0,
+            imageToReplace?.sortOrder ?? baselineSortOrder + uploadedImages.length * 10 + 10,
+          isCover: imageToReplace?.isCover ?? (draft.images.length === 0 && uploadedImages.length === 0),
           storagePath: path,
         });
       }
 
-      setDraft((current) => ({
-        ...current,
-        slug: current.slug || nextSlug,
-        coverImageUrl:
-          current.coverImageUrl || uploadedImages.find((image) => image.isCover)?.imageUrl || "",
-        images: [...current.images, ...uploadedImages],
-      }));
+      setDraft((current) => {
+        if (imageToReplace) {
+          const replacement = uploadedImages[0];
+          const nextImages = current.images.map((image) =>
+            image.id === imageToReplace.id
+              ? {
+                  ...image,
+                  imageUrl: replacement.imageUrl,
+                  altText: replacement.altText,
+                  caption: replacement.caption,
+                  storagePath: replacement.storagePath,
+                }
+              : image,
+          );
 
-      toast.success(`${uploadedImages.length} image uploaded.`);
+          return {
+            ...current,
+            slug: current.slug || nextSlug,
+            coverImageUrl:
+              current.coverImageUrl === imageToReplace.imageUrl || imageToReplace.isCover
+                ? replacement.imageUrl
+                : current.coverImageUrl,
+            images: nextImages,
+          };
+        }
+
+        return {
+          ...current,
+          slug: current.slug || nextSlug,
+          coverImageUrl:
+            current.coverImageUrl || uploadedImages.find((image) => image.isCover)?.imageUrl || "",
+          images: [...current.images, ...uploadedImages],
+        };
+      });
+
+      if (imageToReplace?.storagePath) {
+        await client.storage.from(projectMediaBucket).remove([imageToReplace.storagePath]);
+      }
+
+      toast.success(
+        imageToReplace
+          ? "Image uploaded."
+          : `${uploadedImages.length} image uploaded.`,
+      );
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Unable to upload images.");
     } finally {
       setIsUploading(false);
-      event.target.value = "";
+      setUploadTargetId(null);
     }
+  }
+
+  async function handleUpload(event: React.ChangeEvent<HTMLInputElement>, imageId?: string) {
+    const files = Array.from(event.target.files ?? []);
+    await uploadImages(imageId ? files.slice(0, 1) : files, imageId);
+    event.target.value = "";
   }
 
   async function handleSave() {
@@ -588,6 +714,12 @@ export default function ProjectManager({
         client_name: draft.clientName.trim(),
         summary: draft.summary.trim(),
         description: draft.description.trim(),
+        narrative_eyebrow: draft.narrativeEyebrow.trim(),
+        narrative_title: draft.narrativeTitle.trim(),
+        narrative_highlight: draft.narrativeHighlight.trim(),
+        detail_status_label: draft.detailStatusLabel.trim(),
+        detail_status_title: draft.detailStatusTitle.trim(),
+        detail_status_description: draft.detailStatusDescription.trim(),
         completion_year: Number(draft.completionYear) || new Date().getFullYear(),
         status: draft.status,
         featured: draft.featured,
@@ -605,7 +737,7 @@ export default function ProjectManager({
           ? (fallbackProjectMap.get(fallbackTemplate.slug) ?? null)
           : draft.id;
 
-      if (projectId && !fallbackTemplate) {
+      if (projectId) {
         const { error } = await client
           .from("projects")
           .update(projectPayload)
@@ -794,22 +926,21 @@ export default function ProjectManager({
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="font-display text-xl text-foreground">
-                Demo portfolio is in preview mode
+                Starter portfolio is syncing to Supabase
               </p>
               <p className="mt-2 max-w-3xl font-body text-sm leading-relaxed text-muted-foreground">
-                The public website is currently rendering the starter demo projects. Import them
-                into Supabase once, and they will appear here as real editable records for titles,
-                images, gallery captions, summaries, and project detail pages.
+                The starter portfolio is being stored as real editable records so project cards,
+                detail pages, gallery images, and captions all persist from Supabase.
               </p>
             </div>
             <Button
               type="button"
-              onClick={handleImportDemoPortfolio}
+              onClick={() => void handleImportDemoPortfolio()}
               className="bg-gradient-gold text-charcoal hover:opacity-95"
               disabled={isImporting}
             >
               {isImporting ? <Loader2 className="animate-spin" /> : <Upload />}
-              Import Demo Portfolio
+              Sync Portfolio
             </Button>
           </div>
         </div>
@@ -834,13 +965,17 @@ export default function ProjectManager({
             </Button>
           </div>
 
-          <ScrollArea className="h-[22rem] sm:h-[28rem] xl:h-[36rem]">
-            <div className="space-y-3 p-4">
+          <div
+            data-lenis-prevent
+            className="h-[22rem] overflow-y-auto overscroll-contain px-4 py-4 sm:h-[28rem] xl:h-[36rem]"
+          >
+            <div className="space-y-3 pr-2">
               {projects.map((project) => {
                 const isActive = selectedProjectId === project.id;
 
                 return (
                   <button
+                    id={`project-item-${project.id}`}
                     key={project.id}
                     type="button"
                     onClick={() => selectProject(project)}
@@ -860,9 +995,6 @@ export default function ProjectManager({
                         </p>
                       </div>
                       <div className="flex flex-wrap items-center justify-end gap-2">
-                        {isFallbackProjectId(project.id) ? (
-                          <Badge variant="outline">Demo</Badge>
-                        ) : null}
                         {project.featured ? (
                           <Badge className="bg-accent text-accent-foreground">
                             Featured
@@ -890,7 +1022,7 @@ export default function ProjectManager({
                 </div>
               ) : null}
             </div>
-          </ScrollArea>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -905,7 +1037,7 @@ export default function ProjectManager({
                 </p>
                 {isFallbackProjectId(draft.id) ? (
                   <p className="mt-2 font-body text-xs uppercase tracking-[0.24em] text-gold-light">
-                    Saving this demo project will convert it into a real Supabase record.
+                    Saving this starter project writes it to Supabase as a real portfolio record.
                   </p>
                 ) : null}
               </div>
@@ -914,7 +1046,7 @@ export default function ProjectManager({
                   type="button"
                   variant="outline"
                   onClick={handleDelete}
-                  disabled={isDeleting}
+                  disabled={isDeleting || isImporting}
                 >
                   {isDeleting ? <Loader2 className="animate-spin" /> : <Trash2 />}
                   Delete
@@ -923,7 +1055,7 @@ export default function ProjectManager({
                   type="button"
                   onClick={handleSave}
                   className="bg-gradient-gold text-charcoal hover:opacity-95"
-                  disabled={isSaving}
+                  disabled={isSaving || isImporting}
                 >
                   {isSaving ? <Loader2 className="animate-spin" /> : <Save />}
                   Save
@@ -1065,6 +1197,81 @@ export default function ProjectManager({
               />
             </div>
 
+            <div className="mt-6 rounded-[1.25rem] border border-border/70 bg-background/40 p-4 sm:p-5">
+              <div>
+                <p className="font-display text-xl text-foreground">Narrative Section</p>
+                <p className="mt-1 font-body text-sm text-muted-foreground">
+                  Control the project narrative heading and the status card copy on the detail page.
+                </p>
+              </div>
+
+              <div className="mt-5 grid gap-5 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    Narrative Label
+                  </label>
+                  <Input
+                    value={draft.narrativeEyebrow}
+                    onChange={(event) => updateDraft("narrativeEyebrow", event.target.value)}
+                    placeholder="Project Narrative"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    Status Card Label
+                  </label>
+                  <Input
+                    value={draft.detailStatusLabel}
+                    onChange={(event) => updateDraft("detailStatusLabel", event.target.value)}
+                    placeholder="Project Status"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    Narrative Title
+                  </label>
+                  <Input
+                    value={draft.narrativeTitle}
+                    onChange={(event) => updateDraft("narrativeTitle", event.target.value)}
+                    placeholder="Designed with atmosphere,"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    Narrative Highlight
+                  </label>
+                  <Input
+                    value={draft.narrativeHighlight}
+                    onChange={(event) => updateDraft("narrativeHighlight", event.target.value)}
+                    placeholder="clarity, and detail."
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    Status Card Title
+                  </label>
+                  <Input
+                    value={draft.detailStatusTitle}
+                    onChange={(event) => updateDraft("detailStatusTitle", event.target.value)}
+                    placeholder="Completed"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    Status Card Description
+                  </label>
+                  <Textarea
+                    rows={3}
+                    value={draft.detailStatusDescription}
+                    onChange={(event) =>
+                      updateDraft("detailStatusDescription", event.target.value)
+                    }
+                    placeholder="Add supporting copy for the status card."
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="mt-5 space-y-2">
               <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
                 Cover Image URL
@@ -1099,24 +1306,28 @@ export default function ProjectManager({
               <div>
                 <p className="font-display text-2xl text-foreground">Gallery</p>
                 <p className="mt-1 font-body text-sm text-muted-foreground">
-                  Add remote URLs or upload to the `project-media` Supabase bucket.
+                  Upload images or add another gallery image block manually.
                 </p>
               </div>
               <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border px-4 py-2 font-body text-sm text-foreground transition-colors hover:border-accent">
-                  {isUploading ? <Loader2 className="animate-spin" /> : <Upload size={16} />}
-                  Upload
+                  {isUploading && uploadTargetId === "new" ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <Upload size={16} />
+                  )}
+                  Upload New
                   <input
                     type="file"
                     accept="image/*"
                     multiple
                     className="hidden"
-                    onChange={handleUpload}
+                    onChange={(event) => void handleUpload(event)}
                   />
                 </label>
                 <Button type="button" variant="outline" onClick={addImageFromUrl}>
                   <ImagePlus />
-                  Add URL
+                  Add Image Block
                 </Button>
               </div>
             </div>
@@ -1129,14 +1340,16 @@ export default function ProjectManager({
                 >
                   <div className="relative aspect-[4/3] overflow-hidden rounded-[1rem] border border-border/60 bg-secondary">
                     {image.imageUrl ? (
-                      <Image
+                      <img
                         src={image.imageUrl}
                         alt={image.altText || draft.title || "Project image"}
-                        fill
-                        sizes="180px"
-                        className="object-cover"
+                        className="h-full w-full object-cover"
                       />
-                    ) : null}
+                    ) : (
+                      <div className="flex h-full items-center justify-center px-4 text-center font-body text-sm text-muted-foreground">
+                        Upload an image or paste a URL to preview it here.
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-4">
@@ -1204,6 +1417,20 @@ export default function ProjectManager({
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
+                      <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border px-4 py-2 font-body text-sm text-foreground transition-colors hover:border-accent">
+                        {isUploading && uploadTargetId === image.id ? (
+                          <Loader2 className="animate-spin" />
+                        ) : (
+                          <Upload size={16} />
+                        )}
+                        Upload
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(event) => void handleUpload(event, image.id)}
+                        />
+                      </label>
                       <Button
                         type="button"
                         variant={image.isCover ? "default" : "outline"}

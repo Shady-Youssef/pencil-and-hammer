@@ -9,12 +9,14 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import CTASection from "@/components/home/CTASection";
 import ScrollProgress from "@/components/ScrollProgress";
 import type { ProjectRecord } from "@/lib/projects/data";
+import type { TestimonialRecord } from "@/lib/testimonials/data";
 
 type IndexProps = {
   featuredProjects: ProjectRecord[];
+  testimonials: TestimonialRecord[];
 };
 
-const Index = ({ featuredProjects }: IndexProps) => (
+const Index = ({ featuredProjects, testimonials }: IndexProps) => (
   <>
     <ScrollProgress />
     <Navbar />
@@ -22,7 +24,7 @@ const Index = ({ featuredProjects }: IndexProps) => (
       <HeroSection />
       <ServicesSection />
       <FeaturedWork projects={featuredProjects} />
-      <TestimonialsSection />
+      <TestimonialsSection testimonials={testimonials} />
       <CTASection />
     </main>
     <Footer />

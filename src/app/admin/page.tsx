@@ -6,6 +6,7 @@ import { getAdminProjects } from "@/lib/projects/server";
 import { absoluteUrl } from "@/lib/site";
 import { getSiteSettingsResult } from "@/lib/site/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getAdminTestimonials } from "@/lib/testimonials/server";
 import DashboardPage from "@/views/Dashboard";
 
 export const metadata: Metadata = {
@@ -31,8 +32,15 @@ function getParam(value: string | string[] | undefined, fallback = "") {
 export default async function Page({ searchParams }: PageProps) {
   const params = await searchParams;
   const supabase = await createSupabaseServerClient();
-  const [{ projects, error }, { settings, error: siteSettingsError }] =
-    await Promise.all([getAdminProjects(), getSiteSettingsResult()]);
+  const [
+    { projects, error },
+    { settings, error: siteSettingsError },
+    { testimonials, error: testimonialsError },
+  ] = await Promise.all([
+    getAdminProjects(),
+    getSiteSettingsResult(),
+    getAdminTestimonials(),
+  ]);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -46,6 +54,8 @@ export default async function Page({ searchParams }: PageProps) {
         projectsError={error}
         siteSettings={settings}
         siteSettingsError={siteSettingsError}
+        testimonials={testimonials}
+        testimonialsError={testimonialsError}
       />
     );
   }

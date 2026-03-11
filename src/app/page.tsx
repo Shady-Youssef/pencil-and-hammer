@@ -4,6 +4,7 @@ import HomePage from "@/views/Index";
 import { getFeaturedProjects } from "@/lib/projects/server";
 import { absoluteUrl } from "@/lib/site";
 import { getSiteSettings } from "@/lib/site/server";
+import { getPublishedTestimonials } from "@/lib/testimonials/server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -18,8 +19,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const [featuredProjects, settings] = await Promise.all([
-    getFeaturedProjects(3),
+  const [featuredProjects, testimonials, settings] = await Promise.all([
+    getFeaturedProjects(),
+    getPublishedTestimonials(),
     getSiteSettings(),
   ]);
   const structuredData = {
@@ -52,7 +54,7 @@ export default async function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <HomePage featuredProjects={featuredProjects} />
+      <HomePage featuredProjects={featuredProjects} testimonials={testimonials} />
     </>
   );
 }

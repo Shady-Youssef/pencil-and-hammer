@@ -1,10 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import ProjectCard from "@/components/projects/ProjectCard";
+import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 import type { ProjectRecord } from "@/lib/projects/data";
 
 type FeaturedWorkProps = {
@@ -12,6 +20,31 @@ type FeaturedWorkProps = {
 };
 
 export default function FeaturedWork({ projects }: FeaturedWorkProps) {
+  const [api, setApi] = useState<CarouselApi>();
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(projects.length > 1);
+  const canScroll = projects.length > 1;
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const updateScrollState = () => {
+      setCanScrollPrev(api.canScrollPrev());
+      setCanScrollNext(api.canScrollNext());
+    };
+
+    updateScrollState();
+    api.on("select", updateScrollState);
+    api.on("reInit", updateScrollState);
+
+    return () => {
+      api.off("select", updateScrollState);
+      api.off("reInit", updateScrollState);
+    };
+  }, [api]);
+
   return (
     <section className="section-padding bg-secondary/30 relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -33,13 +66,57 @@ export default function FeaturedWork({ projects }: FeaturedWorkProps) {
           </Link>
         </AnimatedSection>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
-          {projects.map((project, i) => (
-            <AnimatedSection key={project.title} delay={i * 0.15} scale>
-              <ProjectCard project={project} priority={i === 0} compact />
-            </AnimatedSection>
-          ))}
-        </div>
+        <AnimatedSection delay={0.08}>
+          <Carousel
+            setApi={setApi}
+            opts={{
+              align: "start",
+              containScroll: "trimSnaps",
+              loop: projects.length > 3,
+            }}
+            className="relative"
+          >
+            {canScroll ? (
+              <div className="mb-6 flex items-center justify-end gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-11 w-11 rounded-full border-border/70 bg-background/50 backdrop-blur-xl transition-colors hover:border-accent hover:bg-background/70"
+                  onClick={() => api?.scrollPrev()}
+                  disabled={!canScrollPrev}
+                  aria-label="Previous projects"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-11 w-11 rounded-full border-border/70 bg-background/50 backdrop-blur-xl transition-colors hover:border-accent hover:bg-background/70"
+                  onClick={() => api?.scrollNext()}
+                  disabled={!canScrollNext}
+                  aria-label="Next projects"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : null}
+
+            <CarouselContent className="-ml-0">
+              {projects.map((project, i) => (
+                <CarouselItem
+                  key={project.id}
+                  className="pl-0 pr-4 sm:basis-[78%] md:basis-1/2 lg:basis-[42%] xl:basis-[36%]"
+                >
+                  <motion.div className="h-full">
+                    <ProjectCard project={project} priority={i === 0} compact />
+                  </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </AnimatedSection>
       </div>
     </section>
   );

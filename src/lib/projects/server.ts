@@ -10,6 +10,12 @@ const projectSelect = `
   client_name,
   summary,
   description,
+  narrative_eyebrow,
+  narrative_title,
+  narrative_highlight,
+  detail_status_label,
+  detail_status_title,
+  detail_status_description,
   completion_year,
   status,
   featured,
@@ -46,6 +52,12 @@ type ProjectRow = {
   client_name: string | null;
   summary: string | null;
   description: string | null;
+  narrative_eyebrow: string | null;
+  narrative_title: string | null;
+  narrative_highlight: string | null;
+  detail_status_label: string | null;
+  detail_status_title: string | null;
+  detail_status_description: string | null;
   completion_year: number | null;
   status: string | null;
   featured: boolean | null;
@@ -116,6 +128,14 @@ function normalizeProject(row: ProjectRow): ProjectRecord {
     clientName: row.client_name ?? "",
     summary: row.summary ?? "",
     description: row.description ?? "",
+    narrativeEyebrow: row.narrative_eyebrow ?? "Project Narrative",
+    narrativeTitle: row.narrative_title ?? "Designed with atmosphere,",
+    narrativeHighlight: row.narrative_highlight ?? "clarity, and detail.",
+    detailStatusLabel: row.detail_status_label ?? "Project Status",
+    detailStatusTitle: row.detail_status_title ?? status,
+    detailStatusDescription:
+      row.detail_status_description ??
+      "This page is structured to support full galleries, descriptive storytelling, and premium project presentation for both editorial browsing and client review.",
     completionYear: row.completion_year ?? new Date().getFullYear(),
     status,
     featured: row.featured ?? false,
@@ -140,11 +160,13 @@ export async function getPublishedProjects() {
   return sortProjects((data as ProjectRow[]).map(normalizeProject));
 }
 
-export async function getFeaturedProjects(limit = 3) {
+export async function getFeaturedProjects(limit?: number) {
   const projects = await getPublishedProjects();
   const featured = projects.filter((project) => project.featured);
+  const nonFeatured = projects.filter((project) => !project.featured);
+  const source = featured.length ? [...featured, ...nonFeatured] : projects;
 
-  return (featured.length ? featured : projects).slice(0, limit);
+  return typeof limit === "number" ? source.slice(0, limit) : source;
 }
 
 export async function getPublishedProjectBySlug(slug: string) {

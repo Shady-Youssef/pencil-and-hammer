@@ -7,15 +7,17 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard, FolderOpen, Users, MessageSquare, Settings, BarChart3,
   TrendingUp, DollarSign, Clock, CheckCircle2, AlertCircle, ChevronRight,
-  Menu, X, LogOut, Bell, Home
+  Menu, X, LogOut, Bell, Home, Quote
 } from "lucide-react";
 
 import ProjectManager from "@/components/admin/ProjectManager";
 import SiteSettingsManager from "@/components/admin/SiteSettingsManager";
+import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import BrandLockup from "@/components/BrandLockup";
 import { useSiteSettings } from "@/components/site/site-settings-context";
 import type { ProjectRecord } from "@/lib/projects/data";
 import type { SiteSettings } from "@/lib/site";
+import type { TestimonialRecord } from "@/lib/testimonials/data";
 
 type DashboardProps = {
   userEmail: string;
@@ -24,6 +26,8 @@ type DashboardProps = {
   projectsError: string | null;
   siteSettings: SiteSettings;
   siteSettingsError: string | null;
+  testimonials: TestimonialRecord[];
+  testimonialsError: string | null;
 };
 
 const sidebarLinks = [
@@ -32,6 +36,7 @@ const sidebarLinks = [
   { icon: Users, label: "Clients", id: "clients" },
   { icon: MessageSquare, label: "Messages", id: "messages" },
   { icon: BarChart3, label: "Analytics", id: "analytics" },
+  { icon: Quote, label: "Testimonials", id: "testimonials" },
   { icon: Settings, label: "Settings", id: "settings" },
 ];
 
@@ -77,6 +82,8 @@ export default function Dashboard({
   projectsError,
   siteSettings,
   siteSettingsError,
+  testimonials,
+  testimonialsError,
 }: DashboardProps) {
   const { settings } = useSiteSettings();
   const [activeTab, setActiveTab] = useState("overview");
@@ -462,6 +469,15 @@ export default function Dashboard({
                   ))}
                 </div>
               </div>
+            </motion.div>
+          )}
+
+          {activeTab === "testimonials" && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <TestimonialsManager
+                initialTestimonials={testimonials}
+                initialError={testimonialsError}
+              />
             </motion.div>
           )}
 
