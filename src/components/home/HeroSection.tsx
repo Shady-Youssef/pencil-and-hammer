@@ -101,7 +101,7 @@ export default function HeroSection() {
           <MagneticButton>
             <Link
               href="/portfolio"
-              className="group relative inline-flex w-full items-center justify-center overflow-hidden bg-gradient-gold px-8 py-3.5 font-body text-xs font-medium uppercase tracking-[0.24em] text-charcoal sm:w-auto sm:px-10 sm:py-4 sm:text-sm sm:tracking-widest"
+              className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-[0.95rem] bg-gradient-gold px-8 py-3.5 font-body text-xs font-medium uppercase tracking-[0.24em] text-charcoal sm:w-auto sm:px-10 sm:py-4 sm:text-sm sm:tracking-widest"
             >
               <span className="relative z-10">View Our Work</span>
               <motion.span
@@ -115,7 +115,7 @@ export default function HeroSection() {
           <MagneticButton>
             <Link
               href="/contact"
-              className="inline-flex w-full items-center justify-center border border-cream/40 bg-background/30 px-8 py-3.5 font-body text-xs uppercase tracking-[0.24em] text-cream backdrop-blur-sm transition-all duration-300 hover:border-accent hover:text-accent sm:w-auto sm:px-10 sm:py-4 sm:text-sm sm:tracking-widest"
+              className="inline-flex w-full items-center justify-center rounded-[0.95rem] border border-cream/40 bg-background/30 px-8 py-3.5 font-body text-xs uppercase tracking-[0.24em] text-cream backdrop-blur-sm transition-all duration-300 hover:border-accent hover:text-accent sm:w-auto sm:px-10 sm:py-4 sm:text-sm sm:tracking-widest"
             >
               Get in Touch
             </Link>
