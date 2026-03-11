@@ -16,6 +16,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     getPublishedProjectBySlug(slug),
     getSiteSettings(),
   ]);
+  const ogVersion = settings.updatedAt
+    ? encodeURIComponent(settings.updatedAt)
+    : "default";
+  const defaultOgImageUrl = absoluteUrl(`/api/og?v=${ogVersion}`, settings.siteUrl);
 
   if (!project) {
     return {
@@ -39,7 +43,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           url:
             typeof project.coverImageUrl === "string"
               ? project.coverImageUrl
-              : absoluteUrl("/api/og", settings.siteUrl),
+              : defaultOgImageUrl,
           alt: project.title,
         },
       ],
@@ -54,6 +58,10 @@ export default async function Page({ params }: PageProps) {
     getPublishedProjects(),
     getSiteSettings(),
   ]);
+  const ogVersion = settings.updatedAt
+    ? encodeURIComponent(settings.updatedAt)
+    : "default";
+  const defaultOgImageUrl = absoluteUrl(`/api/og?v=${ogVersion}`, settings.siteUrl);
 
   if (!project) {
     notFound();
@@ -74,7 +82,7 @@ export default async function Page({ params }: PageProps) {
     image:
       typeof project.coverImageUrl === "string"
         ? project.coverImageUrl
-        : absoluteUrl("/api/og", settings.siteUrl),
+        : defaultOgImageUrl,
     url: absoluteUrl(`/portfolio/${project.slug}`, settings.siteUrl),
     contentLocation: project.location,
     dateCreated: `${project.completionYear}`,

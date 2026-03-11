@@ -10,6 +10,10 @@ import "../index.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
+  const ogVersion = settings.updatedAt
+    ? encodeURIComponent(settings.updatedAt)
+    : "default";
+  const ogImageUrl = absoluteUrl(`/api/og?v=${ogVersion}`, settings.siteUrl);
 
   return {
     metadataBase: new URL(settings.siteUrl),
@@ -31,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: settings.ogDescription,
       images: [
         {
-          url: absoluteUrl("/api/og", settings.siteUrl),
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: `${settings.siteName} preview`,
@@ -42,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: settings.ogTitle,
       description: settings.ogDescription,
-      images: [absoluteUrl("/api/og", settings.siteUrl)],
+      images: [ogImageUrl],
     },
     icons: {
       icon: [{ url: settings.faviconUrl }],

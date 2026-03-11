@@ -5,6 +5,7 @@ export const siteAssetsBucket = "site-assets";
 
 export type SiteSettings = {
   id: number;
+  updatedAt: string | null;
   siteName: string;
   siteTitle: string;
   siteDescription: string;
@@ -33,6 +34,7 @@ export type SiteSettings = {
 
 export type SiteSettingsRow = {
   id: number;
+  updated_at: string | null;
   site_name: string | null;
   site_title: string | null;
   site_description: string | null;
@@ -61,6 +63,7 @@ export type SiteSettingsRow = {
 
 export const siteSettingsSelect = `
   id,
+  updated_at,
   site_name,
   site_title,
   site_description,
@@ -88,6 +91,23 @@ export const siteSettingsSelect = `
 `;
 
 function normalizeSiteUrl(value?: string | null) {
+  const hostedCandidate = env.siteUrl;
+
+  try {
+    const hostedUrl = new URL(hostedCandidate);
+    const hostedHost = hostedUrl.hostname.toLowerCase();
+    const isHostedLocal =
+      hostedHost === "localhost" ||
+      hostedHost === "127.0.0.1" ||
+      hostedHost === "0.0.0.0";
+
+    if (process.env.VERCEL === "1" && !isHostedLocal) {
+      return hostedUrl.toString().replace(/\/$/, "");
+    }
+  } catch {
+    // Fall through to the stored/local candidate resolution below.
+  }
+
   const candidate = value?.trim() || env.siteUrl;
 
   try {
@@ -134,6 +154,7 @@ function normalizeBrandAssetUrl(
 
 export const defaultSiteSettings: SiteSettings = {
   id: siteSettingsRecordId,
+  updatedAt: null,
   siteName: "MBM Designs",
   siteTitle: "MBM Designs | Luxury Interior Design Studio",
   siteDescription:
@@ -172,6 +193,7 @@ export const defaultSiteSettings: SiteSettings = {
 export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSettings {
   return {
     id: row?.id ?? defaultSiteSettings.id,
+    updatedAt: row?.updated_at ?? defaultSiteSettings.updatedAt,
     siteName: row?.site_name?.trim() || defaultSiteSettings.siteName,
     siteTitle: row?.site_title?.trim() || defaultSiteSettings.siteTitle,
     siteDescription:
