@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="MBM Designs icon">
+  <defs>
+    <linearGradient id="mbm-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8d6722" />
+      <stop offset="55%" stop-color="#d3a64b" />
+      <stop offset="100%" stop-color="#f3d795" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="#0d0907" />
+  <path d="M26 92V36h14l24 32 24-32h14v56H88V58L64 88 40 58v34H26Z" fill="url(#mbm-gold)" />
+</svg>

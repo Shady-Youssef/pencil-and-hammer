@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     images: [absoluteUrl("/api/og")],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.svg",
   },
 };
 
