@@ -1,36 +1,49 @@
 import type { Metadata } from "next";
 
 import HomePage from "@/views/Index";
-import { absoluteUrl, siteConfig } from "@/lib/site";
+import { getFeaturedProjects } from "@/lib/projects/server";
+import { absoluteUrl } from "@/lib/site";
+import { getSiteSettings } from "@/lib/site/server";
 
-export const metadata: Metadata = {
-  title: siteConfig.name,
-  description:
-    "Explore MBM Designs, a luxury interior design studio crafting atmospheric spaces for residential, hospitality, and commercial clients.",
-  alternates: {
-    canonical: absoluteUrl("/"),
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
 
-export default function Page() {
+  return {
+    title: settings.siteName,
+    description: settings.siteDescription,
+    alternates: {
+      canonical: absoluteUrl("/", settings.siteUrl),
+    },
+  };
+}
+
+export default async function Page() {
+  const [featuredProjects, settings] = await Promise.all([
+    getFeaturedProjects(3),
+    getSiteSettings(),
+  ]);
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "InteriorDesigner",
-    name: siteConfig.name,
-    description: siteConfig.description,
-    url: siteConfig.url,
-    email: siteConfig.email,
-    telephone: siteConfig.phone,
+    name: settings.siteName,
+    description: settings.siteDescription,
+    url: settings.siteUrl,
+    email: settings.contactEmail,
+    telephone: settings.contactPhone,
     address: {
       "@type": "PostalAddress",
-      streetAddress: siteConfig.address.street,
-      addressLocality: siteConfig.address.city,
-      addressRegion: siteConfig.address.region,
-      postalCode: siteConfig.address.postalCode,
-      addressCountry: siteConfig.address.country,
+      streetAddress: settings.addressLine1,
+      addressLocality: settings.addressCity,
+      addressRegion: settings.addressRegion,
+      postalCode: settings.addressPostalCode,
+      addressCountry: settings.addressCountry,
     },
-    areaServed: "New York",
-    sameAs: Object.values(siteConfig.social),
+    areaServed: settings.addressCity,
+    sameAs: [
+      settings.instagramUrl,
+      settings.facebookUrl,
+      settings.linkedinUrl,
+    ].filter(Boolean),
   };
 
   return (
@@ -39,7 +52,7 @@ export default function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <HomePage />
+      <HomePage featuredProjects={featuredProjects} />
     </>
   );
 }

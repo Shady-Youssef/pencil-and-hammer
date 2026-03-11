@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import DashboardPage from "@/views/Dashboard";
 import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
+  title: "Admin Access",
   description:
-    "Preview the MBM Designs studio dashboard interface for projects, analytics, and client activity.",
+    "Private MBM Designs admin workspace.",
   robots: {
     index: false,
     follow: false,
   },
   alternates: {
-    canonical: absoluteUrl("/dashboard"),
+    canonical: absoluteUrl("/admin"),
   },
 };
 
-export default function Page() {
-  return <DashboardPage />;
+export default async function Page() {
+  redirect("/admin");
 }

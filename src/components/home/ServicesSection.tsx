@@ -35,14 +35,14 @@ export default function ServicesSection() {
   return (
     <section className="section-padding bg-background relative overflow-hidden">
       {/* Background decorative element */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+      <div className="absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none sm:h-[500px] sm:w-[500px] lg:h-[600px] lg:w-[600px]"
         style={{ background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.03), transparent 70%)" }}
       />
 
       <div className="max-w-7xl mx-auto relative">
-        <AnimatedSection className="text-center mb-20">
+        <AnimatedSection className="mb-12 text-center sm:mb-16 md:mb-20">
           <div className="line-accent mx-auto mb-6" />
-          <h2 className="font-display text-4xl md:text-6xl font-light text-foreground mb-5">
+          <h2 className="mb-5 font-display text-3xl font-light text-foreground sm:text-4xl md:text-6xl">
             Our Services
           </h2>
           <p className="font-body text-muted-foreground max-w-lg mx-auto text-base">
@@ -50,13 +50,13 @@ export default function ServicesSection() {
           </p>
         </AnimatedSection>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
           {services.map((service, i) => (
             <AnimatedSection key={service.title} delay={i * 0.12} scale>
               <motion.div
                 whileHover={{ y: -8 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="group p-8 bg-card rounded-sm border border-border neo-border cursor-pointer relative overflow-hidden"
+                className="group relative overflow-hidden rounded-sm border border-border bg-card p-6 cursor-pointer neo-border sm:p-8"
               >
                 {/* Number watermark */}
                 <span className="absolute -top-2 -right-2 font-display text-[80px] font-light text-foreground/[0.03] leading-none select-none">
@@ -76,9 +76,9 @@ export default function ServicesSection() {
                   </p>
                   <motion.div
                     className="h-[1px] bg-accent mt-6 origin-left"
-                    initial={{ scaleX: 0 }}
+                    initial={{ scaleX: 0.35 }}
                     whileInView={{ scaleX: 1 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false, amount: 0.7 }}
                     transition={{ duration: 0.8, delay: 0.3 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                   />
                 </div>

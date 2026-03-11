@@ -4,22 +4,24 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimatedSection from "@/components/AnimatedSection";
+import { useSiteSettings } from "@/components/site/site-settings-context";
 import ScrollProgress from "@/components/ScrollProgress";
 import MagneticButton from "@/components/MagneticButton";
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-
-const info = [
-  { icon: MapPin, label: "Visit Us", value: "123 Design Avenue\nNew York, NY 10001" },
-  { icon: Phone, label: "Call Us", value: "+1 (555) 234-5678" },
-  { icon: Mail, label: "Email Us", value: "hello@mbmdesigns.com" },
-  { icon: Clock, label: "Hours", value: "Mon – Fri: 9AM – 6PM\nSat: By Appointment" },
-];
+import { getAddressLines } from "@/lib/site";
 
 export default function Contact() {
+  const { settings } = useSiteSettings();
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [focused, setFocused] = useState<string | null>(null);
+  const info = [
+    { icon: MapPin, label: "Visit Us", value: getAddressLines(settings).join("\n") },
+    { icon: Phone, label: "Call Us", value: settings.contactPhone },
+    { icon: Mail, label: "Email Us", value: settings.contactEmail },
+    { icon: Clock, label: "Hours", value: "Mon – Fri: 9AM – 6PM\nSat: By Appointment" },
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

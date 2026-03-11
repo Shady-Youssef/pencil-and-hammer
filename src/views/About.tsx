@@ -16,13 +16,6 @@ const stats = [
   { icon: Globe, value: "8", label: "Countries Served" },
 ];
 
-const team = [
-  { name: "Maria Bello", role: "Principal Designer", initials: "MB" },
-  { name: "David Moore", role: "Senior Architect", initials: "DM" },
-  { name: "Anya Volkov", role: "Color Specialist", initials: "AV" },
-  { name: "Liam Foster", role: "Project Manager", initials: "LF" },
-];
-
 export default function About() {
   return (
     <>
@@ -115,37 +108,6 @@ export default function About() {
                 — Maria Bello, Founder
               </p>
             </AnimatedSection>
-          </div>
-        </section>
-
-        {/* Team */}
-        <section className="section-padding bg-background">
-          <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center mb-20">
-              <div className="line-accent mx-auto mb-6" />
-              <h2 className="font-display text-4xl md:text-5xl font-light text-foreground">Our Team</h2>
-            </AnimatedSection>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {team.map((member, i) => (
-                <AnimatedSection key={member.name} delay={i * 0.1} scale>
-                  <motion.div
-                    whileHover={{ y: -6 }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="text-center group cursor-pointer"
-                  >
-                    <div className="w-32 h-32 mx-auto mb-5 rounded-full bg-secondary flex items-center justify-center border border-border group-hover:border-accent group-hover:shadow-[0_0_30px_hsla(38,60%,52%,0.15)] transition-all duration-500">
-                      <span className="font-display text-2xl text-muted-foreground group-hover:text-accent transition-colors duration-300">
-                        {member.initials}
-                      </span>
-                    </div>
-                    <h3 className="font-display text-lg text-foreground">{member.name}</h3>
-                    <p className="font-body text-xs text-muted-foreground tracking-wider uppercase mt-1">
-                      {member.role}
-                    </p>
-                  </motion.div>
-                </AnimatedSection>
-              ))}
-            </div>
           </div>
         </section>
       </main>

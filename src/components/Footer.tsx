@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { Instagram, Facebook, Linkedin, ArrowUpRight } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
+import BrandLockup from "@/components/BrandLockup";
+import { useSiteSettings } from "@/components/site/site-settings-context";
 import { motion } from "framer-motion";
-import { siteConfig } from "@/lib/site";
+import { getAddressLines } from "@/lib/site";
 
 const footerLinks = [
   { label: "Home", href: "/" },
@@ -13,13 +15,15 @@ const footerLinks = [
   { label: "Contact", href: "/contact" },
 ] as const;
 
-const socialLinks = [
-  { href: siteConfig.social.instagram, label: "Instagram", icon: Instagram },
-  { href: siteConfig.social.facebook, label: "Facebook", icon: Facebook },
-  { href: siteConfig.social.linkedin, label: "LinkedIn", icon: Linkedin },
-] as const;
-
 export default function Footer() {
+  const { settings } = useSiteSettings();
+  const socialLinks = [
+    { href: settings.instagramUrl, label: "Instagram", icon: Instagram },
+    { href: settings.facebookUrl, label: "Facebook", icon: Facebook },
+    { href: settings.linkedinUrl, label: "LinkedIn", icon: Linkedin },
+  ].filter((item) => item.href);
+  const addressLines = getAddressLines(settings);
+
   return (
     <footer className="bg-charcoal text-primary-foreground relative overflow-hidden">
       {/* Decorative gradient */}
@@ -30,9 +34,13 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto section-padding">
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <AnimatedSection className="md:col-span-2" direction="left">
-            <h3 className="font-display text-3xl font-semibold mb-4">
-              MBM<span className="text-gradient-gold"> Designs</span>
-            </h3>
+            <BrandLockup
+              name={settings.siteName}
+              logoUrl={settings.logoUrl}
+              className="gap-3"
+              textClassName="text-2xl text-cream sm:text-3xl"
+              logoClassName="object-contain p-1.5"
+            />
             <p className="text-warm-gray max-w-md leading-relaxed font-body text-sm">
               Transforming spaces into extraordinary experiences. We blend artistry with functionality
               to create interiors that tell your unique story.
@@ -56,15 +64,21 @@ export default function Footer() {
           <AnimatedSection delay={0.2}>
             <h4 className="font-display text-lg mb-6 text-cream">Contact</h4>
             <div className="flex flex-col gap-3 text-warm-gray font-body text-sm">
-              <p>hello@mbmdesigns.com</p>
-              <p>+1 (555) 234-5678</p>
-              <p>123 Design Avenue<br />New York, NY 10001</p>
+              <p>{settings.contactEmail}</p>
+              <p>{settings.contactPhone}</p>
+              <div>
+                {addressLines.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+              </div>
             </div>
           </AnimatedSection>
         </div>
         <div className="border-t border-charcoal-light pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-warm-gray text-xs font-body">
-            © {new Date().getFullYear()} MBM Designs. All rights reserved.
+            © {new Date().getFullYear()} {settings.siteName}. All rights reserved.
           </p>
           <div className="flex gap-4">
             {socialLinks.map(({ href, label, icon: Icon }) => (

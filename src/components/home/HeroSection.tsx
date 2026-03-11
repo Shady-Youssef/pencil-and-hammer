@@ -21,7 +21,7 @@ export default function HeroSection() {
   const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
 
   return (
-    <section ref={ref} className="relative h-screen w-full overflow-hidden">
+    <section ref={ref} className="relative min-h-[42rem] h-[100svh] w-full overflow-hidden">
       {/* Parallax background */}
       <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale }}>
         <Image
@@ -39,13 +39,13 @@ export default function HeroSection() {
       {/* Floating orbs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
-          className="absolute w-64 h-64 rounded-full"
+          className="absolute h-40 w-40 rounded-full sm:h-64 sm:w-64"
           style={{ background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.08), transparent 70%)", top: "20%", right: "10%" }}
           animate={{ y: [-20, 20, -20], x: [-10, 10, -10] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute w-96 h-96 rounded-full"
+          className="absolute h-56 w-56 rounded-full sm:h-80 sm:w-80 lg:h-96 lg:w-96"
           style={{ background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.05), transparent 70%)", bottom: "10%", left: "5%" }}
           animate={{ y: [15, -15, 15], x: [10, -10, 10] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
@@ -55,26 +55,26 @@ export default function HeroSection() {
       {/* Content */}
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6"
+        className="relative z-10 flex h-full flex-col items-center justify-center px-4 pb-20 pt-28 text-center sm:px-6"
       >
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ y: 24 }}
+          animate={{ y: 0 }}
           transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
           <motion.div
-            className="line-accent mx-auto mb-8"
+            className="line-accent mx-auto mb-6 sm:mb-8"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
           />
-          <p className="font-body text-sm tracking-[0.4em] uppercase text-gold-light mb-4">
+          <p className="mb-3 font-body text-[11px] tracking-[0.28em] uppercase text-gold-light sm:mb-4 sm:text-sm sm:tracking-[0.4em]">
             Interior Design Studio
           </p>
         </motion.div>
 
-        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-light text-cream leading-[1.05] max-w-6xl">
+        <h1 className="max-w-6xl font-display text-4xl font-light leading-[1.02] text-cream sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl">
           <TextReveal delay={0.5}>Crafting Spaces</TextReveal>
           <br />
           <span className="italic">
@@ -83,25 +83,25 @@ export default function HeroSection() {
         </h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 1, delay: 1 }}
-          className="font-body text-warm-gray text-base md:text-lg mt-10 max-w-xl leading-relaxed"
+          initial={{ y: 24 }}
+          animate={{ y: 0 }}
+          transition={{ duration: 0.9, delay: 1, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-6 max-w-xl px-2 font-body text-sm leading-relaxed text-warm-gray sm:mt-8 sm:text-base md:mt-10 md:text-lg"
         >
           Where timeless elegance meets modern sophistication.
           We transform your vision into breathtaking reality.
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
           transition={{ duration: 0.8, delay: 1.3 }}
-          className="mt-14 flex gap-6 flex-wrap justify-center"
+          className="mt-10 flex flex-col gap-4 sm:mt-12 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-6 md:mt-14"
         >
           <MagneticButton>
             <Link
               href="/portfolio"
-              className="group relative inline-block bg-gradient-gold font-body text-sm tracking-widest uppercase px-10 py-4 text-charcoal font-medium overflow-hidden"
+              className="group relative inline-flex w-full items-center justify-center overflow-hidden bg-gradient-gold px-8 py-3.5 font-body text-xs font-medium uppercase tracking-[0.24em] text-charcoal sm:w-auto sm:px-10 sm:py-4 sm:text-sm sm:tracking-widest"
             >
               <span className="relative z-10">View Our Work</span>
               <motion.span
@@ -115,7 +115,7 @@ export default function HeroSection() {
           <MagneticButton>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center border border-cream/40 bg-background/30 backdrop-blur-sm font-body text-sm tracking-widest uppercase px-10 py-4 text-cream hover:border-accent hover:text-accent transition-all duration-300"
+              className="inline-flex w-full items-center justify-center border border-cream/40 bg-background/30 px-8 py-3.5 font-body text-xs uppercase tracking-[0.24em] text-cream backdrop-blur-sm transition-all duration-300 hover:border-accent hover:text-accent sm:w-auto sm:px-10 sm:py-4 sm:text-sm sm:tracking-widest"
             >
               Get in Touch
             </Link>
@@ -124,10 +124,10 @@ export default function HeroSection() {
 
         {/* Scroll indicator */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ y: 10 }}
+          animate={{ y: 0 }}
           transition={{ delay: 2 }}
-          className="absolute bottom-10"
+          className="absolute bottom-6 sm:bottom-10"
         >
           <motion.div
             animate={{ y: [0, 10, 0] }}

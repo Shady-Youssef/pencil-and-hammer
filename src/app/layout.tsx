@@ -3,58 +3,60 @@ import Script from "next/script";
 import type { ReactNode } from "react";
 
 import Providers from "@/app/providers";
-import { absoluteUrl, siteConfig } from "@/lib/site";
+import { absoluteUrl } from "@/lib/site";
+import { getSiteSettings } from "@/lib/site/server";
 
 import "../index.css";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteConfig.title,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  keywords: [
-    "luxury interior design",
-    "interior design studio",
-    "residential interior designer",
-    "hospitality design",
-    "commercial interiors",
-    "New York interior design",
-  ],
-  alternates: {
-    canonical: absoluteUrl("/"),
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    title: siteConfig.title,
-    description: siteConfig.description,
-    images: [
-      {
-        url: absoluteUrl("/api/og"),
-        width: 1200,
-        height: 630,
-        alt: `${siteConfig.name} preview`,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.title,
-    description: siteConfig.description,
-    images: [absoluteUrl("/api/og")],
-  },
-  icons: {
-    icon: "/icon.svg",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
 
-export default function RootLayout({
+  return {
+    metadataBase: new URL(settings.siteUrl),
+    title: {
+      default: settings.siteTitle,
+      template: `%s | ${settings.siteName}`,
+    },
+    description: settings.siteDescription,
+    keywords: settings.seoKeywords,
+    alternates: {
+      canonical: absoluteUrl("/", settings.siteUrl),
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: settings.siteUrl,
+      siteName: settings.siteName,
+      title: settings.ogTitle,
+      description: settings.ogDescription,
+      images: [
+        {
+          url: absoluteUrl("/api/og", settings.siteUrl),
+          width: 1200,
+          height: 630,
+          alt: `${settings.siteName} preview`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: settings.ogTitle,
+      description: settings.ogDescription,
+      images: [absoluteUrl("/api/og", settings.siteUrl)],
+    },
+    icons: {
+      icon: [{ url: settings.faviconUrl }],
+      shortcut: [{ url: settings.faviconUrl }],
+      apple: [{ url: settings.faviconUrl }],
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
+  const siteSettings = await getSiteSettings();
+
   return (
     <html
       lang="en"
@@ -74,7 +76,7 @@ export default function RootLayout({
             root.style.colorScheme = theme;
           })();`}
         </Script>
-        <Providers>{children}</Providers>
+        <Providers initialSiteSettings={siteSettings}>{children}</Providers>
       </body>
     </html>
   );

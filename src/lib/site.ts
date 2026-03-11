@@ -1,30 +1,219 @@
 import { env } from "@/lib/env";
 
-const siteUrl = env.siteUrl.replace(/\/$/, "");
+export const siteSettingsRecordId = 1;
+export const siteAssetsBucket = "site-assets";
 
-export const siteConfig = {
-  name: "MBM Designs",
-  title: "MBM Designs | Luxury Interior Design Studio",
-  description:
+export type SiteSettings = {
+  id: number;
+  siteName: string;
+  siteTitle: string;
+  siteDescription: string;
+  siteUrl: string;
+  contactEmail: string;
+  contactPhone: string;
+  addressLine1: string;
+  addressLine2: string;
+  addressCity: string;
+  addressRegion: string;
+  addressPostalCode: string;
+  addressCountry: string;
+  instagramUrl: string;
+  facebookUrl: string;
+  linkedinUrl: string;
+  seoKeywords: string[];
+  ogTitle: string;
+  ogDescription: string;
+  ogKicker: string;
+  ogTagline: string;
+  logoUrl: string;
+  logoStoragePath: string | null;
+  faviconUrl: string;
+  faviconStoragePath: string | null;
+};
+
+export type SiteSettingsRow = {
+  id: number;
+  site_name: string | null;
+  site_title: string | null;
+  site_description: string | null;
+  site_url: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  address_line_1: string | null;
+  address_line_2: string | null;
+  address_city: string | null;
+  address_region: string | null;
+  address_postal_code: string | null;
+  address_country: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  linkedin_url: string | null;
+  seo_keywords: string[] | null;
+  og_title: string | null;
+  og_description: string | null;
+  og_kicker: string | null;
+  og_tagline: string | null;
+  logo_url: string | null;
+  logo_storage_path: string | null;
+  favicon_url: string | null;
+  favicon_storage_path: string | null;
+};
+
+export const siteSettingsSelect = `
+  id,
+  site_name,
+  site_title,
+  site_description,
+  site_url,
+  contact_email,
+  contact_phone,
+  address_line_1,
+  address_line_2,
+  address_city,
+  address_region,
+  address_postal_code,
+  address_country,
+  instagram_url,
+  facebook_url,
+  linkedin_url,
+  seo_keywords,
+  og_title,
+  og_description,
+  og_kicker,
+  og_tagline,
+  logo_url,
+  logo_storage_path,
+  favicon_url,
+  favicon_storage_path
+`;
+
+function normalizeSiteUrl(value?: string | null) {
+  const candidate = value?.trim() || env.siteUrl;
+
+  try {
+    return new URL(candidate).toString().replace(/\/$/, "");
+  } catch {
+    return env.siteUrl.replace(/\/$/, "");
+  }
+}
+
+export const defaultSiteSettings: SiteSettings = {
+  id: siteSettingsRecordId,
+  siteName: "MBM Designs",
+  siteTitle: "MBM Designs | Luxury Interior Design Studio",
+  siteDescription:
     "MBM Designs creates high-end residential, hospitality, and commercial interiors with a refined, editorial aesthetic.",
-  url: siteUrl,
-  ogImage: `${siteUrl}/api/og`,
-  email: "hello@mbmdesigns.com",
-  phone: "+1 (555) 234-5678",
-  address: {
-    street: "123 Design Avenue",
-    city: "New York",
-    region: "NY",
-    postalCode: "10001",
-    country: "US",
-  },
-  social: {
-    instagram: "https://instagram.com",
-    facebook: "https://facebook.com",
-    linkedin: "https://linkedin.com",
-  },
-} as const;
+  siteUrl: normalizeSiteUrl(env.siteUrl),
+  contactEmail: "hello@mbmdesigns.com",
+  contactPhone: "+1 (555) 234-5678",
+  addressLine1: "123 Design Avenue",
+  addressLine2: "",
+  addressCity: "New York",
+  addressRegion: "NY",
+  addressPostalCode: "10001",
+  addressCountry: "US",
+  instagramUrl: "https://instagram.com",
+  facebookUrl: "https://facebook.com",
+  linkedinUrl: "https://linkedin.com",
+  seoKeywords: [
+    "luxury interior design",
+    "interior design studio",
+    "residential interior designer",
+    "hospitality design",
+    "commercial interiors",
+    "New York interior design",
+  ],
+  ogTitle: "MBM Designs | Editorial Luxury Interiors",
+  ogDescription:
+    "High-end residential, hospitality, and commercial interior design with warmth, precision, and a refined editorial point of view.",
+  ogKicker: "Interior Design Studio",
+  ogTagline: "Luxury. Warmth. Precision.",
+  logoUrl: "/MBM-logo.webp",
+  logoStoragePath: null,
+  faviconUrl: "/icon.svg",
+  faviconStoragePath: null,
+};
 
-export function absoluteUrl(path = "") {
-  return `${siteConfig.url}${path}`;
+export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSettings {
+  return {
+    id: row?.id ?? defaultSiteSettings.id,
+    siteName: row?.site_name?.trim() || defaultSiteSettings.siteName,
+    siteTitle: row?.site_title?.trim() || defaultSiteSettings.siteTitle,
+    siteDescription:
+      row?.site_description?.trim() || defaultSiteSettings.siteDescription,
+    siteUrl: normalizeSiteUrl(row?.site_url),
+    contactEmail:
+      row?.contact_email?.trim() || defaultSiteSettings.contactEmail,
+    contactPhone:
+      row?.contact_phone?.trim() || defaultSiteSettings.contactPhone,
+    addressLine1:
+      row?.address_line_1?.trim() || defaultSiteSettings.addressLine1,
+    addressLine2: row?.address_line_2?.trim() || "",
+    addressCity:
+      row?.address_city?.trim() || defaultSiteSettings.addressCity,
+    addressRegion:
+      row?.address_region?.trim() || defaultSiteSettings.addressRegion,
+    addressPostalCode:
+      row?.address_postal_code?.trim() ||
+      defaultSiteSettings.addressPostalCode,
+    addressCountry:
+      row?.address_country?.trim() || defaultSiteSettings.addressCountry,
+    instagramUrl:
+      row?.instagram_url?.trim() || defaultSiteSettings.instagramUrl,
+    facebookUrl:
+      row?.facebook_url?.trim() || defaultSiteSettings.facebookUrl,
+    linkedinUrl:
+      row?.linkedin_url?.trim() || defaultSiteSettings.linkedinUrl,
+    seoKeywords:
+      row?.seo_keywords?.filter(Boolean) ?? defaultSiteSettings.seoKeywords,
+    ogTitle: row?.og_title?.trim() || defaultSiteSettings.ogTitle,
+    ogDescription:
+      row?.og_description?.trim() || defaultSiteSettings.ogDescription,
+    ogKicker: row?.og_kicker?.trim() || defaultSiteSettings.ogKicker,
+    ogTagline: row?.og_tagline?.trim() || defaultSiteSettings.ogTagline,
+    logoUrl: row?.logo_url?.trim() || defaultSiteSettings.logoUrl,
+    logoStoragePath: row?.logo_storage_path ?? null,
+    faviconUrl:
+      row?.favicon_url?.trim() || defaultSiteSettings.faviconUrl,
+    faviconStoragePath: row?.favicon_storage_path ?? null,
+  };
+}
+
+export function absoluteUrl(path = "", baseUrl = defaultSiteSettings.siteUrl) {
+  return `${baseUrl.replace(/\/$/, "")}${path}`;
+}
+
+export function splitKeywords(value: string) {
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+export function joinKeywords(keywords: string[]) {
+  return keywords.join(", ");
+}
+
+export function getAddressLines(settings: SiteSettings) {
+  const lines = [settings.addressLine1];
+
+  if (settings.addressLine2) {
+    lines.push(settings.addressLine2);
+  }
+
+  lines.push(
+    [settings.addressCity, settings.addressRegion, settings.addressPostalCode]
+      .filter(Boolean)
+      .join(", "),
+  );
+
+  return lines.filter(Boolean);
+}
+
+export function sanitizeFileName(name: string) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9.]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }

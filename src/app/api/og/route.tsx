@@ -1,8 +1,7 @@
 import { ImageResponse } from "next/og";
 
-import { siteConfig } from "@/lib/site";
-
-export const runtime = "edge";
+import { absoluteUrl } from "@/lib/site";
+import { getSiteSettings } from "@/lib/site/server";
 
 const imageSize = {
   width: 1200,
@@ -10,6 +9,11 @@ const imageSize = {
 };
 
 export async function GET() {
+  const settings = await getSiteSettings();
+  const logoUrl = settings.logoUrl.startsWith("http")
+    ? settings.logoUrl
+    : absoluteUrl(settings.logoUrl, settings.siteUrl);
+
   return new ImageResponse(
     (
       <div
@@ -45,17 +49,32 @@ export async function GET() {
           <div
             style={{
               display: "flex",
+              alignItems: "center",
+              gap: "18px",
               fontSize: 28,
               letterSpacing: "0.35em",
               textTransform: "uppercase",
               color: "#d2a24a",
             }}
           >
-            Interior Design Studio
+            {settings.logoUrl ? (
+              <img
+                src={logoUrl}
+                alt=""
+                width="70"
+                height="70"
+                style={{
+                  borderRadius: "999px",
+                  objectFit: "cover",
+                  border: "1px solid rgba(244, 237, 229, 0.12)",
+                }}
+              />
+            ) : null}
+            <div style={{ display: "flex" }}>{settings.ogKicker}</div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             <div style={{ display: "flex", fontSize: 84, fontWeight: 600 }}>
-              {siteConfig.name}
+              {settings.ogTitle}
             </div>
             <div
               style={{
@@ -67,8 +86,7 @@ export async function GET() {
                 fontFamily: "sans-serif",
               }}
             >
-              Editorial, high-end interiors for residential, hospitality, and
-              commercial spaces.
+              {settings.ogDescription}
             </div>
           </div>
           <div
@@ -80,8 +98,12 @@ export async function GET() {
               color: "#f4ede5",
             }}
           >
-            <div style={{ display: "flex" }}>{siteConfig.url.replace(/^https?:\/\//, "")}</div>
-            <div style={{ display: "flex", color: "#d2a24a" }}>Luxury. Warmth. Precision.</div>
+            <div style={{ display: "flex" }}>
+              {settings.siteUrl.replace(/^https?:\/\//, "")}
+            </div>
+            <div style={{ display: "flex", color: "#d2a24a" }}>
+              {settings.ogTagline}
+            </div>
           </div>
         </div>
       </div>

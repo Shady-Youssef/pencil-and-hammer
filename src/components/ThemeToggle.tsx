@@ -50,6 +50,7 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
       </span>
 
       <motion.span
+        initial={false}
         animate={{ x: mounted && isDark ? 40 : 0 }}
         transition={{ type: "spring", stiffness: 450, damping: 32 }}
         className="relative z-10 block h-6 w-6 rounded-full bg-gradient-gold shadow-[0_8px_24px_rgba(194,145,58,0.45)]"

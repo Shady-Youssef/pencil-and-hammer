@@ -8,15 +8,20 @@ import FeaturedWork from "@/components/home/FeaturedWork";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import CTASection from "@/components/home/CTASection";
 import ScrollProgress from "@/components/ScrollProgress";
+import type { ProjectRecord } from "@/lib/projects/data";
 
-const Index = () => (
+type IndexProps = {
+  featuredProjects: ProjectRecord[];
+};
+
+const Index = ({ featuredProjects }: IndexProps) => (
   <>
     <ScrollProgress />
     <Navbar />
     <main className="grain-overlay">
       <HeroSection />
       <ServicesSection />
-      <FeaturedWork />
+      <FeaturedWork projects={featuredProjects} />
       <TestimonialsSection />
       <CTASection />
     </main>

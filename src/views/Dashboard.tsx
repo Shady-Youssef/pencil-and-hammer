@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -8,6 +9,22 @@ import {
   TrendingUp, DollarSign, Clock, CheckCircle2, AlertCircle, ChevronRight,
   Menu, X, LogOut, Bell, Home
 } from "lucide-react";
+
+import ProjectManager from "@/components/admin/ProjectManager";
+import SiteSettingsManager from "@/components/admin/SiteSettingsManager";
+import BrandLockup from "@/components/BrandLockup";
+import { useSiteSettings } from "@/components/site/site-settings-context";
+import type { ProjectRecord } from "@/lib/projects/data";
+import type { SiteSettings } from "@/lib/site";
+
+type DashboardProps = {
+  userEmail: string;
+  userName: string;
+  projects: ProjectRecord[];
+  projectsError: string | null;
+  siteSettings: SiteSettings;
+  siteSettingsError: string | null;
+};
 
 const sidebarLinks = [
   { icon: LayoutDashboard, label: "Overview", id: "overview" },
@@ -53,18 +70,38 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard({
+  userEmail,
+  userName,
+  projects,
+  projectsError,
+  siteSettings,
+  siteSettingsError,
+}: DashboardProps) {
+  const { settings } = useSiteSettings();
   const [activeTab, setActiveTab] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const activeProjectsCount = projects.filter((project) => project.status === "In Progress").length;
+  const publishedProjectsCount = projects.filter((project) => project.published).length;
+  const featuredProjectsCount = projects.filter((project) => project.featured).length;
+  const initials = userName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "MB";
 
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex flex-col w-64 bg-charcoal min-h-screen fixed left-0 top-0">
         <div className="p-6 border-b border-charcoal-light">
-          <h1 className="font-display text-xl text-cream">
-            MBM<span className="text-gradient-gold"> Designs</span>
-          </h1>
+          <BrandLockup
+            name={settings.siteName}
+            logoUrl={settings.logoUrl}
+            textClassName="text-xl text-cream"
+            logoClassName="object-contain p-1.5"
+          />
           <p className="font-body text-xs text-warm-gray mt-1">Admin Dashboard</p>
         </div>
         <nav className="flex-1 py-4">
@@ -88,10 +125,12 @@ export default function Dashboard() {
             <Home size={18} strokeWidth={1.5} />
             Back to Home
           </Link>
-          <button className="flex items-center gap-3 text-warm-gray hover:text-cream transition-colors font-body text-sm">
-            <LogOut size={18} strokeWidth={1.5} />
-            Sign Out
-          </button>
+          <form action="/auth/signout" method="post">
+            <button type="submit" className="flex items-center gap-3 text-warm-gray hover:text-cream transition-colors font-body text-sm">
+              <LogOut size={18} strokeWidth={1.5} />
+              Sign Out
+            </button>
+          </form>
         </div>
       </aside>
 
@@ -102,10 +141,21 @@ export default function Dashboard() {
           <motion.aside
             initial={{ x: -280 }}
             animate={{ x: 0 }}
-            className="relative w-64 bg-charcoal min-h-screen"
+            className="relative min-h-screen w-[85vw] max-w-xs bg-charcoal"
           >
             <div className="p-6 border-b border-charcoal-light flex justify-between items-center">
-              <h1 className="font-display text-xl text-cream">MBM</h1>
+              <div className="flex items-center gap-3">
+                <div className="relative h-10 w-10 overflow-hidden rounded-full border border-charcoal-light bg-background/20">
+                  <Image
+                    src={settings.logoUrl}
+                    alt={`${settings.siteName} logo`}
+                    fill
+                    sizes="40px"
+                    className="object-cover"
+                  />
+                </div>
+                <h1 className="line-clamp-1 font-display text-lg text-cream">{settings.siteName}</h1>
+              </div>
               <button onClick={() => setSidebarOpen(false)} className="text-warm-gray">
                 <X size={20} />
               </button>
@@ -132,6 +182,14 @@ export default function Dashboard() {
                   {link.label}
                 </button>
               ))}
+              <form action="/auth/signout" method="post" className="px-6 pt-4">
+                <button
+                  type="submit"
+                  className="w-full text-left font-body text-sm text-warm-gray transition-colors hover:text-cream"
+                >
+                  Sign Out
+                </button>
+              </form>
             </nav>
           </motion.aside>
         </div>
@@ -140,51 +198,81 @@ export default function Dashboard() {
       {/* Main */}
       <div className="flex-1 lg:ml-64">
         {/* Top bar */}
-        <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-lg border-b border-border px-6 lg:px-10 h-16 flex items-center justify-between">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur-lg sm:px-6 lg:px-10">
           <div className="flex items-center gap-4">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-foreground">
               <Menu size={22} />
             </button>
-            <h2 className="font-display text-xl capitalize text-foreground">{activeTab}</h2>
+            <h2 className="font-display text-lg capitalize text-foreground sm:text-xl">{activeTab}</h2>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button className="relative text-muted-foreground hover:text-foreground transition-colors">
               <Bell size={20} />
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full" />
             </button>
             <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center">
-              <span className="font-body text-xs font-semibold text-accent-foreground">MB</span>
+              <span className="font-body text-xs font-semibold text-accent-foreground">{initials}</span>
             </div>
           </div>
         </header>
 
         {/* Content */}
-        <div className="p-6 lg:p-10">
+        <div className="p-4 sm:p-6 lg:p-10">
           {activeTab === "overview" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
+              <div className="mb-8 rounded-sm border border-border bg-card p-5 sm:p-6">
+                <p className="font-body text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                  Signed in as
+                </p>
+                <h3 className="mt-3 break-words font-display text-2xl text-foreground sm:text-3xl">
+                  {userName}
+                </h3>
+                <p className="mt-2 font-body text-sm text-muted-foreground">
+                  {userEmail}
+                </p>
+              </div>
               {/* Stats */}
-              <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-                {statsData.map((stat) => (
-                  <div key={stat.label} className="bg-card border border-border p-6 rounded-sm hover-lift">
+              <div className="mb-10 grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
+                {statsData.map((stat) => {
+                  const value =
+                    stat.label === "Active Projects"
+                      ? String(activeProjectsCount)
+                      : stat.label === "Revenue"
+                        ? String(publishedProjectsCount)
+                        : stat.label === "Total Clients"
+                          ? String(featuredProjectsCount)
+                          : "Admin";
+                  const change =
+                    stat.label === "Active Projects"
+                      ? "Projects currently in delivery"
+                      : stat.label === "Revenue"
+                        ? "Published on the public website"
+                        : stat.label === "Total Clients"
+                          ? "Highlighted across marketing surfaces"
+                          : "Private CMS workspace";
+
+                  return (
+                  <div key={stat.label} className="rounded-sm border border-border bg-card p-5 hover-lift sm:p-6">
                     <div className="flex items-center justify-between mb-4">
                       <stat.icon size={22} strokeWidth={1.5} className={stat.color} />
                       <ChevronRight size={16} className="text-muted-foreground" />
                     </div>
-                    <p className="font-display text-3xl text-foreground">{stat.value}</p>
+                    <p className="font-display text-3xl text-foreground">{value}</p>
                     <p className="font-body text-xs text-muted-foreground mt-1">{stat.label}</p>
-                    <p className="font-body text-xs text-accent mt-2">{stat.change}</p>
+                    <p className="font-body text-xs text-accent mt-2">{change}</p>
                   </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Projects table + Messages */}
               <div className="grid xl:grid-cols-3 gap-6">
                 <div className="xl:col-span-2 bg-card border border-border rounded-sm overflow-hidden">
-                  <div className="p-6 border-b border-border flex items-center justify-between">
+                  <div className="flex items-center justify-between border-b border-border p-5 sm:p-6">
                     <h3 className="font-display text-lg text-foreground">Recent Projects</h3>
                     <button className="font-body text-xs text-accent tracking-wider uppercase hover:text-gold-dark transition-colors">
                       View All
@@ -228,7 +316,7 @@ export default function Dashboard() {
 
                 {/* Messages */}
                 <div className="bg-card border border-border rounded-sm">
-                  <div className="p-6 border-b border-border flex items-center justify-between">
+                  <div className="flex items-center justify-between border-b border-border p-5 sm:p-6">
                     <h3 className="font-display text-lg text-foreground">Messages</h3>
                     <span className="bg-accent/10 text-accent font-body text-xs px-2 py-0.5 rounded-full">
                       2 new
@@ -256,13 +344,13 @@ export default function Dashboard() {
               </div>
 
               {/* Quick actions */}
-              <div className="mt-10 grid sm:grid-cols-3 gap-6">
+              <div className="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-6">
                 {[
                   { icon: CheckCircle2, label: "Tasks Due Today", value: "5 tasks", desc: "2 high priority" },
                   { icon: Clock, label: "Upcoming Meetings", value: "3 meetings", desc: "Next: 2:00 PM consultation" },
                   { icon: AlertCircle, label: "Pending Approvals", value: "7 items", desc: "3 budget proposals" },
                 ].map((item) => (
-                  <div key={item.label} className="bg-card border border-border p-6 rounded-sm hover-lift cursor-pointer">
+                  <div key={item.label} className="cursor-pointer rounded-sm border border-border bg-card p-5 hover-lift sm:p-6">
                     <item.icon size={20} strokeWidth={1.5} className="text-accent mb-3" />
                     <p className="font-display text-lg text-foreground">{item.value}</p>
                     <p className="font-body text-xs text-muted-foreground mt-1">{item.label}</p>
@@ -275,31 +363,17 @@ export default function Dashboard() {
 
           {activeTab === "projects" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recentProjects.map((p) => (
-                  <div key={p.name} className="bg-card border border-border p-6 rounded-sm hover-lift">
-                    <div className="flex justify-between items-start mb-4">
-                      <h3 className="font-display text-lg text-foreground">{p.name}</h3>
-                      <StatusBadge status={p.status} />
-                    </div>
-                    <p className="font-body text-sm text-muted-foreground mb-1">{p.client}</p>
-                    <p className="font-body text-sm text-foreground font-medium mb-4">{p.budget}</p>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-gold rounded-full" style={{ width: `${p.progress}%` }} />
-                      </div>
-                      <span className="font-body text-xs text-muted-foreground">{p.progress}%</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ProjectManager
+                initialProjects={projects}
+                initialError={projectsError}
+              />
             </motion.div>
           )}
 
           {activeTab === "clients" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div className="bg-card border border-border rounded-sm overflow-hidden">
-                <table className="w-full">
+              <div className="overflow-x-auto rounded-sm border border-border bg-card">
+                <table className="w-full min-w-[36rem]">
                   <thead>
                     <tr className="border-b border-border">
                       <th className="text-left font-body text-xs tracking-wider uppercase text-muted-foreground p-4">Client</th>
@@ -362,9 +436,9 @@ export default function Dashboard() {
 
           {activeTab === "analytics" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div className="grid sm:grid-cols-2 gap-6 mb-8">
+              <div className="mb-8 grid gap-4 sm:grid-cols-2 sm:gap-6">
                 {statsData.map((s) => (
-                  <div key={s.label} className="bg-card border border-border p-8 rounded-sm">
+                  <div key={s.label} className="rounded-sm border border-border bg-card p-5 sm:p-8">
                     <s.icon size={24} strokeWidth={1.2} className="text-accent mb-4" />
                     <p className="font-display text-4xl text-foreground">{s.value}</p>
                     <p className="font-body text-sm text-muted-foreground mt-2">{s.label}</p>
@@ -372,7 +446,7 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-              <div className="bg-card border border-border p-8 rounded-sm">
+              <div className="rounded-sm border border-border bg-card p-5 sm:p-8">
                 <h3 className="font-display text-xl text-foreground mb-6">Monthly Revenue Trend</h3>
                 <div className="flex items-end gap-3 h-48">
                   {[45, 62, 78, 55, 89, 95, 72, 88, 93, 67, 85, 92].map((v, i) => (
@@ -393,31 +467,10 @@ export default function Dashboard() {
 
           {activeTab === "settings" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div className="max-w-2xl bg-card border border-border p-8 rounded-sm">
-                <h3 className="font-display text-xl text-foreground mb-8">Profile Settings</h3>
-                <div className="space-y-6">
-                  {[
-                    { label: "Studio Name", value: "MBM Designs" },
-                    { label: "Email", value: "hello@mbmdesigns.com" },
-                    { label: "Phone", value: "+1 (555) 234-5678" },
-                    { label: "Address", value: "123 Design Avenue, New York, NY" },
-                  ].map((field) => (
-                    <div key={field.label}>
-                      <label className="font-body text-xs tracking-wider uppercase text-muted-foreground block mb-2">
-                        {field.label}
-                      </label>
-                      <input
-                        type="text"
-                        defaultValue={field.value}
-                        className="w-full bg-background border border-border px-4 py-3 font-body text-sm text-foreground focus:outline-none focus:border-accent transition-colors"
-                      />
-                    </div>
-                  ))}
-                  <button className="bg-gradient-gold font-body text-sm tracking-widest uppercase px-8 py-3 text-charcoal font-medium hover:opacity-90 transition-opacity mt-4">
-                    Save Changes
-                  </button>
-                </div>
-              </div>
+              <SiteSettingsManager
+                initialSettings={siteSettings}
+                initialError={siteSettingsError}
+              />
             </motion.div>
           )}
         </div>

@@ -1,14 +1,17 @@
 import type { MetadataRoute } from "next";
 
-import { siteConfig } from "@/lib/site";
+import { absoluteUrl } from "@/lib/site";
+import { getSiteSettings } from "@/lib/site/server";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const settings = await getSiteSettings();
+
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/dashboard"],
+      disallow: ["/admin", "/dashboard", "/login", "/signup"],
     },
-    sitemap: `${siteConfig.url}/sitemap.xml`,
+    sitemap: absoluteUrl("/sitemap.xml", settings.siteUrl),
   };
 }
