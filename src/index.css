@@ -45,9 +45,6 @@
     --warm-gray: 25 5% 45%;
     --glow-gold: 0 0 40px hsla(38, 60%, 46%, 0.2);
     --glow-soft: 0 0 80px hsla(38, 60%, 46%, 0.08);
-
-    --font-display: 'Playfair Display', serif;
-    --font-body: 'Poppins', sans-serif;
   }
 
   .dark {
@@ -103,9 +100,10 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     overflow-x: hidden;
+    font-family: "Poppins", sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
+    font-family: "Playfair Display", serif;
   }
 
   ::selection {

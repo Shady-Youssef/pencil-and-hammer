@@ -1,4 +1,7 @@
+"use client";
+
 import { useState } from "react";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -94,12 +97,13 @@ export default function Portfolio() {
                       whileHover={{ scale: 1.02 }}
                       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                     >
-                      <motion.img
+                      <Image
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-full object-cover"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        fill
+                        placeholder="blur"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/50 transition-all duration-700 flex items-end p-8">
                         <div className="translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-600" style={{ transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)" }}>

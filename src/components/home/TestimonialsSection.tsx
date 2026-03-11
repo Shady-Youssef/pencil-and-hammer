@@ -1,3 +1,5 @@
+"use client";
+
 import AnimatedSection from "@/components/AnimatedSection";
 import { Star, Quote } from "lucide-react";
 import { motion } from "framer-motion";

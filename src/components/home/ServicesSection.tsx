@@ -1,3 +1,5 @@
+"use client";
+
 import AnimatedSection from "@/components/AnimatedSection";
 import { motion } from "framer-motion";
 import { Paintbrush, Sofa, Lightbulb, Ruler } from "lucide-react";

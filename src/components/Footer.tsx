@@ -1,7 +1,23 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import { Instagram, Facebook, Linkedin, ArrowUpRight } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { motion } from "framer-motion";
+import { siteConfig } from "@/lib/site";
+
+const footerLinks = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Portfolio", href: "/portfolio" },
+  { label: "Contact", href: "/contact" },
+] as const;
+
+const socialLinks = [
+  { href: siteConfig.social.instagram, label: "Instagram", icon: Instagram },
+  { href: siteConfig.social.facebook, label: "Facebook", icon: Facebook },
+  { href: siteConfig.social.linkedin, label: "LinkedIn", icon: Linkedin },
+] as const;
 
 export default function Footer() {
   return (
@@ -25,13 +41,13 @@ export default function Footer() {
           <AnimatedSection delay={0.1}>
             <h4 className="font-display text-lg mb-6 text-cream">Quick Links</h4>
             <div className="flex flex-col gap-3">
-              {["Home", "About", "Portfolio", "Contact"].map((item) => (
+              {footerLinks.map((item) => (
                 <Link
-                  key={item}
-                  to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                  key={item.href}
+                  href={item.href}
                   className="text-warm-gray hover:text-gold transition-colors font-body text-sm flex items-center gap-1 group"
                 >
-                  {item}
+                  {item.label}
                   <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               ))}
@@ -51,10 +67,13 @@ export default function Footer() {
             © {new Date().getFullYear()} MBM Designs. All rights reserved.
           </p>
           <div className="flex gap-4">
-            {[Instagram, Facebook, Linkedin].map((Icon, i) => (
+            {socialLinks.map(({ href, label, icon: Icon }) => (
               <motion.a
-                key={i}
-                href="#"
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
                 whileHover={{ y: -3, scale: 1.1 }}
                 transition={{ duration: 0.2 }}
                 className="text-warm-gray hover:text-gold transition-colors"

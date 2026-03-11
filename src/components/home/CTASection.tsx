@@ -1,5 +1,8 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
 import AnimatedSection from "@/components/AnimatedSection";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import heroImg from "@/assets/hero-interior.jpg";
@@ -9,7 +12,14 @@ export default function CTASection() {
     <section className="relative overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
-        <img src={heroImg} alt="" className="w-full h-full object-cover" />
+        <Image
+          src={heroImg}
+          alt=""
+          fill
+          sizes="100vw"
+          placeholder="blur"
+          className="object-cover"
+        />
         <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
       </div>
 
@@ -41,7 +51,7 @@ export default function CTASection() {
 
           <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.25 }} className="inline-block">
             <Link
-              to="/contact"
+              href="/contact"
               className="inline-flex items-center gap-3 rounded-full border border-border bg-card/90 px-10 py-4 font-body text-xs tracking-[0.28em] uppercase text-foreground shadow-[0_8px_30px_hsl(var(--background)/0.45)] transition-all duration-300 hover:border-accent hover:text-accent"
             >
               <Sparkles size={14} className="text-accent" />

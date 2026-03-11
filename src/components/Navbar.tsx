@@ -1,8 +1,13 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+
+const heroOverlayRoutes = new Set(["/", "/about"]);
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -10,12 +15,14 @@ const navLinks = [
   { name: "Portfolio", path: "/portfolio" },
   { name: "Contact", path: "/contact" },
   { name: "Dashboard", path: "/dashboard" },
-];
+] as const;
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const location = useLocation();
+  const pathname = usePathname() ?? "/";
+  const hasHeroOverlay = heroOverlayRoutes.has(pathname);
+  const useOverlayPalette = hasHeroOverlay && !scrolled && !isOpen;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -25,7 +32,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setIsOpen(false);
-  }, [location]);
+  }, [pathname]);
 
   return (
     <motion.nav
@@ -33,13 +40,18 @@ export default function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-        scrolled
+        scrolled || isOpen || !hasHeroOverlay
           ? "bg-background/80 backdrop-blur-2xl shadow-sm border-b border-border/50"
           : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 lg:px-12 h-20">
-        <Link to="/" className="font-display text-2xl font-semibold tracking-wider text-foreground">
+        <Link
+          href="/"
+          className={`font-display text-2xl font-semibold tracking-wider transition-colors duration-500 ${
+            useOverlayPalette ? "text-cream drop-shadow-[0_4px_18px_rgba(0,0,0,0.35)]" : "text-foreground"
+          }`}
+        >
           MBM<span className="text-gradient-gold"> Designs</span>
         </Link>
 
@@ -53,32 +65,53 @@ export default function Navbar() {
               transition={{ delay: 0.1 + i * 0.05, duration: 0.5 }}
             >
               <Link
-                to={link.path}
+                href={link.path}
                 className={`relative font-body text-sm tracking-widest uppercase transition-colors duration-300 ${
-                  location.pathname === link.path
-                    ? "text-accent"
-                    : "text-muted-foreground hover:text-foreground"
+                  pathname === link.path
+                    ? useOverlayPalette
+                      ? "text-gold-light"
+                      : "text-accent"
+                    : useOverlayPalette
+                      ? "text-cream/72 hover:text-cream"
+                      : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {link.name}
-                {location.pathname === link.path && (
+                {pathname === link.path && (
                   <motion.div
                     layoutId="nav-indicator"
-                    className="absolute -bottom-1 left-0 right-0 h-[2px] bg-accent"
+                    className={`absolute -bottom-1 left-0 right-0 h-[2px] ${
+                      useOverlayPalette ? "bg-gold-light" : "bg-accent"
+                    }`}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}
               </Link>
             </motion.div>
           ))}
-          <ThemeToggle />
+          <ThemeToggle
+            className={
+              useOverlayPalette
+                ? "border-white/10 bg-charcoal/45 text-cream shadow-[0_16px_40px_rgba(0,0,0,0.28)]"
+                : undefined
+            }
+          />
         </div>
 
         <div className="flex items-center gap-3 md:hidden">
-          <ThemeToggle />
+          <ThemeToggle
+            className={
+              useOverlayPalette
+                ? "border-white/10 bg-charcoal/45 text-cream shadow-[0_16px_40px_rgba(0,0,0,0.28)]"
+                : undefined
+            }
+          />
           <button
+            type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="text-foreground p-2"
+            className={`p-2 transition-colors duration-500 ${
+              useOverlayPalette ? "text-cream" : "text-foreground"
+            }`}
             aria-label="Toggle menu"
           >
             <AnimatePresence mode="wait">
@@ -115,9 +148,9 @@ export default function Navbar() {
                   transition={{ delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <Link
-                    to={link.path}
+                    href={link.path}
                     className={`block py-3 font-body text-sm tracking-widest uppercase transition-colors ${
-                      location.pathname === link.path
+                      pathname === link.path
                         ? "text-accent"
                         : "text-muted-foreground"
                     }`}

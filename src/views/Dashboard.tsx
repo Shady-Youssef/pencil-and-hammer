@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, FolderOpen, Users, MessageSquare, Settings, BarChart3,
@@ -82,7 +84,7 @@ export default function Dashboard() {
           ))}
         </nav>
         <div className="p-6 border-t border-charcoal-light space-y-3">
-          <Link to="/" className="flex items-center gap-3 text-warm-gray hover:text-gold transition-colors font-body text-sm">
+          <Link href="/" className="flex items-center gap-3 text-warm-gray hover:text-gold transition-colors font-body text-sm">
             <Home size={18} strokeWidth={1.5} />
             Back to Home
           </Link>
@@ -110,7 +112,7 @@ export default function Dashboard() {
             </div>
             <nav className="py-4">
               <Link
-                to="/"
+                href="/"
                 className="w-full flex items-center gap-3 px-6 py-3 font-body text-sm text-warm-gray hover:text-gold transition-colors"
               >
                 <Home size={18} strokeWidth={1.5} />

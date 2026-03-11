@@ -1,6 +1,9 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
 import AnimatedSection from "@/components/AnimatedSection";
 import { ArrowUpRight } from "lucide-react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import portfolio1 from "@/assets/portfolio-1.jpg";
 import portfolio2 from "@/assets/portfolio-2.jpg";
@@ -24,7 +27,7 @@ export default function FeaturedWork() {
             </h2>
           </div>
           <Link
-            to="/portfolio"
+            href="/portfolio"
             className="group font-body text-sm tracking-widest uppercase text-accent hover:text-gold-dark transition-colors flex items-center gap-2"
           >
             View All
@@ -37,18 +40,19 @@ export default function FeaturedWork() {
         <div className="grid md:grid-cols-3 gap-8">
           {projects.map((project, i) => (
             <AnimatedSection key={project.title} delay={i * 0.15} scale>
-              <Link to="/portfolio" className="group block">
+              <Link href="/portfolio" className="group block">
                 <motion.div
                   className="relative overflow-hidden aspect-[4/5] rounded-sm"
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <motion.img
+                  <Image
                     src={project.image}
                     alt={project.title}
-                    className="w-full h-full object-cover"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    fill
+                    placeholder="blur"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-700 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/40 transition-all duration-700" />
                   

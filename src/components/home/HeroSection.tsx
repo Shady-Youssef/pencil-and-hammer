@@ -1,3 +1,7 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import heroImg from "@/assets/hero-interior.jpg";
@@ -20,7 +24,15 @@ export default function HeroSection() {
     <section ref={ref} className="relative h-screen w-full overflow-hidden">
       {/* Parallax background */}
       <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale }}>
-        <img src={heroImg} alt="Luxury interior design" className="w-full h-full object-cover" />
+        <Image
+          src={heroImg}
+          alt="Luxury interior design"
+          fill
+          priority
+          placeholder="blur"
+          sizes="100vw"
+          className="object-cover"
+        />
       </motion.div>
       <div className="overlay-dark absolute inset-0" />
 
@@ -87,7 +99,7 @@ export default function HeroSection() {
           className="mt-14 flex gap-6 flex-wrap justify-center"
         >
           <MagneticButton>
-            <a
+            <Link
               href="/portfolio"
               className="group relative inline-block bg-gradient-gold font-body text-sm tracking-widest uppercase px-10 py-4 text-charcoal font-medium overflow-hidden"
             >
@@ -98,15 +110,15 @@ export default function HeroSection() {
                 whileHover={{ x: "0%" }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               />
-            </a>
+            </Link>
           </MagneticButton>
           <MagneticButton>
-            <a
+            <Link
               href="/contact"
               className="inline-flex items-center justify-center border border-cream/40 bg-background/30 backdrop-blur-sm font-body text-sm tracking-widest uppercase px-10 py-4 text-cream hover:border-accent hover:text-accent transition-all duration-300"
             >
               Get in Touch
-            </a>
+            </Link>
           </MagneticButton>
         </motion.div>
 

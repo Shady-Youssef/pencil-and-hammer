@@ -1,29 +1,58 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme } from "@/components/theme-context";
+import { cn } from "@/lib/utils";
 
-export default function ThemeToggle() {
-  const { theme, toggle } = useTheme();
-  const isDark = theme === "dark";
+type ThemeToggleProps = {
+  className?: string;
+};
+
+export default function ThemeToggle({ className }: ThemeToggleProps) {
+  const { theme, mounted, toggle } = useTheme();
+  const isDark = mounted && theme === "dark";
 
   return (
     <button
+      type="button"
       onClick={toggle}
-      aria-label="Toggle theme"
-      className="relative w-14 h-7 rounded-full bg-secondary border border-border p-0.5 transition-colors duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      aria-label={mounted ? `Switch to ${isDark ? "light" : "dark"} mode` : "Toggle theme"}
+      aria-pressed={mounted ? isDark : undefined}
+      className={cn(
+        "relative inline-flex h-8 w-[4.5rem] items-center overflow-hidden rounded-full border border-border/80 bg-secondary/75 p-1 text-foreground shadow-[0_12px_35px_rgba(15,10,5,0.12)] backdrop-blur-xl transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        className,
+      )}
     >
-      {/* Track icons */}
-      <span className="absolute inset-0 flex items-center justify-between px-1.5 pointer-events-none">
-        <Sun size={12} className={`transition-opacity duration-300 ${isDark ? "opacity-30" : "opacity-80 text-gold"}`} />
-        <Moon size={12} className={`transition-opacity duration-300 ${isDark ? "opacity-80 text-gold-light" : "opacity-30"}`} />
+      <span className="absolute inset-x-2 flex items-center justify-between pointer-events-none">
+        <Sun
+          size={13}
+          className={cn(
+            "transition-all duration-300",
+            mounted
+              ? isDark
+                ? "opacity-30 text-foreground"
+                : "opacity-90 text-gold"
+              : "opacity-50 text-foreground",
+          )}
+        />
+        <Moon
+          size={13}
+          className={cn(
+            "transition-all duration-300",
+            mounted
+              ? isDark
+                ? "opacity-85 text-gold-light"
+                : "opacity-30 text-foreground"
+              : "opacity-50 text-foreground",
+          )}
+        />
       </span>
 
-      {/* Thumb */}
-      <motion.div
-        layout
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        className="relative z-10 w-6 h-6 rounded-full bg-gradient-gold shadow-md"
-        style={{ marginLeft: isDark ? "calc(100% - 1.5rem)" : 0 }}
+      <motion.span
+        animate={{ x: mounted && isDark ? 40 : 0 }}
+        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+        className="relative z-10 block h-6 w-6 rounded-full bg-gradient-gold shadow-[0_8px_24px_rgba(194,145,58,0.45)]"
       />
     </button>
   );
