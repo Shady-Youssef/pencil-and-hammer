@@ -12,7 +12,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import ProjectPreviewDialog from "@/components/admin/ProjectPreviewDialog";
@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -429,6 +430,8 @@ export default function ProjectManager({
   const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>("all");
   const [activeTab, setActiveTab] = useState<EditorTab>("overview");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isNavigatorOpen, setIsNavigatorOpen] = useState(false);
+  const editorSectionRef = useRef<HTMLDivElement | null>(null);
 
   const hasPersistedProjects = useMemo(
     () => projects.some((project) => !isFallbackProjectId(project.id)),
@@ -489,6 +492,16 @@ export default function ProjectManager({
   const publicPageHref = draft.published && previewProject.slug
     ? `/portfolio/${previewProject.slug}`
     : null;
+  const activeTabLabel = useMemo(() => {
+    switch (activeTab) {
+      case "story":
+        return "Story & Status";
+      case "gallery":
+        return "Gallery";
+      default:
+        return "Overview";
+    }
+  }, [activeTab]);
 
   const refreshProjects = useCallback(async (nextSelectedId?: string | null) => {
     const { data, error } = await client.from("projects").select(projectSelect);
@@ -854,7 +867,13 @@ export default function ProjectManager({
     event.target.value = "";
   }
 
-  async function handleSave() {
+  async function handleSave(event?: {
+    preventDefault?: () => void;
+    stopPropagation?: () => void;
+  }) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+
     if (!draft.title.trim()) {
       toast.error("Project title is required.");
       setActiveTab("overview");
@@ -1063,6 +1082,187 @@ export default function ProjectManager({
     window.open(publicPageHref, "_blank", "noopener,noreferrer");
   }
 
+  function scrollToEditor() {
+    editorSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function renderProjectNavigatorContent(isMobileSheet = false) {
+    return (
+      <>
+        <div className={isMobileSheet ? "border-b border-border px-5 py-5" : "border-b border-border px-5 py-5"}>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="font-display text-2xl text-foreground">
+                {isMobileSheet ? "Project Navigator" : "Projects"}
+              </p>
+              <p className="mt-1 font-body text-sm text-muted-foreground">
+                Search, filter, and jump between records faster.
+              </p>
+            </div>
+            <Button
+              type="button"
+              onClick={() => {
+                createNewProject();
+                if (isMobileSheet) {
+                  setIsNavigatorOpen(false);
+                  window.setTimeout(scrollToEditor, 80);
+                }
+              }}
+              className="w-full bg-gradient-gold text-charcoal hover:opacity-95 sm:w-auto"
+            >
+              <Plus />
+              New
+            </Button>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search title, slug, client, or location"
+                className="pl-9"
+              />
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Select
+                value={statusFilter}
+                onValueChange={(value) => setStatusFilter(value as ProjectStatus | "all")}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All statuses</SelectItem>
+                  {projectStatusOptions.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={visibilityFilter}
+                onValueChange={(value) => setVisibilityFilter(value as VisibilityFilter)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by visibility" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All visibility</SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
+                  <SelectItem value="hidden">Hidden</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+
+        <div
+          data-lenis-prevent
+          className={isMobileSheet
+            ? "h-[calc(85vh-11.5rem)] overflow-y-auto overscroll-contain px-4 py-4"
+            : "h-[22rem] overflow-y-auto overscroll-contain px-4 py-4 sm:h-[28rem] xl:h-[54rem]"
+          }
+        >
+          <div className="mb-4 flex flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+              Showing {filteredProjects.length} of {projects.length}
+            </p>
+            {(searchQuery || statusFilter !== "all" || visibilityFilter !== "all") ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setStatusFilter("all");
+                  setVisibilityFilter("all");
+                }}
+                className="font-body text-xs uppercase tracking-[0.24em] text-accent transition-colors hover:text-accent/80"
+              >
+                Clear filters
+              </button>
+            ) : null}
+          </div>
+
+          <div className="space-y-3 pr-2">
+            {filteredProjects.map((project) => {
+              const isActive = selectedProjectId === project.id;
+
+              return (
+                <button
+                  id={`project-item-${project.id}`}
+                  key={project.id}
+                  type="button"
+                  onClick={() => {
+                    selectProject(project);
+                    if (isMobileSheet) {
+                      setIsNavigatorOpen(false);
+                      window.setTimeout(scrollToEditor, 80);
+                    }
+                  }}
+                  className={`w-full rounded-[1.1rem] border p-4 text-left transition-all ${
+                    isActive
+                      ? "border-accent bg-secondary/50 shadow-[0_18px_40px_-28px_rgba(198,147,60,0.5)]"
+                      : "border-border hover:border-accent/30 hover:bg-secondary/25"
+                  }`}
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="truncate font-display text-xl text-foreground">
+                        {project.title}
+                      </p>
+                      <p className="mt-1 truncate font-body text-sm text-muted-foreground">
+                        {project.location || "Location pending"}
+                      </p>
+                    </div>
+                    {project.featured ? (
+                      <Badge className="border-0 bg-accent text-accent-foreground">
+                        <Star className="mr-1 size-3.5" />
+                        Featured
+                      </Badge>
+                    ) : null}
+                  </div>
+
+                  <p className="mt-3 line-clamp-2 font-body text-sm leading-relaxed text-muted-foreground">
+                    {project.summary || "No summary added yet."}
+                  </p>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <Badge variant={getStatusVariant(project.status)}>{project.status}</Badge>
+                    <Badge variant={project.published ? "default" : "outline"}>
+                      {project.published ? "Published" : "Hidden"}
+                    </Badge>
+                    <Badge variant="outline">{project.images.length} images</Badge>
+                  </div>
+
+                  <div className="mt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                    <p className="min-w-0 truncate font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      /portfolio/{project.slug}
+                    </p>
+                    <p className="font-body text-xs text-muted-foreground">
+                      Sort {project.sortOrder}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+
+            {!filteredProjects.length ? (
+              <div className="rounded-[1rem] border border-dashed border-border p-6 text-center">
+                <p className="font-body text-sm text-muted-foreground">
+                  No projects match the current filters.
+                </p>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <ProjectPreviewDialog
@@ -1072,13 +1272,79 @@ export default function ProjectManager({
         hasUnsavedChanges={hasUnsavedChanges}
         liveHref={publicPageHref}
       />
+      <Sheet open={isNavigatorOpen} onOpenChange={setIsNavigatorOpen}>
+        <SheetContent
+          side="bottom"
+          className="h-[85vh] rounded-t-[1.5rem] border-border bg-background p-0 xl:hidden"
+        >
+          <SheetHeader className="border-b border-border/70 px-5 py-4 text-left">
+            <SheetTitle className="font-display text-2xl">Project Navigator</SheetTitle>
+            <SheetDescription>
+              Switch projects, filter records, or start a new draft without leaving the editor.
+            </SheetDescription>
+          </SheetHeader>
+          {renderProjectNavigatorContent(true)}
+        </SheetContent>
+      </Sheet>
 
-      <div className="space-y-8">
+      <div
+        className="space-y-8 pb-28 xl:pb-0"
+        onSubmitCapture={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Total Projects" value={projects.length} helper="Full portfolio inventory" />
           <StatCard label="Published" value={publishedCount} helper="Visible on the website" />
           <StatCard label="Featured" value={featuredCount} helper="Pinned to priority slots" />
           <StatCard label="Hidden" value={hiddenCount} helper="Saved but not public" />
+        </div>
+
+        <div className="xl:hidden">
+          <div className="rounded-[1.4rem] border border-border bg-card/95 p-4 shadow-[0_24px_60px_-42px_rgba(0,0,0,0.75)] backdrop-blur-sm">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-body text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+                  Current Project
+                </p>
+                <p className="mt-2 truncate font-display text-2xl text-foreground">
+                  {draft.title.trim() || "New Project Draft"}
+                </p>
+                <p className="mt-2 font-body text-sm text-muted-foreground">
+                  You are editing the <span className="text-foreground">{activeTabLabel}</span> section.
+                </p>
+              </div>
+              <Badge variant={hasUnsavedChanges ? "secondary" : "outline"}>
+                {hasUnsavedChanges ? "Unsaved" : "Saved"}
+              </Badge>
+            </div>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <Button type="button" variant="outline" onClick={() => setIsNavigatorOpen(true)}>
+                Browse Projects
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={createNewProject}
+              >
+                <Plus />
+                New Draft
+              </Button>
+            </div>
+
+            <div className="mt-4 rounded-[1rem] border border-border/70 bg-background/50 p-3">
+              <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                Mobile flow
+              </p>
+              <p className="mt-2 font-body text-sm leading-relaxed text-muted-foreground">
+                1. Open <span className="text-foreground">Browse Projects</span> to switch records.
+                2. Edit the current section tabs.
+                3. Use the fixed bottom bar to preview or save at any time.
+              </p>
+            </div>
+          </div>
         </div>
 
         {errorMessage ? (
@@ -1116,163 +1382,11 @@ export default function ProjectManager({
         ) : null}
 
         <div className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-          <div className="rounded-[1.5rem] border border-border bg-card">
-            <div className="border-b border-border px-5 py-5">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <p className="font-display text-2xl text-foreground">Projects</p>
-                  <p className="mt-1 font-body text-sm text-muted-foreground">
-                    Search, filter, and jump between records faster.
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  onClick={createNewProject}
-                  className="w-full bg-gradient-gold text-charcoal hover:opacity-95 sm:w-auto"
-                >
-                  <Plus />
-                  New
-                </Button>
-              </div>
-
-              <div className="mt-5 space-y-3">
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Search title, slug, client, or location"
-                    className="pl-9"
-                  />
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Select
-                    value={statusFilter}
-                    onValueChange={(value) => setStatusFilter(value as ProjectStatus | "all")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All statuses</SelectItem>
-                      {projectStatusOptions.map((status) => (
-                        <SelectItem key={status} value={status}>
-                          {status}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={visibilityFilter}
-                    onValueChange={(value) => setVisibilityFilter(value as VisibilityFilter)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Filter by visibility" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All visibility</SelectItem>
-                      <SelectItem value="published">Published</SelectItem>
-                      <SelectItem value="hidden">Hidden</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            <div
-              data-lenis-prevent
-              className="h-[22rem] overflow-y-auto overscroll-contain px-4 py-4 sm:h-[28rem] xl:h-[54rem]"
-            >
-              <div className="mb-4 flex flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
-                <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                  Showing {filteredProjects.length} of {projects.length}
-                </p>
-                {(searchQuery || statusFilter !== "all" || visibilityFilter !== "all") ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setStatusFilter("all");
-                      setVisibilityFilter("all");
-                    }}
-                    className="font-body text-xs uppercase tracking-[0.24em] text-accent transition-colors hover:text-accent/80"
-                  >
-                    Clear filters
-                  </button>
-                ) : null}
-              </div>
-
-              <div className="space-y-3 pr-2">
-                {filteredProjects.map((project) => {
-                  const isActive = selectedProjectId === project.id;
-
-                  return (
-                    <button
-                      id={`project-item-${project.id}`}
-                      key={project.id}
-                      type="button"
-                      onClick={() => selectProject(project)}
-                      className={`w-full rounded-[1.1rem] border p-4 text-left transition-all ${
-                        isActive
-                          ? "border-accent bg-secondary/50 shadow-[0_18px_40px_-28px_rgba(198,147,60,0.5)]"
-                          : "border-border hover:border-accent/30 hover:bg-secondary/25"
-                      }`}
-                    >
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="min-w-0">
-                          <p className="truncate font-display text-xl text-foreground">
-                            {project.title}
-                          </p>
-                          <p className="mt-1 truncate font-body text-sm text-muted-foreground">
-                            {project.location || "Location pending"}
-                          </p>
-                        </div>
-                        {project.featured ? (
-                          <Badge className="border-0 bg-accent text-accent-foreground">
-                            <Star className="mr-1 size-3.5" />
-                            Featured
-                          </Badge>
-                        ) : null}
-                      </div>
-
-                      <p className="mt-3 line-clamp-2 font-body text-sm leading-relaxed text-muted-foreground">
-                        {project.summary || "No summary added yet."}
-                      </p>
-
-                      <div className="mt-4 flex flex-wrap items-center gap-2">
-                        <Badge variant={getStatusVariant(project.status)}>{project.status}</Badge>
-                        <Badge variant={project.published ? "default" : "outline"}>
-                          {project.published ? "Published" : "Hidden"}
-                        </Badge>
-                        <Badge variant="outline">{project.images.length} images</Badge>
-                      </div>
-
-                      <div className="mt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                        <p className="min-w-0 truncate font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                          /portfolio/{project.slug}
-                        </p>
-                        <p className="font-body text-xs text-muted-foreground">
-                          Sort {project.sortOrder}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
-
-                {!filteredProjects.length ? (
-                  <div className="rounded-[1rem] border border-dashed border-border p-6 text-center">
-                    <p className="font-body text-sm text-muted-foreground">
-                      No projects match the current filters.
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            </div>
+          <div className="hidden xl:block rounded-[1.5rem] border border-border bg-card">
+            {renderProjectNavigatorContent()}
           </div>
 
-          <div className="rounded-[1.5rem] border border-border bg-card">
+          <div ref={editorSectionRef} className="rounded-[1.5rem] border border-border bg-card">
             <div className="border-b border-border px-5 py-5 sm:px-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -1307,6 +1421,14 @@ export default function ProjectManager({
                 </div>
 
                 <div className="grid w-full gap-3 sm:flex sm:w-auto sm:flex-row sm:flex-wrap">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsNavigatorOpen(true)}
+                    className="w-full xl:hidden"
+                  >
+                    Browse Projects
+                  </Button>
                   <Button
                     type="button"
                     variant="outline"
@@ -1824,6 +1946,28 @@ export default function ProjectManager({
                 </TabsContent>
               </Tabs>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="fixed inset-x-4 bottom-4 z-30 xl:hidden">
+        <div className="rounded-[1.25rem] border border-border/80 bg-background/92 p-2 shadow-[0_26px_70px_-34px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+          <div className="grid grid-cols-3 gap-2">
+            <Button type="button" variant="outline" onClick={() => setIsNavigatorOpen(true)} className="h-11">
+              Browse
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setIsPreviewOpen(true)} className="h-11">
+              Preview
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSave}
+              className="h-11 bg-gradient-gold text-charcoal hover:opacity-95"
+              disabled={isSaving || isImporting}
+            >
+              {isSaving ? <Loader2 className="animate-spin" /> : <Save />}
+              Save
+            </Button>
           </div>
         </div>
       </div>
