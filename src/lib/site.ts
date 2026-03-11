@@ -91,7 +91,24 @@ function normalizeSiteUrl(value?: string | null) {
   const candidate = value?.trim() || env.siteUrl;
 
   try {
-    return new URL(candidate).toString().replace(/\/$/, "");
+    const normalizedCandidate = new URL(candidate);
+    const normalizedEnvUrl = new URL(env.siteUrl);
+    const candidateHost = normalizedCandidate.hostname.toLowerCase();
+    const envHost = normalizedEnvUrl.hostname.toLowerCase();
+    const isCandidateLocalhost =
+      candidateHost === "localhost" ||
+      candidateHost === "127.0.0.1" ||
+      candidateHost === "0.0.0.0";
+    const isEnvLocalhost =
+      envHost === "localhost" ||
+      envHost === "127.0.0.1" ||
+      envHost === "0.0.0.0";
+
+    if (isCandidateLocalhost && !isEnvLocalhost) {
+      return normalizedEnvUrl.toString().replace(/\/$/, "");
+    }
+
+    return normalizedCandidate.toString().replace(/\/$/, "");
   } catch {
     return env.siteUrl.replace(/\/$/, "");
   }
