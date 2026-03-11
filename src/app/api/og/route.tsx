@@ -1,7 +1,12 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import { ImageResponse } from "next/og";
 
 import { absoluteUrl } from "@/lib/site";
 import { getSiteSettings } from "@/lib/site/server";
+
+export const runtime = "nodejs";
 
 const imageSize = {
   width: 1200,
@@ -16,9 +21,9 @@ const supportedOgLogoTypes = new Set([
   "image/gif",
 ]);
 
-function toBase64(buffer: ArrayBuffer) {
+function toBase64(buffer: ArrayBuffer | Uint8Array) {
   let binary = "";
-  const bytes = new Uint8Array(buffer);
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
 
   for (const byte of bytes) {
     binary += String.fromCharCode(byte);
@@ -27,33 +32,99 @@ function toBase64(buffer: ArrayBuffer) {
   return btoa(binary);
 }
 
+function detectImageType(bytes: Uint8Array) {
+  if (bytes.length >= 12) {
+    const riff = String.fromCharCode(...bytes.slice(0, 4));
+    const webp = String.fromCharCode(...bytes.slice(8, 12));
+
+    if (riff === "RIFF" && webp === "WEBP") {
+      return "image/webp";
+    }
+  }
+
+  if (
+    bytes.length >= 8 &&
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47 &&
+    bytes[4] === 0x0d &&
+    bytes[5] === 0x0a &&
+    bytes[6] === 0x1a &&
+    bytes[7] === 0x0a
+  ) {
+    return "image/png";
+  }
+
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+    return "image/jpeg";
+  }
+
+  if (bytes.length >= 6) {
+    const gif = String.fromCharCode(...bytes.slice(0, 6));
+
+    if (gif === "GIF87a" || gif === "GIF89a") {
+      return "image/gif";
+    }
+  }
+
+  const textPrefix = new TextDecoder().decode(bytes.slice(0, 256)).trimStart();
+
+  if (textPrefix.startsWith("<svg") || textPrefix.startsWith("<?xml")) {
+    return "image/svg+xml";
+  }
+
+  return null;
+}
+
+async function readLocalAssetDataUrl(assetPath: string) {
+  const filePath = path.join(process.cwd(), "public", assetPath.replace(/^\/+/, ""));
+  const bytes = await readFile(filePath);
+  const contentType = detectImageType(bytes);
+
+  if (!contentType || !supportedOgLogoTypes.has(contentType)) {
+    return null;
+  }
+
+  return `data:${contentType};base64,${toBase64(bytes)}`;
+}
+
+async function fetchRemoteAssetDataUrl(assetUrl: string) {
+  const response = await fetch(assetUrl, {
+    cache: "no-store",
+    signal: AbortSignal.timeout(2500),
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const buffer = await response.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  const contentType = detectImageType(bytes);
+
+  if (!contentType || !supportedOgLogoTypes.has(contentType)) {
+    return null;
+  }
+
+  return `data:${contentType};base64,${toBase64(bytes)}`;
+}
+
 async function resolveOgLogoDataUrl(logoUrl: string, siteUrl: string) {
-  const assetUrl = logoUrl.startsWith("http")
-    ? logoUrl
-    : absoluteUrl(logoUrl, siteUrl);
+  if (!logoUrl) {
+    return null;
+  }
 
   try {
-    const response = await fetch(assetUrl, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      return null;
+    if (logoUrl.startsWith("/")) {
+      return await readLocalAssetDataUrl(logoUrl);
     }
 
-    const contentType = response.headers.get("content-type")?.split(";")[0]?.trim();
+    const assetUrl = logoUrl.startsWith("http")
+      ? logoUrl
+      : absoluteUrl(logoUrl, siteUrl);
 
-    if (!contentType || !supportedOgLogoTypes.has(contentType)) {
-      return null;
-    }
-
-    const buffer = await response.arrayBuffer();
-
-    if (!buffer.byteLength) {
-      return null;
-    }
-
-    return `data:${contentType};base64,${toBase64(buffer)}`;
+    return await fetchRemoteAssetDataUrl(assetUrl);
   } catch {
     return null;
   }
