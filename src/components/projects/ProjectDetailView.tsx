@@ -172,6 +172,20 @@ export default function ProjectDetailView({
             </div>
 
             <div className="space-y-5">
+              <motion.section
+                initial={{ y: 18, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.65, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                className="rounded-[1.35rem] border border-border/70 bg-card/60 p-5 backdrop-blur-xl sm:rounded-[1.6rem] sm:p-6 md:p-8"
+              >
+                <p className="font-body text-xs uppercase tracking-[0.32em] text-gold-light">
+                  Project Overview
+                </p>
+                <p className="mt-5 font-body text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg">
+                  {project.description}
+                </p>
+              </motion.section>
+
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
                 {project.images.map((image, index) => (
                   <motion.button
@@ -213,20 +227,6 @@ export default function ProjectDetailView({
                   </motion.button>
                 ))}
               </div>
-
-              <motion.section
-                initial={{ y: 18, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.65, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-[1.35rem] border border-border/70 bg-card/60 p-5 backdrop-blur-xl sm:rounded-[1.6rem] sm:p-6 md:p-8"
-              >
-                <p className="font-body text-xs uppercase tracking-[0.32em] text-gold-light">
-                  Project Overview
-                </p>
-                <p className="mt-5 font-body text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg">
-                  {project.description}
-                </p>
-              </motion.section>
             </div>
           </div>
         </section>
