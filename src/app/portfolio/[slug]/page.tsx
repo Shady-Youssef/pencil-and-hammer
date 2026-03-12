@@ -69,6 +69,9 @@ export default async function Page({ params }: PageProps) {
 
   const projectIndex = publishedProjects.findIndex((entry) => entry.slug === project.slug);
   const stickyHero = projectIndex === -1 ? true : projectIndex % 2 === 0;
+  const featuredProjects = publishedProjects
+    .filter((entry) => entry.slug !== project.slug)
+    .slice(0, 5);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -94,7 +97,11 @@ export default async function Page({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <ProjectDetailView project={project} stickyHero={stickyHero} />
+      <ProjectDetailView
+        project={project}
+        featuredProjects={featuredProjects}
+        stickyHero={stickyHero}
+      />
     </>
   );
 }

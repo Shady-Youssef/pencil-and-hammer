@@ -4,25 +4,39 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, CalendarDays, Images, MapPin } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import ScrollProgress from "@/components/ScrollProgress";
-import type { ProjectRecord } from "@/lib/projects/data";
+import FeaturedWork from "@/components/home/FeaturedWork";
+import { resolveProjectImageUrl, type ProjectRecord } from "@/lib/projects/data";
 
 type ProjectDetailViewProps = {
   project: ProjectRecord;
+  featuredProjects: ProjectRecord[];
   stickyHero: boolean;
 };
 
 export default function ProjectDetailView({
   project,
+  featuredProjects,
   stickyHero,
 }: ProjectDetailViewProps) {
   const [activeImageId, setActiveImageId] = useState(project.images[0]?.id ?? "");
   const activeImage =
     project.images.find((image) => image.id === activeImageId) ?? project.images[0];
+
+  useEffect(() => {
+    setActiveImageId(project.images[0]?.id ?? "");
+  }, [project]);
+
+  useEffect(() => {
+    for (const image of project.images) {
+      const preloadImage = new window.Image();
+      preloadImage.src = resolveProjectImageUrl(image.imageUrl);
+    }
+  }, [project.images]);
 
   return (
     <>
@@ -124,13 +138,13 @@ export default function ProjectDetailView({
                 className="relative aspect-[4/5] overflow-hidden rounded-[1.35rem] border border-white/8 bg-charcoal sm:aspect-[16/10] sm:rounded-[2rem] lg:h-[calc(100vh-9rem)] lg:aspect-auto"
                 style={{ viewTransitionName: `project-cover-${project.slug}` }}
               >
-                <AnimatePresence mode="wait">
+                <AnimatePresence initial={false}>
                   <motion.div
                     key={activeImage?.id}
-                    initial={{ x: 44, opacity: 0.72, scale: 1.02 }}
+                    initial={{ opacity: 0.82, scale: 1.01 }}
                     animate={{ x: 0, opacity: 1, scale: 1 }}
-                    exit={{ x: -28, opacity: 0.72, scale: 0.985 }}
-                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                    exit={{ opacity: 0, scale: 0.995 }}
+                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                     className="absolute inset-0"
                   >
                     {activeImage ? (
@@ -218,6 +232,8 @@ export default function ProjectDetailView({
             </div>
           </div>
         </section>
+
+        {featuredProjects.length > 0 ? <FeaturedWork projects={featuredProjects} /> : null}
       </main>
       <Footer />
     </>

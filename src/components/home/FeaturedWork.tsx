@@ -23,6 +23,7 @@ export default function FeaturedWork({ projects }: FeaturedWorkProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(projects.length > 1);
+  const [isAutoSwipePaused, setIsAutoSwipePaused] = useState(false);
   const canScroll = projects.length > 1;
 
   useEffect(() => {
@@ -44,6 +45,25 @@ export default function FeaturedWork({ projects }: FeaturedWorkProps) {
       api.off("reInit", updateScrollState);
     };
   }, [api]);
+
+  useEffect(() => {
+    if (!api || !canScroll || isAutoSwipePaused) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      if (api.canScrollNext()) {
+        api.scrollNext();
+        return;
+      }
+
+      api.scrollTo(0);
+    }, 4200);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [api, canScroll, isAutoSwipePaused]);
 
   return (
     <section className="section-padding bg-secondary/30 relative overflow-hidden">
@@ -75,6 +95,16 @@ export default function FeaturedWork({ projects }: FeaturedWorkProps) {
               loop: projects.length > 3,
             }}
             className="relative"
+            onMouseEnter={() => setIsAutoSwipePaused(true)}
+            onMouseLeave={() => setIsAutoSwipePaused(false)}
+            onFocusCapture={() => setIsAutoSwipePaused(true)}
+            onBlurCapture={(event) => {
+              if (event.currentTarget.contains(event.relatedTarget)) {
+                return;
+              }
+
+              setIsAutoSwipePaused(false);
+            }}
           >
             {canScroll ? (
               <div className="mb-6 flex items-center justify-end gap-3">
