@@ -2,6 +2,21 @@ import { env } from "@/lib/env";
 
 export const siteSettingsRecordId = 1;
 export const siteAssetsBucket = "site-assets";
+export const aboutStatIcons = ["award", "users", "clock", "globe", "sparkles", "home"] as const;
+
+export type AboutStatIcon = (typeof aboutStatIcons)[number];
+
+export type AboutStoryParagraph = {
+  id: string;
+  body: string;
+};
+
+export type AboutStat = {
+  id: string;
+  icon: AboutStatIcon;
+  title: string;
+  description: string;
+};
 
 export type SiteSettings = {
   id: number;
@@ -30,6 +45,19 @@ export type SiteSettings = {
   logoStoragePath: string | null;
   faviconUrl: string;
   faviconStoragePath: string | null;
+  aboutHeroTitle: string;
+  aboutHeroSubtitle: string;
+  aboutHeroImageUrl: string;
+  aboutHeroImageStoragePath: string | null;
+  aboutStoryTitle: string;
+  aboutStoryParagraphs: AboutStoryParagraph[];
+  aboutPortraitUrl: string;
+  aboutPortraitStoragePath: string | null;
+  aboutPortraitAlt: string;
+  aboutStats: AboutStat[];
+  aboutPhilosophyTitle: string;
+  aboutPhilosophyQuote: string;
+  aboutPhilosophyAttribution: string;
 };
 
 export type SiteSettingsRow = {
@@ -59,6 +87,21 @@ export type SiteSettingsRow = {
   logo_storage_path: string | null;
   favicon_url: string | null;
   favicon_storage_path: string | null;
+  about_hero_title: string | null;
+  about_hero_subtitle: string | null;
+  about_hero_image_url: string | null;
+  about_hero_image_storage_path: string | null;
+  about_story_title: string | null;
+  about_story_paragraphs: unknown;
+  about_story_body_primary: string | null;
+  about_story_body_secondary: string | null;
+  about_portrait_url: string | null;
+  about_portrait_storage_path: string | null;
+  about_portrait_alt: string | null;
+  about_stats: unknown;
+  about_philosophy_title: string | null;
+  about_philosophy_quote: string | null;
+  about_philosophy_attribution: string | null;
 };
 
 export const siteSettingsSelect = `
@@ -87,7 +130,22 @@ export const siteSettingsSelect = `
   logo_url,
   logo_storage_path,
   favicon_url,
-  favicon_storage_path
+  favicon_storage_path,
+  about_hero_title,
+  about_hero_subtitle,
+  about_hero_image_url,
+  about_hero_image_storage_path,
+  about_story_title,
+  about_story_paragraphs,
+  about_story_body_primary,
+  about_story_body_secondary,
+  about_portrait_url,
+  about_portrait_storage_path,
+  about_portrait_alt,
+  about_stats,
+  about_philosophy_title,
+  about_philosophy_quote,
+  about_philosophy_attribution
 `;
 
 function normalizeSiteUrl(value?: string | null) {
@@ -152,6 +210,161 @@ function normalizeBrandAssetUrl(
   return candidate;
 }
 
+function isAboutStatIcon(value: string): value is AboutStatIcon {
+  return aboutStatIcons.includes(value as AboutStatIcon);
+}
+
+export const defaultAboutStats: AboutStat[] = [
+  {
+    id: "projects-completed",
+    icon: "award",
+    title: "150+",
+    description: "Projects Completed",
+  },
+  {
+    id: "team-members",
+    icon: "users",
+    title: "12",
+    description: "Team Members",
+  },
+  {
+    id: "years-experience",
+    icon: "clock",
+    title: "15",
+    description: "Years Experience",
+  },
+  {
+    id: "countries-served",
+    icon: "globe",
+    title: "8",
+    description: "Countries Served",
+  },
+];
+
+export const defaultAboutStoryParagraphs: AboutStoryParagraph[] = [
+  {
+    id: "about-story-1",
+    body:
+      "Founded in 2010, MBM Designs has grown from a boutique studio into one of New York's most sought-after interior design firms. We believe that exceptional design is born from the intersection of artistry, innovation, and deep understanding of how people live.",
+  },
+  {
+    id: "about-story-2",
+    body:
+      "Every project we undertake is a collaborative journey. We listen, we dream, and we create spaces that are not only visually stunning but deeply personal - environments that enhance your daily life and stand the test of time.",
+  },
+];
+
+function createStoryParagraphFallbacks(
+  primary?: string | null,
+  secondary?: string | null,
+) {
+  const paragraphs = [primary?.trim(), secondary?.trim()]
+    .filter((entry): entry is string => Boolean(entry))
+    .map((body, index) => ({
+      id: `about-story-${index + 1}`,
+      body,
+    }));
+
+  return paragraphs.length ? paragraphs : defaultAboutStoryParagraphs;
+}
+
+function normalizeAboutStoryParagraphs(
+  value: unknown,
+  primary?: string | null,
+  secondary?: string | null,
+) {
+  if (!Array.isArray(value)) {
+    return createStoryParagraphFallbacks(primary, secondary);
+  }
+
+  const paragraphs = value
+    .map((entry, index) => {
+      if (typeof entry === "string") {
+        const body = entry.trim();
+
+        if (!body) {
+          return null;
+        }
+
+        return {
+          id: `about-story-${index + 1}`,
+          body,
+        };
+      }
+
+      if (!entry || typeof entry !== "object") {
+        return null;
+      }
+
+      const candidate = entry as Partial<AboutStoryParagraph>;
+      const body = typeof candidate.body === "string" ? candidate.body.trim() : "";
+
+      if (!body) {
+        return null;
+      }
+
+      return {
+        id:
+          typeof candidate.id === "string" && candidate.id.trim()
+            ? candidate.id.trim()
+            : `about-story-${index + 1}`,
+        body,
+      };
+    })
+    .filter((entry): entry is AboutStoryParagraph => Boolean(entry));
+
+  return paragraphs;
+}
+
+function normalizeAboutStats(value: unknown) {
+  if (!Array.isArray(value)) {
+    return defaultAboutStats;
+  }
+
+  const stats = value
+    .map((entry, index) => {
+      if (!entry || typeof entry !== "object") {
+        return null;
+      }
+
+      const candidate = entry as Partial<AboutStat>;
+      const rawCandidate = entry as Record<string, unknown>;
+      const icon = typeof candidate.icon === "string" && isAboutStatIcon(candidate.icon)
+        ? candidate.icon
+        : defaultAboutStats[index % defaultAboutStats.length]?.icon ?? "award";
+      const legacyValue =
+        typeof rawCandidate.value === "string" ? rawCandidate.value.trim() : "";
+      const legacyLabel =
+        typeof rawCandidate.label === "string" ? rawCandidate.label.trim() : "";
+      const titleText =
+        typeof candidate.title === "string" ? candidate.title.trim() : legacyValue;
+      const descriptionText =
+        typeof candidate.description === "string"
+          ? candidate.description.trim()
+          : legacyLabel;
+
+      if (!titleText && !descriptionText) {
+        return null;
+      }
+
+      return {
+        id:
+          typeof candidate.id === "string" && candidate.id.trim()
+            ? candidate.id.trim()
+            : `about-stat-${index + 1}`,
+        icon,
+        title: titleText || defaultAboutStats[index % defaultAboutStats.length]?.title || "",
+        description:
+          descriptionText ||
+          defaultAboutStats[index % defaultAboutStats.length]?.description ||
+          "",
+      };
+    })
+    .filter((entry): entry is AboutStat => Boolean(entry));
+
+  return stats;
+}
+
 export const defaultSiteSettings: SiteSettings = {
   id: siteSettingsRecordId,
   updatedAt: null,
@@ -188,6 +401,20 @@ export const defaultSiteSettings: SiteSettings = {
   logoStoragePath: null,
   faviconUrl: "/MBM-logo.png",
   faviconStoragePath: null,
+  aboutHeroTitle: "About Us",
+  aboutHeroSubtitle: "The story behind the spaces",
+  aboutHeroImageUrl: "",
+  aboutHeroImageStoragePath: null,
+  aboutStoryTitle: "Our Story",
+  aboutStoryParagraphs: defaultAboutStoryParagraphs,
+  aboutPortraitUrl: "",
+  aboutPortraitStoragePath: null,
+  aboutPortraitAlt: "MBM Designs portrait",
+  aboutStats: defaultAboutStats,
+  aboutPhilosophyTitle: "Our Philosophy",
+  aboutPhilosophyQuote:
+    '"Great design is not about following trends - it\'s about creating timeless spaces that resonate with the soul of those who inhabit them."',
+  aboutPhilosophyAttribution: "Maria Bello, Founder",
 };
 
 export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSettings {
@@ -240,6 +467,33 @@ export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSetting
       ["/icon.svg", "/MBM-logo.webp", "/MBM-logo.svg"],
     ),
     faviconStoragePath: row?.favicon_storage_path ?? null,
+    aboutHeroTitle:
+      row?.about_hero_title?.trim() || defaultSiteSettings.aboutHeroTitle,
+    aboutHeroSubtitle:
+      row?.about_hero_subtitle?.trim() || defaultSiteSettings.aboutHeroSubtitle,
+    aboutHeroImageUrl: row?.about_hero_image_url?.trim() || "",
+    aboutHeroImageStoragePath: row?.about_hero_image_storage_path ?? null,
+    aboutStoryTitle:
+      row?.about_story_title?.trim() || defaultSiteSettings.aboutStoryTitle,
+    aboutStoryParagraphs: normalizeAboutStoryParagraphs(
+      row?.about_story_paragraphs,
+      row?.about_story_body_primary,
+      row?.about_story_body_secondary,
+    ),
+    aboutPortraitUrl: row?.about_portrait_url?.trim() || "",
+    aboutPortraitStoragePath: row?.about_portrait_storage_path ?? null,
+    aboutPortraitAlt:
+      row?.about_portrait_alt?.trim() || defaultSiteSettings.aboutPortraitAlt,
+    aboutStats: normalizeAboutStats(row?.about_stats),
+    aboutPhilosophyTitle:
+      row?.about_philosophy_title?.trim() ||
+      defaultSiteSettings.aboutPhilosophyTitle,
+    aboutPhilosophyQuote:
+      row?.about_philosophy_quote?.trim() ||
+      defaultSiteSettings.aboutPhilosophyQuote,
+    aboutPhilosophyAttribution:
+      row?.about_philosophy_attribution?.trim() ||
+      defaultSiteSettings.aboutPhilosophyAttribution,
   };
 }
 

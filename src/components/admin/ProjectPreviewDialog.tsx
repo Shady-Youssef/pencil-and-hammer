@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { CalendarDays, ExternalLink, Eye, ImageIcon, MapPin, Sparkles } from "lucide-react";
+import { CalendarDays, ExternalLink, Eye, ImageIcon, MapPin } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -91,7 +91,7 @@ function DetailPreview({ project }: { project: ProjectRecord }) {
         </div>
 
         <div className="grid gap-4 p-5 sm:grid-cols-3 sm:p-6">
-          <div className="rounded-[1.2rem] border border-border/60 bg-background/60 p-4">
+          <div className="rounded-[1.2rem] border border-border/60 bg-background/60 p-4 sm:col-span-2">
             <div className="flex items-center gap-3">
               <MapPin size={16} className="text-accent" />
               <div>
@@ -100,19 +100,6 @@ function DetailPreview({ project }: { project: ProjectRecord }) {
                 </p>
                 <p className="mt-1 font-body text-sm text-foreground">
                   {project.location || "Not provided"}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-[1.2rem] border border-border/60 bg-background/60 p-4">
-            <div className="flex items-center gap-3">
-              <Sparkles size={16} className="text-accent" />
-              <div>
-                <p className="font-body text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-                  Client
-                </p>
-                <p className="mt-1 font-body text-sm text-foreground">
-                  {project.clientName || "Private client"}
                 </p>
               </div>
             </div>
@@ -131,37 +118,19 @@ function DetailPreview({ project }: { project: ProjectRecord }) {
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-[1.5rem] border border-border/70 bg-card/70 p-5 sm:p-6">
-          <p className="font-body text-xs uppercase tracking-[0.32em] text-gold-light">
-            {project.narrativeEyebrow}
-          </p>
-          <h3 className="mt-4 font-display text-3xl text-foreground sm:text-4xl">
-            {project.narrativeTitle}
-            <span className="text-gradient-gold"> {project.narrativeHighlight}</span>
-          </h3>
-          <p className="mt-5 font-body text-sm leading-relaxed text-muted-foreground sm:text-base">
-            {project.description}
-          </p>
-        </div>
-
-        <div className="rounded-[1.5rem] border border-border/70 bg-secondary/35 p-5 sm:p-6">
-          <p className="font-body text-xs uppercase tracking-[0.28em] text-muted-foreground">
-            {project.detailStatusLabel}
-          </p>
-          <p className="mt-3 font-display text-2xl text-foreground">
-            {project.detailStatusTitle}
-          </p>
-          <p className="mt-3 font-body text-sm leading-relaxed text-muted-foreground">
-            {project.detailStatusDescription}
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <Badge variant="secondary">{project.status}</Badge>
-            <Badge variant={project.published ? "default" : "outline"}>
-              {project.published ? "Published" : "Hidden"}
-            </Badge>
-            <Badge variant="outline">{project.images.length} image{project.images.length === 1 ? "" : "s"}</Badge>
-          </div>
+      <section className="rounded-[1.5rem] border border-border/70 bg-card/70 p-5 sm:p-6">
+        <p className="font-body text-xs uppercase tracking-[0.32em] text-gold-light">
+          Project Overview
+        </p>
+        <p className="mt-5 font-body text-sm leading-relaxed text-muted-foreground sm:text-base">
+          {project.description}
+        </p>
+        <div className="mt-6 flex flex-wrap gap-2">
+          <Badge variant="secondary">{project.status}</Badge>
+          <Badge variant={project.published ? "default" : "outline"}>
+            {project.published ? "Published" : "Hidden"}
+          </Badge>
+          <Badge variant="outline">{project.images.length} image{project.images.length === 1 ? "" : "s"}</Badge>
         </div>
       </section>
 
@@ -170,7 +139,7 @@ function DetailPreview({ project }: { project: ProjectRecord }) {
           <div>
             <p className="font-display text-2xl text-foreground">Gallery</p>
             <p className="mt-1 font-body text-sm text-muted-foreground">
-              Previewing image order, captions, and cover selection.
+              Previewing image order and cover selection.
             </p>
           </div>
           <Badge variant="outline">
@@ -203,10 +172,8 @@ function DetailPreview({ project }: { project: ProjectRecord }) {
                     <Badge className="border-0 bg-accent text-accent-foreground">Cover</Badge>
                   ) : null}
                 </div>
-                <p className="font-body text-sm text-foreground">{image.altText}</p>
-                <p className="font-body text-sm leading-relaxed text-muted-foreground">
-                  {image.caption || "No caption added yet."}
-                </p>
+                <p className="font-display text-lg text-foreground">{project.title}</p>
+                <p className="font-body text-sm text-muted-foreground">{image.altText}</p>
               </div>
             </article>
           ))}

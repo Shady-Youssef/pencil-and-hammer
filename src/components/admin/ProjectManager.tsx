@@ -308,6 +308,14 @@ function sanitizeFileName(name: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+function fileNameToAltText(name: string) {
+  return name
+    .replace(/\.[^/.]+$/, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function buildPreviewProject(draft: ProjectDraft): ProjectRecord {
   const title = draft.title.trim() || "Untitled Project";
   const slug = draft.slug.trim() || slugifyProjectTitle(title) || "project-preview";
@@ -495,7 +503,7 @@ export default function ProjectManager({
   const activeTabLabel = useMemo(() => {
     switch (activeTab) {
       case "story":
-        return "Story & Status";
+        return "Description";
       case "gallery":
         return "Gallery";
       default:
@@ -800,7 +808,7 @@ export default function ProjectManager({
         uploadedImages.push({
           id: imageToReplace?.id ?? `temp-${crypto.randomUUID()}`,
           imageUrl: publicUrl,
-          altText: imageToReplace?.altText || draft.title || file.name,
+          altText: fileNameToAltText(file.name) || imageToReplace?.altText || draft.title || file.name,
           caption: imageToReplace?.caption ?? "",
           sortOrder:
             imageToReplace?.sortOrder ?? baselineSortOrder + uploadedImages.length * 10 + 10,
@@ -902,7 +910,7 @@ export default function ProjectManager({
         title: draft.title.trim(),
         category: draft.category,
         location: draft.location.trim(),
-        client_name: draft.clientName.trim(),
+        client_name: "",
         summary: draft.summary.trim(),
         description: draft.description.trim(),
         narrative_eyebrow: draft.narrativeEyebrow.trim(),
@@ -996,7 +1004,7 @@ export default function ProjectManager({
           image_url: image.imageUrl,
           storage_path: image.storagePath,
           alt_text: image.altText.trim(),
-          caption: image.caption.trim(),
+          caption: "",
           sort_order: image.sortOrder,
           is_cover: image.isCover,
         }));
@@ -1008,7 +1016,7 @@ export default function ProjectManager({
           image_url: image.imageUrl,
           storage_path: image.storagePath,
           alt_text: image.altText.trim(),
-          caption: image.caption.trim(),
+          caption: "",
           sort_order: image.sortOrder,
           is_cover: image.isCover,
         }));
@@ -1365,7 +1373,7 @@ export default function ProjectManager({
                 </p>
                 <p className="mt-2 max-w-3xl font-body text-sm leading-relaxed text-muted-foreground">
                   The starter portfolio is being stored as real editable records so project cards,
-                  detail pages, gallery images, and captions all persist from Supabase.
+                  detail pages and gallery images all persist from Supabase.
                 </p>
               </div>
               <Button
@@ -1499,7 +1507,7 @@ export default function ProjectManager({
                     Overview
                   </TabsTrigger>
                   <TabsTrigger value="story" className="w-full rounded-[0.8rem]">
-                    Story & Status
+                    Description
                   </TabsTrigger>
                   <TabsTrigger value="gallery" className="w-full rounded-[0.8rem]">
                     Gallery
@@ -1589,14 +1597,6 @@ export default function ProjectManager({
                               value={draft.location}
                               onChange={(event) => updateDraft("location", event.target.value)}
                               placeholder="SoHo, NY"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <FieldLabel>Client</FieldLabel>
-                            <Input
-                              value={draft.clientName}
-                              onChange={(event) => updateDraft("clientName", event.target.value)}
-                              placeholder="Private Client"
                             />
                           </div>
                           <div className="space-y-2">
@@ -1719,76 +1719,6 @@ export default function ProjectManager({
                     />
                   </div>
 
-                  <div className="rounded-[1.25rem] border border-border/70 bg-background/40 p-4 sm:p-5">
-                    <div>
-                      <p className="font-display text-xl text-foreground">Narrative Section</p>
-                      <p className="mt-1 font-body text-sm text-muted-foreground">
-                        Control the story heading and project status card content.
-                      </p>
-                    </div>
-
-                    <div className="mt-5 grid gap-5 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <FieldLabel>Narrative Label</FieldLabel>
-                        <Input
-                          value={draft.narrativeEyebrow}
-                          onChange={(event) =>
-                            updateDraft("narrativeEyebrow", event.target.value)
-                          }
-                          placeholder="Project Narrative"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <FieldLabel>Status Card Label</FieldLabel>
-                        <Input
-                          value={draft.detailStatusLabel}
-                          onChange={(event) =>
-                            updateDraft("detailStatusLabel", event.target.value)
-                          }
-                          placeholder="Project Status"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <FieldLabel>Narrative Title</FieldLabel>
-                        <Input
-                          value={draft.narrativeTitle}
-                          onChange={(event) => updateDraft("narrativeTitle", event.target.value)}
-                          placeholder="Designed with atmosphere,"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <FieldLabel>Narrative Highlight</FieldLabel>
-                        <Input
-                          value={draft.narrativeHighlight}
-                          onChange={(event) =>
-                            updateDraft("narrativeHighlight", event.target.value)
-                          }
-                          placeholder="clarity, and detail."
-                        />
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <FieldLabel>Status Card Title</FieldLabel>
-                        <Input
-                          value={draft.detailStatusTitle}
-                          onChange={(event) =>
-                            updateDraft("detailStatusTitle", event.target.value)
-                          }
-                          placeholder="Completed"
-                        />
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <FieldLabel>Status Card Description</FieldLabel>
-                        <Textarea
-                          rows={4}
-                          value={draft.detailStatusDescription}
-                          onChange={(event) =>
-                            updateDraft("detailStatusDescription", event.target.value)
-                          }
-                          placeholder="Add supporting copy for the status card."
-                        />
-                      </div>
-                    </div>
-                  </div>
                 </TabsContent>
 
                 <TabsContent value="gallery" className="space-y-6">
@@ -1797,7 +1727,7 @@ export default function ProjectManager({
                       <div>
                         <p className="font-display text-xl text-foreground">Gallery Assets</p>
                         <p className="mt-1 font-body text-sm text-muted-foreground">
-                          Upload images, control captions, and choose the cover image.
+                          Upload one or many images at once, manage alt text, and choose the cover image.
                         </p>
                       </div>
                       <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
@@ -1807,7 +1737,7 @@ export default function ProjectManager({
                           ) : (
                             <Upload size={16} />
                           )}
-                          Upload New
+                          Bulk Upload Images
                           <input
                             type="file"
                             accept="image/*"
@@ -1821,6 +1751,16 @@ export default function ProjectManager({
                           Add Image Block
                         </Button>
                       </div>
+                    </div>
+
+                    <div className="mt-4 rounded-[1rem] border border-border/70 bg-background/50 p-3">
+                      <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Bulk Upload Behavior
+                      </p>
+                      <p className="mt-2 font-body text-sm leading-relaxed text-muted-foreground">
+                        If you upload 4 images, the editor will automatically create 4 image blocks.
+                        Alt text is auto-filled from each file name, and sort order is assigned in sequence.
+                      </p>
                     </div>
 
                     <div className="mt-6 space-y-4">
@@ -1845,6 +1785,18 @@ export default function ProjectManager({
 
                           <div className="space-y-4">
                             <div className="grid gap-4 md:grid-cols-2">
+                              <div className="space-y-2 md:col-span-2">
+                                <FieldLabel>Image Title</FieldLabel>
+                                <Input
+                                  value={draft.title}
+                                  readOnly
+                                  placeholder="Inherited from project title"
+                                  className="cursor-not-allowed opacity-80"
+                                />
+                                <p className="font-body text-xs text-muted-foreground">
+                                  This title is fixed for all images in the project and follows the project title automatically.
+                                </p>
+                              </div>
                               <div className="space-y-2 md:col-span-2">
                                 <FieldLabel>Image URL</FieldLabel>
                                 <Input
@@ -1883,21 +1835,6 @@ export default function ProjectManager({
                                   }
                                 />
                               </div>
-                            </div>
-
-                            <div className="space-y-2">
-                              <FieldLabel>Caption</FieldLabel>
-                              <Textarea
-                                rows={3}
-                                value={image.caption}
-                                onChange={(event) =>
-                                  updateImage(image.id, (current) => ({
-                                    ...current,
-                                    caption: event.target.value,
-                                  }))
-                                }
-                                placeholder="Add an editorial caption for this image."
-                              />
                             </div>
 
                             <div className="flex flex-wrap gap-3">
