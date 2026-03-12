@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
 declare global {
@@ -10,7 +11,13 @@ declare global {
 }
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
   useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
     if (window.innerWidth < 768 || "ontouchstart" in window) {
       return;
     }
@@ -36,6 +43,30 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       lenis.destroy();
     };
   }, []);
+
+  useLayoutEffect(() => {
+    const resetScrollPosition = () => {
+      window.__mbmLenis?.scrollTo(0, {
+        immediate: true,
+        force: true,
+      });
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto",
+      });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    resetScrollPosition();
+
+    const frameId = window.requestAnimationFrame(resetScrollPosition);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [pathname]);
 
   return <>{children}</>;
 }

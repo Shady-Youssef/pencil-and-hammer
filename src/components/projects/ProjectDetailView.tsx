@@ -15,13 +15,11 @@ import { resolveProjectImageUrl, type ProjectRecord } from "@/lib/projects/data"
 type ProjectDetailViewProps = {
   project: ProjectRecord;
   featuredProjects: ProjectRecord[];
-  stickyHero: boolean;
 };
 
 export default function ProjectDetailView({
   project,
   featuredProjects,
-  stickyHero,
 }: ProjectDetailViewProps) {
   const [activeImageId, setActiveImageId] = useState(project.images[0]?.id ?? "");
   const activeImage =
@@ -130,7 +128,7 @@ export default function ProjectDetailView({
 
         <section className="px-4 pb-14 sm:px-6 sm:pb-16 md:px-12 lg:px-20 xl:px-24">
           <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-10">
-            <div className={stickyHero ? "lg:sticky lg:top-28 lg:self-start" : ""}>
+            <div className="lg:sticky lg:top-28 lg:self-start">
               <motion.div
                 initial={{ y: 34, opacity: 0, scale: 0.985 }}
                 animate={{ y: 0, opacity: 1, scale: 1 }}

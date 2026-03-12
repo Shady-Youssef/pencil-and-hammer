@@ -67,8 +67,6 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  const projectIndex = publishedProjects.findIndex((entry) => entry.slug === project.slug);
-  const stickyHero = projectIndex === -1 ? true : projectIndex % 2 === 0;
   const featuredProjects = publishedProjects
     .filter((entry) => entry.slug !== project.slug)
     .slice(0, 5);
@@ -100,7 +98,6 @@ export default async function Page({ params }: PageProps) {
       <ProjectDetailView
         project={project}
         featuredProjects={featuredProjects}
-        stickyHero={stickyHero}
       />
     </>
   );
