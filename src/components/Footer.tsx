@@ -28,7 +28,7 @@ export default function Footer() {
     <footer className="bg-charcoal text-primary-foreground relative overflow-hidden">
       {/* Decorative gradient */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[1px]"
-        style={{ background: "linear-gradient(90deg, transparent, hsl(38 60% 52% / 0.3), transparent)" }}
+        style={{ background: "linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.2), transparent)" }}
       />
       
       <div className="max-w-7xl mx-auto section-padding">

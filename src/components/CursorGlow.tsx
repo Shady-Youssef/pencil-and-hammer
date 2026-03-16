@@ -34,7 +34,7 @@ export default function CursorGlow() {
         y,
         translateX: "-50%",
         translateY: "-50%",
-        background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.06) 0%, transparent 70%)",
+        background: "radial-gradient(circle, hsla(0, 0%, 100%, 0.06) 0%, transparent 70%)",
         opacity: visible ? 1 : 0,
       }}
     />

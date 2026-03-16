@@ -126,7 +126,7 @@ export default function ProjectCard({
                   : { x: "-130%", opacity: 0 }
               }
               transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-none absolute inset-y-0 left-0 w-1/3 rotate-12 bg-[linear-gradient(90deg,transparent,rgba(198,147,60,0.45),transparent)] blur-2xl"
+              className="pointer-events-none absolute inset-y-0 left-0 w-1/3 rotate-12 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.32),transparent)] blur-2xl"
             />
 
             <div className="absolute inset-0 flex flex-col justify-between p-4 sm:p-6">

@@ -42,12 +42,12 @@ export default function ProjectDetailView({
       <Navbar />
       <main className="bg-background">
         <section className="relative overflow-hidden pt-24 sm:pt-28">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(198,147,60,0.14),transparent_36%),linear-gradient(180deg,rgba(9,7,5,1)_0%,rgba(9,7,5,0.4)_34%,rgba(9,7,5,0)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.1),transparent_36%),linear-gradient(180deg,rgba(8,8,8,1)_0%,rgba(8,8,8,0.4)_34%,rgba(8,8,8,0)_100%)]" />
           <motion.div
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-none absolute -right-10 top-16 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(198,147,60,0.2),transparent_72%)] blur-3xl sm:-right-16 sm:top-20 sm:h-72 sm:w-72"
+            className="pointer-events-none absolute -right-10 top-16 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.14),transparent_72%)] blur-3xl sm:-right-16 sm:top-20 sm:h-72 sm:w-72"
           />
 
           <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 md:px-12 lg:px-20 xl:px-24">
@@ -202,7 +202,7 @@ export default function ProjectDetailView({
                     whileHover={{ y: -6 }}
                     className={`group relative overflow-hidden rounded-[1.25rem] border text-left transition-all duration-500 ${
                       image.id === activeImage?.id
-                        ? "border-accent shadow-[0_24px_70px_-28px_rgba(198,147,60,0.55)]"
+                        ? "border-accent shadow-[0_24px_70px_-28px_rgba(255,255,255,0.18)]"
                         : "border-border/70 hover:border-accent/40"
                     }`}
                   >
