@@ -3,142 +3,156 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import heroImg from "@/assets/hero-interior.jpg";
 import MagneticButton from "@/components/MagneticButton";
+import { useSiteSettings } from "@/components/site/site-settings-context";
 import TextReveal from "@/components/TextReveal";
 import { useRef } from "react";
 
 export default function HeroSection() {
   const ref = useRef(null);
+  const { settings } = useSiteSettings();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
+  const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1, 1.06]);
+
+  const metrics = [
+    { value: "11", label: "Specialists across design and build" },
+    { value: "84", label: "Projects delivered with site oversight" },
+    { value: "4", label: "Core sectors: homes, retail, hospitality, workplaces" },
+  ];
 
   return (
-    <section ref={ref} className="relative min-h-[42rem] h-[100svh] w-full overflow-hidden">
-      {/* Parallax background */}
-      <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale }}>
-        <Image
-          src={heroImg}
-          alt="Luxury interior design"
-          fill
-          priority
-          placeholder="blur"
-          sizes="100vw"
-          className="object-cover"
-        />
-      </motion.div>
-      <div className="overlay-dark absolute inset-0" />
+    <section ref={ref} className="relative min-h-[54rem] overflow-hidden pb-14 pt-28 sm:pb-20 sm:pt-32">
+      <div className="paper-grid absolute inset-0 opacity-55" />
+      <div className="absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,hsla(0,0%,100%,0.12),transparent_55%)]" />
 
-      {/* Floating orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="section-padding relative z-10 mx-auto max-w-7xl">
         <motion.div
-          className="absolute h-40 w-40 rounded-full sm:h-64 sm:w-64"
-          style={{ background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.08), transparent 70%)", top: "20%", right: "10%" }}
-          animate={{ y: [-20, 20, -20], x: [-10, 10, -10] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute h-56 w-56 rounded-full sm:h-80 sm:w-80 lg:h-96 lg:w-96"
-          style={{ background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.05), transparent 70%)", bottom: "10%", left: "5%" }}
-          animate={{ y: [15, -15, 15], x: [10, -10, 10] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
-
-      {/* Content */}
-      <motion.div
-        style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-10 flex h-full flex-col items-center justify-center px-4 pb-20 pt-28 text-center sm:px-6"
-      >
-        <motion.div
-          initial={{ y: 24 }}
-          animate={{ y: 0 }}
-          transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-4 sm:mb-6"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="section-shell relative min-h-[42rem] overflow-hidden rounded-[2.4rem] border-white/10 bg-black/30 p-6 text-cream shadow-[0_40px_120px_-64px_rgba(0,0,0,0.8)] sm:p-8 md:p-10 lg:p-12"
         >
-          <motion.div
-            className="line-accent mx-auto mb-6 sm:mb-8"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          />
-          <p className="mb-3 font-body text-[11px] tracking-[0.28em] uppercase text-gold-light sm:mb-4 sm:text-sm sm:tracking-[0.4em]">
-            Interior Design Studio
-          </p>
+          <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale }}>
+            <Image
+              src={heroImg}
+              alt="Pencil And Hammer interior project"
+              fill
+              priority
+              placeholder="blur"
+              sizes="100vw"
+              className="object-cover"
+            />
+          </motion.div>
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.86)_0%,rgba(5,5,5,0.68)_44%,rgba(5,5,5,0.58)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_24%)]" />
+
+          <div className="relative z-10 flex min-h-[38rem] flex-col justify-between">
+            <div className="max-w-3xl">
+              <div className="mb-6 flex items-center gap-4">
+                <div className="line-accent" />
+                <p className="font-body text-[11px] uppercase tracking-[0.34em] text-gold-light sm:text-xs">
+                  Design-Build Company
+                </p>
+              </div>
+
+              <h1 className="max-w-3xl font-display text-[3.3rem] font-light leading-[0.94] text-cream sm:text-[4.6rem] md:text-[5.8rem] lg:text-[6.6rem]">
+                <TextReveal delay={0.18}>Pencil sketches.</TextReveal>
+                <br />
+                <span className="text-gradient-gold">
+                  <TextReveal delay={0.35}>Built realities.</TextReveal>
+                </span>
+              </h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-8 max-w-2xl font-body text-base leading-8 text-cream/72 sm:text-lg"
+              >
+                {settings.siteName} shapes interiors through one connected
+                process: strategy, concept design, technical coordination, and
+                delivery. The result is a more grounded project from first
+                meeting to final reveal.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.62 }}
+                className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap"
+              >
+                <MagneticButton>
+                  <Link
+                    href="/portfolio"
+                    className="inline-flex items-center justify-center gap-3 rounded-full bg-gradient-gold px-8 py-4 font-body text-xs font-semibold uppercase tracking-[0.26em] text-cream"
+                  >
+                    Explore Projects
+                    <ArrowUpRight size={16} />
+                  </Link>
+                </MagneticButton>
+                <MagneticButton>
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center justify-center rounded-full border border-white/16 bg-white/6 px-8 py-4 font-body text-xs uppercase tracking-[0.26em] text-cream backdrop-blur-md transition-colors hover:border-white/28 hover:bg-white/10"
+                  >
+                    Book Discovery Call
+                  </Link>
+                </MagneticButton>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.82 }}
+              className="grid gap-4 pt-10 md:grid-cols-[minmax(0,1.2fr)_repeat(2,minmax(0,1fr))]"
+            >
+              <div className="rounded-[1.6rem] border border-white/10 bg-black/28 p-5 backdrop-blur-md">
+                <p className="font-body text-[11px] uppercase tracking-[0.28em] text-gold-light">
+                  Current Focus
+                </p>
+                <p className="mt-3 font-display text-2xl text-cream">
+                  Residential, hospitality, retail, and workplace interiors.
+                </p>
+              </div>
+              {metrics.map((metric) => (
+                <div
+                  key={metric.label}
+                  className="rounded-[1.6rem] border border-white/10 bg-black/22 p-5 backdrop-blur-md"
+                >
+                  <p className="font-display text-4xl text-cream">{metric.value}</p>
+                  <p className="mt-2 font-body text-xs uppercase tracking-[0.18em] text-cream/62">
+                    {metric.label}
+                  </p>
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </motion.div>
 
-        <h1 className="max-w-6xl font-display text-4xl font-light leading-[1.02] text-cream sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl">
-          <TextReveal delay={0.5}>Crafting Spaces</TextReveal>
-          <br />
-          <span className="italic">
-            <TextReveal delay={0.7}>That Inspire</TextReveal>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.8 }}
+          className="mt-12 flex items-center gap-3"
+        >
+          <span className="font-body text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            Scroll
           </span>
-        </h1>
-
-        <motion.p
-          initial={{ y: 24 }}
-          animate={{ y: 0 }}
-          transition={{ duration: 0.9, delay: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-6 max-w-xl px-2 font-body text-sm leading-relaxed text-warm-gray sm:mt-8 sm:text-base md:mt-10 md:text-lg"
-        >
-          Where timeless elegance meets modern sophistication.
-          We transform your vision into breathtaking reality.
-        </motion.p>
-
-        <motion.div
-          initial={{ y: 20 }}
-          animate={{ y: 0 }}
-          transition={{ duration: 0.8, delay: 1.3 }}
-          className="mt-10 flex flex-col gap-4 sm:mt-12 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-6 md:mt-14"
-        >
-          <MagneticButton>
-            <Link
-              href="/portfolio"
-              className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-[0.95rem] bg-gradient-gold px-8 py-3.5 font-body text-xs font-medium uppercase tracking-[0.24em] text-charcoal sm:w-auto sm:px-10 sm:py-4 sm:text-sm sm:tracking-widest"
-            >
-              <span className="relative z-10">View Our Work</span>
-              <motion.span
-                className="absolute inset-0 bg-cream"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "0%" }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              />
-            </Link>
-          </MagneticButton>
-          <MagneticButton>
-            <Link
-              href="/contact"
-              className="inline-flex w-full items-center justify-center rounded-[0.95rem] border border-cream/40 bg-background/30 px-8 py-3.5 font-body text-xs uppercase tracking-[0.24em] text-cream backdrop-blur-sm transition-all duration-300 hover:border-accent hover:text-accent sm:w-auto sm:px-10 sm:py-4 sm:text-sm sm:tracking-widest"
-            >
-              Get in Touch
-            </Link>
-          </MagneticButton>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ y: 10 }}
-          animate={{ y: 0 }}
-          transition={{ delay: 2 }}
-          className="absolute bottom-6 sm:bottom-10"
-        >
           <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-            className="flex flex-col items-center gap-3"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 2.4, ease: "easeInOut" }}
           >
-            <span className="font-body text-[10px] tracking-[0.3em] uppercase text-cream/40">Scroll</span>
-            <ArrowDown size={16} className="text-cream/40" />
+            <ArrowDown size={16} className="text-muted-foreground" />
           </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 }

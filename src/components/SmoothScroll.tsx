@@ -6,7 +6,7 @@ import Lenis from "lenis";
 
 declare global {
   interface Window {
-    __mbmLenis?: Lenis;
+    __pencilHammerLenis?: Lenis;
   }
 }
 
@@ -30,7 +30,7 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       smoothWheel: true,
       touchMultiplier: 2,
     });
-    window.__mbmLenis = lenis;
+    window.__pencilHammerLenis = lenis;
 
     function raf(time: number) {
       lenis.raf(time);
@@ -39,14 +39,14 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     requestAnimationFrame(raf);
 
     return () => {
-      delete window.__mbmLenis;
+      delete window.__pencilHammerLenis;
       lenis.destroy();
     };
   }, []);
 
   useLayoutEffect(() => {
     const resetScrollPosition = () => {
-      window.__mbmLenis?.scrollTo(0, {
+      window.__pencilHammerLenis?.scrollTo(0, {
         immediate: true,
         force: true,
       });

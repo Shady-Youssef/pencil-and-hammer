@@ -5,7 +5,7 @@ import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Admin Access",
-  description: "Private MBM Designs admin sign-in.",
+  description: "Private Pencil And Hammer admin sign-in.",
   robots: {
     index: false,
     follow: false,

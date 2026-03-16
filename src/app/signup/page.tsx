@@ -5,7 +5,7 @@ import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Access Provisioning",
-  description: "MBM Designs account access is provisioned internally by administrators.",
+  description: "Pencil And Hammer account access is provisioned internally by administrators.",
   robots: {
     index: false,
     follow: false,

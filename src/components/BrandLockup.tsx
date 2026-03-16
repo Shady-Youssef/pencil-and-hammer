@@ -15,7 +15,7 @@ function splitName(name: string) {
   const [first, ...rest] = name.trim().split(/\s+/);
 
   return {
-    first: first || "MBM",
+    first: first || "Pencil",
     rest: rest.join(" "),
   };
 }

@@ -2,20 +2,20 @@ alter table public.site_settings
   add column if not exists about_story_paragraphs jsonb not null default '[
     {
       "id": "about-story-1",
-      "body": "Founded in 2010, MBM Designs has grown from a boutique studio into one of New York''s most sought-after interior design firms. We believe that exceptional design is born from the intersection of artistry, innovation, and deep understanding of how people live."
+      "body": "Pencil And Hammer was built as a design-build practice for clients who need clarity from the first brief to the final handover. We combine concept design, technical coordination, procurement guidance, and on-site execution into one disciplined workflow."
     },
     {
       "id": "about-story-2",
-      "body": "Every project we undertake is a collaborative journey. We listen, we dream, and we create spaces that are not only visually stunning but deeply personal - environments that enhance your daily life and stand the test of time."
+      "body": "Our work is intentionally balanced: strong ideas on paper, practical decisions in the field, and interiors that perform long after launch. The result is a calmer process for clients and spaces that feel resolved rather than decorated."
     }
   ]'::jsonb;
 
 alter table public.site_settings
   alter column about_stats set default '[
-    {"id":"projects-completed","icon":"award","title":"150+","description":"Projects Completed"},
-    {"id":"team-members","icon":"users","title":"12","description":"Team Members"},
-    {"id":"years-experience","icon":"clock","title":"15","description":"Years Experience"},
-    {"id":"countries-served","icon":"globe","title":"8","description":"Countries Served"}
+    {"id":"projects-completed","icon":"award","title":"84","description":"Projects Delivered"},
+    {"id":"team-members","icon":"users","title":"11","description":"Design + Site Specialists"},
+    {"id":"years-experience","icon":"clock","title":"9","description":"Cities Across MENA"},
+    {"id":"countries-served","icon":"globe","title":"96%","description":"Repeat And Referral Work"}
   ]'::jsonb;
 
 update public.site_settings

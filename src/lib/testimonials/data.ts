@@ -39,7 +39,7 @@ export function deriveInitials(name: string) {
     .slice(0, 2)
     .toUpperCase();
 
-  return initials || "MB";
+  return initials || "PH";
 }
 
 export function normalizeTestimonial(row: TestimonialRow): TestimonialRecord {
@@ -61,9 +61,9 @@ export const fallbackTestimonials: TestimonialRecord[] = [
   {
     id: "fallback-testimonial-sarah-mitchell",
     name: "Sarah Mitchell",
-    role: "Homeowner",
+    role: "Homeowner, Cobble Hill",
     quote:
-      "MBM Designs transformed our home beyond anything we imagined. Every detail was considered with such care and precision.",
+      "Pencil And Hammer brought structure to every decision. The house feels warm and finished, but the process was just as impressive as the final result.",
     initials: "SM",
     rating: 5,
     sortOrder: 10,
@@ -72,9 +72,9 @@ export const fallbackTestimonials: TestimonialRecord[] = [
   {
     id: "fallback-testimonial-james-chen",
     name: "James Chen",
-    role: "CEO, Luxe Hotels",
+    role: "Operations Director, Meridian Stays",
     quote:
-      "Their understanding of luxury hospitality design is unparalleled. Our guests consistently praise the ambiance they created.",
+      "They understood the guest experience and the site realities at the same time. That combination saved us time and protected the concept.",
     initials: "JC",
     rating: 5,
     sortOrder: 20,
@@ -83,9 +83,9 @@ export const fallbackTestimonials: TestimonialRecord[] = [
   {
     id: "fallback-testimonial-olivia-park",
     name: "Olivia Park",
-    role: "Real Estate Developer",
+    role: "Development Lead, Atlas Properties",
     quote:
-      "Working with MBM elevated our properties' value significantly. Their designs are both timeless and market-savvy.",
+      "The team is disciplined, responsive, and commercially aware. They delivered a stronger product because they think beyond mood boards.",
     initials: "OP",
     rating: 5,
     sortOrder: 30,

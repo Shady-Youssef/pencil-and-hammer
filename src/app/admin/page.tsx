@@ -11,7 +11,7 @@ import DashboardPage from "@/views/Dashboard";
 
 export const metadata: Metadata = {
   title: "Admin Access",
-  description: "Sign in to the private MBM Designs admin workspace.",
+  description: "Sign in to the private Pencil And Hammer admin workspace.",
   robots: {
     index: false,
     follow: false,
@@ -64,10 +64,10 @@ export default async function Page({ searchParams }: PageProps) {
     <AuthShell
       badge="Admin Access"
       title="Sign in"
-      description="Use your administrator or CSM credentials to enter the private MBM Designs workspace."
+      description="Use your administrator credentials to enter the private Pencil And Hammer workspace."
       footer={
         <p className="font-body text-sm text-muted-foreground">
-          Only internal MBM Designs administrators can issue access. Contact the
+          Only internal Pencil And Hammer administrators can issue access. Contact the
           studio team if your account has not been provisioned.
         </p>
       }

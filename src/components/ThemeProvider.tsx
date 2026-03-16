@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { ThemeContext, type Theme } from "@/components/theme-context";
 
-const STORAGE_KEY = "mbm-theme";
+const STORAGE_KEY = "pencil-hammer-theme";
 
 function getStoredTheme(): Theme | null {
   if (typeof window === "undefined") {

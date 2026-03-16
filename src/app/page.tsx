@@ -26,7 +26,7 @@ export default async function Page() {
   ]);
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "InteriorDesigner",
+    "@type": "ProfessionalService",
     name: settings.siteName,
     description: settings.siteDescription,
     url: settings.siteUrl,

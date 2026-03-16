@@ -67,7 +67,7 @@ export default function LoginForm({
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="you@studio.com"
+          placeholder="you@pencilandhammer.com"
         />
       </div>
       <div className="space-y-2">
@@ -100,7 +100,7 @@ export default function LoginForm({
         Sign in
       </Button>
       <p className="font-body text-xs leading-relaxed text-muted-foreground">
-        Access is provisioned internally by MBM Designs administrators and CSM staff.
+        Access is provisioned internally by Pencil And Hammer administrators.
       </p>
     </form>
   );

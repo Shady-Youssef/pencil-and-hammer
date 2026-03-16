@@ -1,6 +1,6 @@
-# MBM Designs Studio
+# Pencil And Hammer
 
-Next.js 16 application for the MBM Designs studio site and upcoming client/dashboard workflows.
+Next.js 16 application for the Pencil And Hammer marketing site and internal content workflow.
 
 ## Stack
 
@@ -48,4 +48,3 @@ Current app integrations expect:
 
 - Production build currently runs through `next build --webpack` because the local sandbox environment here crashes on Turbopack production builds.
 - Supabase browser/server clients and middleware are already wired in for future auth and data work.
-# pencil-and-hammer

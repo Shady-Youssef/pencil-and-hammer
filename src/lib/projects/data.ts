@@ -66,11 +66,11 @@ export function resolveProjectImageUrl(source: ProjectImageSource) {
 }
 
 export const defaultProjectNarrativeEyebrow = "Project Narrative";
-export const defaultProjectNarrativeTitle = "Designed with atmosphere,";
-export const defaultProjectNarrativeHighlight = "clarity, and detail.";
+export const defaultProjectNarrativeTitle = "Resolved with atmosphere,";
+export const defaultProjectNarrativeHighlight = "clarity, and control.";
 export const defaultProjectDetailStatusLabel = "Project Status";
 export const defaultProjectDetailStatusDescription =
-  "This page is structured to support full galleries, descriptive storytelling, and premium project presentation for both editorial browsing and client review.";
+  "Each project page is structured to support galleries, narrative context, and a clear view of how the design was carried through delivery.";
 
 function sortImages(images: ProjectImage[]) {
   return [...images].sort((left, right) => {
@@ -120,7 +120,7 @@ export const fallbackProjects: ProjectRecord[] = [
     summary:
       "A dark, cocooning bedroom suite layered with bronze lighting, custom millwork, and tactile natural finishes.",
     description:
-      "Serene Retreat was conceived as a private sanctuary above the rhythm of Manhattan. MBM Designs reworked the suite around a restrained architectural palette, balancing smoked oak, matte plaster, aged brass, and low-glow lighting to create a quiet sense of depth. The result is intimate, editorial, and deeply livable, with every surface calibrated for calm.",
+      "Serene Retreat was conceived as a private sanctuary above the rhythm of Manhattan. Pencil And Hammer reworked the suite around a restrained architectural palette, balancing smoked oak, matte plaster, aged brass, and low-glow lighting to create a quiet sense of depth. The result is intimate, editorial, and deeply livable, with every surface calibrated for calm.",
     narrativeEyebrow: "Project Narrative",
     narrativeTitle: "Designed with atmosphere,",
     narrativeHighlight: "clarity, and detail.",
@@ -173,7 +173,7 @@ export const fallbackProjects: ProjectRecord[] = [
     summary:
       "A refined kitchen defined by veined stone, satin brass accents, and a cinematic lighting composition.",
     description:
-      "Modern Elegance transforms the kitchen into a social and sculptural centerpiece. MBM Designs paired monolithic stone surfaces with softened lighting and precision cabinetry, producing a space that feels both dramatic and effortless. Every detail was tuned for hospitality at home, from the pendants' warm glow to the disciplined material rhythm across the island and back wall.",
+      "Modern Elegance transforms the kitchen into a social and sculptural centerpiece. Pencil And Hammer paired monolithic stone surfaces with softened lighting and precision cabinetry, producing a space that feels both dramatic and effortless. Every detail was tuned for hospitality at home, from the pendants' warm glow to the disciplined material rhythm across the island and back wall.",
     narrativeEyebrow: "Project Narrative",
     narrativeTitle: "Composed with restraint,",
     narrativeHighlight: "warmth, and precision.",
@@ -226,7 +226,7 @@ export const fallbackProjects: ProjectRecord[] = [
     summary:
       "A spa-like bathing room grounded in stone, candlelight, and a highly atmospheric hospitality mood.",
     description:
-      "Warm Sanctuary brings hospitality-grade immersion into a private wellness setting. MBM Designs used textured stone, smoked bronze fixtures, and carefully concealed lighting to produce a space that feels restorative and cinematic. The room was designed to slow time down, with every proportion, reflection, and accent light calibrated for ritual rather than routine.",
+      "Warm Sanctuary brings hospitality-grade immersion into a private wellness setting. Pencil And Hammer used textured stone, smoked bronze fixtures, and carefully concealed lighting to produce a space that feels restorative and cinematic. The room was designed to slow time down, with every proportion, reflection, and accent light calibrated for ritual rather than routine.",
     narrativeEyebrow: "Project Narrative",
     narrativeTitle: "Built for ritual,",
     narrativeHighlight: "immersion, and calm.",
@@ -279,7 +279,7 @@ export const fallbackProjects: ProjectRecord[] = [
     summary:
       "A restrained executive environment blending tailored comfort with gallery-like material clarity.",
     description:
-      "Executive Suite was designed for a client who wanted precision without coldness. MBM Designs treated the space as a sequence of calm, high-performing zones, balancing architectural discipline with tactile finishes and discreet warm lighting. The result feels authoritative, polished, and highly usable for both focused work and client hosting.",
+      "Executive Suite was designed for a client who wanted precision without coldness. Pencil And Hammer treated the space as a sequence of calm, high-performing zones, balancing architectural discipline with tactile finishes and discreet warm lighting. The result feels authoritative, polished, and highly usable for both focused work and client hosting.",
     narrativeEyebrow: "Project Narrative",
     narrativeTitle: "Shaped for focus,",
     narrativeHighlight: "authority, and ease.",
@@ -332,7 +332,7 @@ export const fallbackProjects: ProjectRecord[] = [
     summary:
       "A richly layered dining environment designed around intimacy, glow, and high-end guest flow.",
     description:
-      "Grand Dining is built around contrast: shadow and warmth, solidity and softness, spectacle and comfort. MBM Designs choreographed the room to feel immersive from arrival through service, using low ambient light, reflective bronze notes, and sculptural furniture placement to heighten the guest journey while preserving visual calm.",
+      "Grand Dining is built around contrast: shadow and warmth, solidity and softness, spectacle and comfort. Pencil And Hammer choreographed the room to feel immersive from arrival through service, using low ambient light, reflective bronze notes, and sculptural furniture placement to heighten the guest journey while preserving visual calm.",
     narrativeEyebrow: "Project Narrative",
     narrativeTitle: "Created for intimacy,",
     narrativeHighlight: "glow, and rhythm.",
@@ -385,7 +385,7 @@ export const fallbackProjects: ProjectRecord[] = [
     summary:
       "A social club interior mixing crafted stone, bronze highlights, and softly theatrical evening light.",
     description:
-      "Artisan Lounge rethinks the members club as an edited, hospitality-driven social space. MBM Designs built the interior around conversation zones, long sightlines, and intimate pools of light. Materially, the space leans into stone, smoked glass, and warm metal to create a setting that feels curated rather than crowded.",
+      "Artisan Lounge rethinks the members club as an edited, hospitality-driven social space. Pencil And Hammer built the interior around conversation zones, long sightlines, and intimate pools of light. Materially, the space leans into stone, smoked glass, and warm metal to create a setting that feels curated rather than crowded.",
     narrativeEyebrow: "Project Narrative",
     narrativeTitle: "Curated for connection,",
     narrativeHighlight: "tone, and depth.",

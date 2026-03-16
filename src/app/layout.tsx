@@ -70,7 +70,7 @@ export default async function RootLayout({
       <body>
         <Script id="theme-boot" strategy="beforeInteractive">
           {`(() => {
-            const storageKey = "mbm-theme";
+            const storageKey = "pencil-hammer-theme";
             const root = document.documentElement;
             const storedTheme = localStorage.getItem(storageKey);
             const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";

@@ -7,7 +7,7 @@ import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Update Password",
-  description: "Set a new password for your MBM Designs account.",
+  description: "Set a new password for your Pencil And Hammer account.",
   alternates: {
     canonical: absoluteUrl("/reset-password"),
   },
@@ -28,7 +28,7 @@ export default async function Page({ searchParams }: PageProps) {
     <AuthShell
       badge="Secure Reset"
       title="Choose a new password"
-      description="Set a fresh password for your MBM Designs account after following the secure recovery link."
+      description="Set a fresh password for your Pencil And Hammer account after following the secure recovery link."
       footer={
         <p className="font-body text-sm text-muted-foreground">
           Need to start over?{" "}

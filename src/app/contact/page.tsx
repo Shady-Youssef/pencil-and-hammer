@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Contact",
-    description: `Contact ${settings.siteName} to book a consultation for residential, hospitality, or commercial interior design projects.`,
+    description: `Contact ${settings.siteName} to discuss residential, hospitality, retail, or workplace design-build projects.`,
     alternates: {
       canonical: absoluteUrl("/contact", settings.siteUrl),
     },

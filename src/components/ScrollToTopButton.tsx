@@ -53,8 +53,8 @@ export default function ScrollToTopButton() {
       return;
     }
 
-    if (window.__mbmLenis) {
-      window.__mbmLenis.scrollTo(0, {
+    if (window.__pencilHammerLenis) {
+      window.__pencilHammerLenis.scrollTo(0, {
         duration: 1.1,
         easing: (t: number) => 1 - Math.pow(1 - t, 3),
       });

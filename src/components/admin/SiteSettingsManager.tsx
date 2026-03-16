@@ -610,7 +610,7 @@ export default function SiteSettingsManager({
                     <Input
                       value={draft.siteUrl}
                       onChange={(event) => updateDraft("siteUrl", event.target.value)}
-                      placeholder="https://mbmdesigns.com"
+                      placeholder="https://pencil-and-hammer.vercel.app"
                     />
                   </div>
                   <div className="space-y-2">

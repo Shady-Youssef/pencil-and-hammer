@@ -27,11 +27,11 @@ export default function AuthShell({
           </p>
           <h1 className="font-display text-5xl font-light leading-tight text-cream md:text-6xl">
             Private access for
-            <span className="text-gradient-gold"> MBM Designs</span>
+            <span className="text-gradient-gold"> Pencil And Hammer</span>
           </h1>
           <p className="mt-6 max-w-xl font-body text-base leading-relaxed text-warm-gray">
-            Use your studio account to access the dashboard, client workflow,
-            and project communication in one place.
+            Use your internal account to access the dashboard, content
+            workflow, and project records in one place.
           </p>
           <div className="mt-10 flex flex-wrap gap-4 font-body text-sm text-warm-gray">
             <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2">

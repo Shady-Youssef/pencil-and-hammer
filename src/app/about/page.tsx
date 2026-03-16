@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "About",
     description:
-      "Learn how the studio approaches timeless, luxurious interior design with a refined editorial point of view.",
+      "Learn how Pencil And Hammer combines concept design, technical coordination, and execution into one design-build workflow.",
     alternates: {
       canonical: absoluteUrl("/about", settings.siteUrl),
     },

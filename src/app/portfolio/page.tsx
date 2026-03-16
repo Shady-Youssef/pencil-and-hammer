@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Portfolio",
-    description: `Browse a curated portfolio of ${settings.siteName} interiors across residential, commercial, and hospitality spaces.`,
+    description: `Browse selected ${settings.siteName} interiors across residential, retail, hospitality, and workplace categories.`,
     alternates: {
       canonical: absoluteUrl("/portfolio", settings.siteUrl),
     },
