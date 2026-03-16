@@ -48,3 +48,4 @@ Current app integrations expect:
 
 - Production build currently runs through `next build --webpack` because the local sandbox environment here crashes on Turbopack production builds.
 - Supabase browser/server clients and middleware are already wired in for future auth and data work.
+# pencil-and-hammer
