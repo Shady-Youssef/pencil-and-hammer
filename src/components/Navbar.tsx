@@ -104,11 +104,11 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
         scrolled || isOpen || !hasHeroOverlay
-          ? "bg-background/80 backdrop-blur-2xl shadow-sm border-b border-border/50"
+          ? "border-b border-border/50 bg-background/84 backdrop-blur-2xl shadow-sm"
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 lg:px-12 h-20">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-12">
         <Link
           href="/"
           className={`transition-colors duration-500 ${
@@ -121,15 +121,15 @@ export default function Navbar() {
             name={settings.siteName}
             logoUrl={settings.logoUrl}
             priority
-            className="gap-2 sm:gap-3"
-            textClassName={`${useOverlayPalette ? "text-cream" : "text-foreground"} text-lg sm:text-2xl`}
+            className="gap-3"
+            textClassName={`${useOverlayPalette ? "text-cream" : "text-foreground"} text-xl sm:text-[1.75rem]`}
             logoClassName="object-contain p-1.5"
           />
         </Link>
 
         {/* Desktop */}
-        <div className="hidden md:flex items-center gap-10">
-          <div ref={desktopNavRef} className="relative flex items-center gap-10 pb-3">
+        <div className="hidden md:flex items-center gap-8">
+          <div ref={desktopNavRef} className="relative flex items-center gap-8 pb-3">
             {navLinks.map((link) => (
               <div key={link.path} className="relative">
                 <Link
@@ -137,7 +137,7 @@ export default function Navbar() {
                   ref={(node) => {
                     linkRefs.current[link.path] = node;
                   }}
-                  className={`relative font-body text-sm tracking-widest uppercase transition-colors duration-300 ${
+                  className={`relative font-body text-[13px] font-medium tracking-[0.22em] uppercase transition-colors duration-300 ${
                     activePath === link.path
                       ? useOverlayPalette
                         ? "text-gold-light"

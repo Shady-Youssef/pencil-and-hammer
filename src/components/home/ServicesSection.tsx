@@ -1,86 +1,105 @@
 "use client";
 
-import AnimatedSection from "@/components/AnimatedSection";
 import { motion } from "framer-motion";
-import { Paintbrush, Sofa, Lightbulb, Ruler } from "lucide-react";
+import { Lightbulb, Paintbrush, Ruler, Sofa } from "lucide-react";
+
+import AnimatedSection from "@/components/AnimatedSection";
 
 const services = [
   {
     icon: Paintbrush,
     title: "Interior Design",
-    description: "Comprehensive design solutions tailored to your lifestyle, from concept to completion.",
-    num: "01",
-  },
-  {
-    icon: Sofa,
-    title: "Furniture Curation",
-    description: "Hand-selected pieces from world-renowned artisans and exclusive collections.",
-    num: "02",
-  },
-  {
-    icon: Lightbulb,
-    title: "Lighting Design",
-    description: "Custom lighting schemes that create atmosphere and enhance architectural details.",
-    num: "03",
+    description:
+      "Concept direction, material thinking, and spatial language shaped for real project conditions.",
+    note: "From concept boards to fully coordinated design intent.",
+    className: "md:col-span-3 md:row-span-2",
   },
   {
     icon: Ruler,
     title: "Space Planning",
-    description: "Optimizing layouts for flow, function, and visual impact in every project.",
-    num: "04",
+    description:
+      "Layouts are resolved for movement, visibility, furniture logic, and everyday use.",
+    note: "Flow, zoning, and operational clarity.",
+    className: "md:col-span-3",
+  },
+  {
+    icon: Lightbulb,
+    title: "Lighting Strategy",
+    description:
+      "Layered lighting schemes that define mood while supporting technical and functional needs.",
+    note: "Ambient, accent, and task lighting in one system.",
+    className: "md:col-span-2",
+  },
+  {
+    icon: Sofa,
+    title: "Furniture + Styling",
+    description:
+      "Curated selections, custom pieces, and finishing layers that complete the atmosphere.",
+    note: "Procurement-minded recommendations with a cohesive final read.",
+    className: "md:col-span-4",
   },
 ];
 
 export default function ServicesSection() {
   return (
-    <section className="section-padding bg-background relative overflow-hidden">
-      {/* Background decorative element */}
-      <div className="absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none sm:h-[500px] sm:w-[500px] lg:h-[600px] lg:w-[600px]"
-        style={{ background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.03), transparent 70%)" }}
-      />
+    <section className="section-padding relative overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_26%,rgba(255,255,255,0.08),transparent_24%),radial-gradient(circle_at_82%_72%,rgba(0,0,0,0.06),transparent_30%)]" />
 
-      <div className="max-w-7xl mx-auto relative">
-        <AnimatedSection className="mb-12 text-center sm:mb-16 md:mb-20">
-          <div className="line-accent mx-auto mb-6" />
-          <h2 className="mb-5 font-display text-3xl font-light text-foreground sm:text-4xl md:text-6xl">
-            Our Services
+      <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-14">
+        <AnimatedSection className="lg:sticky lg:top-28 lg:self-start">
+          <p className="font-body text-[11px] uppercase tracking-[0.34em] text-muted-foreground">
+            What We Handle
+          </p>
+          <h2 className="mt-5 max-w-md font-display text-4xl font-light leading-tight text-foreground sm:text-5xl md:text-6xl">
+            A studio structure built for more than mood boards.
           </h2>
-          <p className="font-body text-muted-foreground max-w-lg mx-auto text-base">
-            A full spectrum of design services to elevate every corner of your world.
+          <p className="mt-6 max-w-md font-body text-base leading-8 text-muted-foreground">
+            The work is organized like a serious project: concept, planning,
+            materials, lighting, and furniture all developed as one coherent system.
           </p>
         </AnimatedSection>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
-          {services.map((service, i) => (
-            <AnimatedSection key={service.title} delay={i * 0.12} scale>
+        <div className="grid gap-4 md:grid-cols-6 md:auto-rows-[minmax(180px,1fr)]">
+          {services.map((service, index) => (
+            <AnimatedSection
+              key={service.title}
+              delay={index * 0.08}
+              scale
+              className={service.className}
+            >
               <motion.div
                 whileHover={{ y: -8 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative overflow-hidden rounded-sm border border-border bg-card p-6 cursor-pointer neo-border sm:p-8"
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-border/70 bg-card/75 p-6 backdrop-blur-xl sm:p-7"
               >
-                {/* Number watermark */}
-                <span className="absolute -top-2 -right-2 font-display text-[80px] font-light text-foreground/[0.03] leading-none select-none">
-                  {service.num}
-                </span>
-                <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-sm bg-secondary flex items-center justify-center mb-6 group-hover:bg-accent/10 transition-colors duration-500">
+                <div className="absolute right-5 top-5 font-display text-6xl leading-none tracking-[-0.06em] text-foreground/[0.04]">
+                  0{index + 1}
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-[1.2rem] border border-border/70 bg-background/80">
                     <service.icon
-                      size={28}
-                      strokeWidth={1.2}
-                      className="text-accent transition-all duration-500 group-hover:scale-110"
+                      size={26}
+                      strokeWidth={1.35}
+                      className="text-foreground transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
-                  <h3 className="font-display text-xl mb-3 text-foreground">{service.title}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                  <div className="h-px flex-1 bg-border/80" />
+                </div>
+                <div className="mt-8">
+                  <h3 className="font-display text-2xl text-foreground">{service.title}</h3>
+                  <p className="mt-3 font-body text-sm leading-7 text-muted-foreground">
                     {service.description}
                   </p>
-                  <motion.div
-                    className="h-[1px] bg-accent mt-6 origin-left"
-                    initial={{ scaleX: 0.35 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: false, amount: 0.7 }}
-                    transition={{ duration: 0.8, delay: 0.3 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  />
+                </div>
+                <div className="mt-auto pt-8">
+                  <div className="rounded-[1.2rem] bg-background/70 px-4 py-3">
+                    <p className="font-body text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                      Scope Note
+                    </p>
+                    <p className="mt-2 font-body text-sm leading-6 text-foreground/82">
+                      {service.note}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             </AnimatedSection>

@@ -1,186 +1,137 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Quote, Star } from "lucide-react";
 
 import AnimatedSection from "@/components/AnimatedSection";
-import { Star, Quote, ArrowLeft, ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
 import type { TestimonialRecord } from "@/lib/testimonials/data";
-import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel";
 
 type TestimonialsSectionProps = {
   testimonials: TestimonialRecord[];
 };
 
-export default function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
-  const [api, setApi] = useState<CarouselApi>();
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(testimonials.length > 1);
-  const [isAutoSwipePaused, setIsAutoSwipePaused] = useState(false);
-  const canScroll = testimonials.length > 1;
+export default function TestimonialsSection({
+  testimonials,
+}: TestimonialsSectionProps) {
+  if (testimonials.length === 0) {
+    return null;
+  }
 
-  useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    const updateScrollState = () => {
-      setCanScrollPrev(api.canScrollPrev());
-      setCanScrollNext(api.canScrollNext());
-    };
-
-    updateScrollState();
-    api.on("select", updateScrollState);
-    api.on("reInit", updateScrollState);
-
-    return () => {
-      api.off("select", updateScrollState);
-      api.off("reInit", updateScrollState);
-    };
-  }, [api]);
-
-  useEffect(() => {
-    if (!api || !canScroll || isAutoSwipePaused) {
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      if (api.canScrollNext()) {
-        api.scrollNext();
-        return;
-      }
-
-      api.scrollTo(0);
-    }, 4600);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [api, canScroll, isAutoSwipePaused]);
+  const [leadTestimonial, ...supportingTestimonials] = testimonials;
 
   return (
-    <section className="section-padding bg-charcoal relative overflow-hidden">
-      <div
-        className="absolute right-0 top-0 h-[280px] w-[280px] rounded-full pointer-events-none sm:h-[380px] sm:w-[380px] lg:h-[500px] lg:w-[500px]"
-        style={{ background: "radial-gradient(circle, hsla(38, 60%, 52%, 0.04), transparent 70%)" }}
-      />
+    <section className="section-padding relative overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_25%,rgba(0,0,0,0.05),transparent_24%),radial-gradient(circle_at_82%_70%,rgba(255,255,255,0.1),transparent_20%)]" />
 
-      <div className="max-w-7xl mx-auto relative">
-        <AnimatedSection className="mb-12 flex flex-col gap-6 sm:mb-16 md:mb-20 md:flex-row md:items-end md:justify-between">
-          <div className="text-center md:text-left">
-            <div className="line-accent mx-auto mb-6 md:mx-0" />
-            <h2 className="font-display text-3xl font-light text-cream sm:text-4xl md:text-6xl">
-              Client Voices
-            </h2>
-          </div>
+      <div className="relative mx-auto grid max-w-7xl gap-10 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
+        <AnimatedSection className="xl:sticky xl:top-28 xl:self-start">
+          <p className="font-body text-[11px] uppercase tracking-[0.34em] text-muted-foreground">
+            Client Perspective
+          </p>
+          <h2 className="mt-5 max-w-md font-display text-4xl font-light leading-tight text-foreground sm:text-5xl md:text-6xl">
+            Trusted because the process feels clear as well as beautiful.
+          </h2>
+          <p className="mt-6 max-w-md font-body text-base leading-8 text-muted-foreground">
+            Clients stay confident when design, coordination, and delivery
+            are connected. That confidence shows up in the work and in the reviews.
+          </p>
 
-          {canScroll ? (
-            <div className="flex items-center justify-center gap-3 md:justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="h-11 w-11 rounded-full border-border/70 bg-background/50 backdrop-blur-xl transition-colors hover:border-accent hover:bg-background/70"
-                onClick={() => api?.scrollPrev()}
-                disabled={!canScrollPrev}
-                aria-label="Previous testimonials"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="h-11 w-11 rounded-full border-border/70 bg-background/50 backdrop-blur-xl transition-colors hover:border-accent hover:bg-background/70"
-                onClick={() => api?.scrollNext()}
-                disabled={!canScrollNext}
-                aria-label="Next testimonials"
-              >
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+          <div className="mt-10 rounded-[1.8rem] border border-border/70 bg-card/75 p-6 backdrop-blur-xl">
+            <p className="font-body text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+              Reputation Snapshot
+            </p>
+            <div className="mt-4 flex items-end gap-4">
+              <p className="font-display text-5xl text-foreground">4.9</p>
+              <div className="pb-2">
+                <div className="flex gap-1">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Star
+                      key={index}
+                      size={14}
+                      className="fill-foreground text-foreground"
+                    />
+                  ))}
+                </div>
+                <p className="mt-2 font-body text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                  Average client rating
+                </p>
+              </div>
             </div>
-          ) : null}
+          </div>
         </AnimatedSection>
 
-        <AnimatedSection delay={0.08}>
-          <Carousel
-            setApi={setApi}
-            opts={{
-              align: "start",
-              containScroll: "trimSnaps",
-              loop: testimonials.length > 3,
-            }}
-            className="relative"
-            onMouseEnter={() => setIsAutoSwipePaused(true)}
-            onMouseLeave={() => setIsAutoSwipePaused(false)}
-            onFocusCapture={() => setIsAutoSwipePaused(true)}
-            onBlurCapture={(event) => {
-              if (event.currentTarget.contains(event.relatedTarget)) {
-                return;
-              }
+        <div className="grid gap-5 md:grid-cols-2">
+          <AnimatedSection scale className="md:row-span-2">
+            <motion.article
+              whileHover={{ y: -8 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="relative flex h-full min-h-[28rem] flex-col rounded-[2.2rem] border border-border/70 bg-charcoal p-7 text-cream shadow-[0_30px_80px_-42px_rgba(0,0,0,0.8)] sm:p-8"
+            >
+              <Quote size={34} className="text-cream/18" />
+              <p className="mt-8 font-display text-[2rem] leading-tight text-cream sm:text-[2.5rem]">
+                “{leadTestimonial.quote}”
+              </p>
+              <div className="mt-auto pt-10">
+                <div className="flex gap-1">
+                  {Array.from({ length: leadTestimonial.rating }).map((_, index) => (
+                    <Star
+                      key={index}
+                      size={14}
+                      className="fill-cream text-cream"
+                    />
+                  ))}
+                </div>
+                <p className="mt-5 font-display text-2xl text-cream">
+                  {leadTestimonial.name}
+                </p>
+                <p className="mt-2 font-body text-[11px] uppercase tracking-[0.22em] text-cream/54">
+                  {leadTestimonial.role}
+                </p>
+              </div>
+            </motion.article>
+          </AnimatedSection>
 
-              setIsAutoSwipePaused(false);
-            }}
-          >
-            <CarouselContent className="-ml-0">
-              {testimonials.map((testimonial, i) => (
-                <CarouselItem
-                  key={testimonial.id}
-                  className="pl-0 pr-4 sm:basis-[82%] md:basis-1/2 xl:basis-1/3"
-                >
-                  <AnimatedSection delay={i * 0.08} scale className="h-full">
-                    <motion.div
-                      whileHover={{ y: -6 }}
-                      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      className="glass-card-hover relative flex h-full min-h-[360px] flex-col rounded-sm p-6 sm:p-8"
-                    >
-                      <Quote size={28} className="mb-4 text-gold/20" />
-                      <div className="mb-6 flex gap-1">
-                        {Array.from({ length: testimonial.rating }).map((_, j) => (
-                          <motion.div
-                            key={j}
-                            initial={{ y: 6, scale: 0.82 }}
-                            whileInView={{ y: 0, scale: 1 }}
-                            viewport={{ once: false, amount: 0.7 }}
-                            transition={{
-                              delay: 0.22 + j * 0.06,
-                              duration: 0.35,
-                              ease: [0.22, 1, 0.36, 1],
-                            }}
-                          >
-                            <Star size={14} className="fill-gold text-gold" />
-                          </motion.div>
-                        ))}
-                      </div>
-                      <p className="mb-8 flex-1 font-body text-sm italic leading-relaxed text-warm-gray">
-                        "{testimonial.quote}"
-                      </p>
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20">
-                          <span className="font-body text-xs font-medium text-gold">
-                            {testimonial.initials}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-display text-lg text-cream">{testimonial.name}</p>
-                          <p className="font-body text-xs uppercase tracking-wider text-warm-gray">
-                            {testimonial.role}
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </AnimatedSection>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </AnimatedSection>
+          {supportingTestimonials.slice(0, 2).map((testimonial, index) => (
+            <AnimatedSection
+              key={testimonial.id}
+              delay={0.08 + index * 0.08}
+              scale
+              className={index === 1 ? "md:translate-y-10" : ""}
+            >
+              <motion.article
+                whileHover={{ y: -8 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="flex h-full min-h-[18rem] flex-col rounded-[1.9rem] border border-border/70 bg-card/80 p-6 backdrop-blur-xl sm:p-7"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border/70 bg-background/80">
+                    <span className="font-body text-xs font-medium uppercase tracking-[0.2em] text-foreground/82">
+                      {testimonial.initials}
+                    </span>
+                  </div>
+                  <div className="flex gap-1">
+                    {Array.from({ length: testimonial.rating }).map((_, starIndex) => (
+                      <Star
+                        key={starIndex}
+                        size={13}
+                        className="fill-foreground text-foreground"
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-8 flex-1 font-body text-sm leading-7 text-foreground/82">
+                  “{testimonial.quote}”
+                </p>
+                <div className="mt-8 border-t border-border/70 pt-4">
+                  <p className="font-display text-xl text-foreground">{testimonial.name}</p>
+                  <p className="mt-2 font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                    {testimonial.role}
+                  </p>
+                </div>
+              </motion.article>
+            </AnimatedSection>
+          ))}
+        </div>
       </div>
     </section>
   );

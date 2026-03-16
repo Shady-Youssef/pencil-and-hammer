@@ -15,7 +15,7 @@ create table if not exists public.site_settings (
   site_name text not null default 'Pencil And Hammer',
   site_title text not null default 'Pencil And Hammer | Design-Build Studio',
   site_description text not null default 'Pencil And Hammer is a design-build company delivering residential, hospitality, retail, and workplace interiors with strategic planning and a clean material point of view.',
-  site_url text not null default 'http://localhost:3000',
+  site_url text not null default 'https://pencil-and-hammer.vercel.app',
   contact_email text not null default 'hello@pencilandhammer.com',
   contact_phone text not null default '+1 (555) 234-5678',
   address_line_1 text not null default '123 Design Avenue',

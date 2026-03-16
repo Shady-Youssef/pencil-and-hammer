@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { AnimatePresence, motion } from "framer-motion";
+
 import AnimatedSection from "@/components/AnimatedSection";
-import ScrollProgress from "@/components/ScrollProgress";
-import { motion, AnimatePresence } from "framer-motion";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import ProjectCard from "@/components/projects/ProjectCard";
+import ScrollProgress from "@/components/ScrollProgress";
 import type { ProjectRecord } from "@/lib/projects/data";
 
 type PortfolioProps = {
@@ -29,26 +30,30 @@ export default function Portfolio({ projects }: PortfolioProps) {
     <>
       <ScrollProgress />
       <Navbar />
-      <main>
-        {/* Hero */}
-        <section className="pt-36 pb-16 section-padding bg-background">
-          <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center">
-              <div className="line-accent mx-auto mb-6" />
-              <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-light text-foreground mb-4">
-                Our Portfolio
+      <main className="bg-background">
+        <section className="relative overflow-hidden border-b border-border/60 pt-32 sm:pt-36">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_24%),linear-gradient(180deg,rgba(0,0,0,0.03)_0%,rgba(0,0,0,0)_100%)]" />
+          <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-14 sm:px-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:px-12">
+            <AnimatedSection>
+              <p className="font-body text-[11px] uppercase tracking-[0.32em] text-muted-foreground">
+                Portfolio
+              </p>
+              <h1 className="mt-5 max-w-2xl font-display text-[3.3rem] font-light leading-[0.95] text-foreground sm:text-[4.5rem] md:text-[5.4rem]">
+                Projects presented with more clarity and less clutter.
               </h1>
-              <p className="font-body text-muted-foreground max-w-lg mx-auto">
-                A curated collection of our most distinguished projects.
+            </AnimatedSection>
+            <AnimatedSection direction="right" className="lg:pt-8">
+              <p className="max-w-xl font-body text-base leading-8 text-muted-foreground sm:text-lg">
+                The portfolio is organized to show atmosphere, category, and project character quickly.
+                Filter by sector, scan the work, and move into each project detail view without friction.
               </p>
             </AnimatedSection>
           </div>
         </section>
 
-        {/* Filter + Grid */}
-        <section className="section-padding pt-0 bg-background">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex justify-center gap-6 mb-16 flex-wrap">
+        <section className="section-padding">
+          <div className="mx-auto max-w-7xl">
+            <AnimatedSection className="mb-12 flex flex-wrap justify-center gap-3">
               {categories.map((cat) => (
                 <button
                   key={cat}
@@ -57,36 +62,29 @@ export default function Portfolio({ projects }: PortfolioProps) {
                       setActive(cat);
                     });
                   }}
-                  className={`relative font-body text-sm tracking-widest uppercase pb-2 transition-colors ${
+                  className={`rounded-full border px-5 py-2.5 font-body text-[11px] font-medium uppercase tracking-[0.22em] transition-colors ${
                     active === cat
-                      ? "text-accent"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border bg-card/70 text-muted-foreground hover:border-foreground/24 hover:text-foreground"
                   }`}
                 >
                   {cat}
-                  {active === cat && (
-                    <motion.div
-                      layoutId="portfolio-filter"
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-accent"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
                 </button>
               ))}
-            </div>
+            </AnimatedSection>
 
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
-                initial={{ y: 24, scale: 0.992 }}
-                animate={{ y: 0, scale: 1 }}
-                exit={{ y: -16, scale: 0.992 }}
-                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -18 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="grid gap-8 md:grid-cols-2 xl:grid-cols-3"
               >
-                {filtered.map((project, i) => (
-                  <AnimatedSection key={project.id} delay={i * 0.06} scale>
-                    <ProjectCard project={project} priority={i < 2} />
+                {filtered.map((project, index) => (
+                  <AnimatedSection key={project.id} delay={index * 0.04} scale>
+                    <ProjectCard project={project} priority={index < 2} />
                   </AnimatedSection>
                 ))}
               </motion.div>

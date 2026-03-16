@@ -14,15 +14,6 @@ type BrandLockupProps = {
   priority?: boolean;
 };
 
-function splitName(name: string) {
-  const [first, ...rest] = name.trim().split(/\s+/);
-
-  return {
-    first: first || "Pencil",
-    rest: rest.join(" "),
-  };
-}
-
 function getInitials(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
 
@@ -41,7 +32,6 @@ export default function BrandLockup({
   logoClassName,
   priority = false,
 }: BrandLockupProps) {
-  const words = splitName(name);
   const initials = getInitials(name);
   const [imageFailed, setImageFailed] = useState(!logoUrl);
 
@@ -64,9 +54,8 @@ export default function BrandLockup({
           />
         )}
       </span>
-      <span className={cn("font-display text-2xl font-semibold tracking-wider", textClassName)}>
-        {words.first}
-        {words.rest ? <span className="text-gradient-gold"> {words.rest}</span> : null}
+      <span className={cn("font-display text-2xl font-medium tracking-[0.02em]", textClassName)}>
+        {name}
       </span>
     </span>
   );
