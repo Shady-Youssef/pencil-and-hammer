@@ -22,12 +22,38 @@ const aboutIconMap: Record<AboutStatIcon, ElementType> = {
   home: Home,
 };
 
+function isBrandAsset(url: string, storagePath: string | null, logoUrl: string, logoStoragePath: string | null) {
+  const normalizedUrl = url.trim().toLowerCase();
+  const normalizedLogoUrl = logoUrl.trim().toLowerCase();
+  const normalizedStoragePath = storagePath?.trim().toLowerCase() ?? "";
+  const normalizedLogoStoragePath = logoStoragePath?.trim().toLowerCase() ?? "";
+
+  if (!normalizedUrl) {
+    return false;
+  }
+
+  if (
+    (normalizedStoragePath && normalizedLogoStoragePath && normalizedStoragePath === normalizedLogoStoragePath) ||
+    normalizedUrl === normalizedLogoUrl
+  ) {
+    return true;
+  }
+
+  return /logo|mark|icon|lockup|wordmark/.test(normalizedUrl);
+}
+
 export default function About() {
   const { settings } = useSiteSettings();
   const heroImage = settings.aboutHeroImageUrl || aboutTeam;
   const storyTitle = settings.aboutStoryTitle.trim() || "Our Story";
   const storyParagraphs = settings.aboutStoryParagraphs.filter((paragraph) =>
     paragraph.body.trim(),
+  );
+  const portraitIsBrandAsset = isBrandAsset(
+    settings.aboutPortraitUrl,
+    settings.aboutPortraitStoragePath,
+    settings.logoUrl,
+    settings.logoStoragePath,
   );
 
   return (
@@ -99,11 +125,25 @@ export default function About() {
             {settings.aboutPortraitUrl ? (
               <AnimatedSection direction="left">
                 <div className="overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-[0_24px_70px_-44px_rgba(0,0,0,0.18)]">
-                  <img
-                    src={settings.aboutPortraitUrl}
-                    alt={settings.aboutPortraitAlt || storyTitle}
-                    className="h-[28rem] w-full object-cover object-center sm:h-[36rem] lg:h-[42rem]"
-                  />
+                  {portraitIsBrandAsset ? (
+                    <div className="bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_58%)] p-4 dark:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_58%)] sm:p-5 lg:p-6">
+                      <div className="flex aspect-[5/4] w-full items-center justify-center rounded-[1.6rem] border border-border/70 bg-background/82 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:border-white/10 dark:bg-black/36 sm:aspect-[4/3] sm:p-5 lg:p-6">
+                        <div className="h-full w-full overflow-hidden rounded-[1.1rem] sm:rounded-[1.25rem]">
+                          <img
+                            src={settings.aboutPortraitUrl}
+                            alt={settings.aboutPortraitAlt || storyTitle}
+                            className="h-full w-full object-contain"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={settings.aboutPortraitUrl}
+                      alt={settings.aboutPortraitAlt || storyTitle}
+                      className="h-[28rem] w-full object-cover object-center sm:h-[36rem] lg:h-[42rem]"
+                    />
+                  )}
                 </div>
               </AnimatedSection>
             ) : null}

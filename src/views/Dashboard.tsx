@@ -21,7 +21,7 @@ import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import BrandLockup from "@/components/BrandLockup";
 import { useSiteSettings } from "@/components/site/site-settings-context";
 import type { ProjectRecord } from "@/lib/projects/data";
-import type { SiteSettings } from "@/lib/site";
+import { getEffectiveFaviconUrl, type SiteSettings } from "@/lib/site";
 import type { TestimonialRecord } from "@/lib/testimonials/data";
 
 /* ------------------------------------------------------------------ */
@@ -173,6 +173,7 @@ export default function Dashboard({
   testimonialsError,
 }: DashboardProps) {
   const { settings } = useSiteSettings();
+  const brandMarkUrl = getEffectiveFaviconUrl(settings);
   const [activeTab, setActiveTab] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -291,7 +292,8 @@ export default function Dashboard({
         <div className="p-6 border-b border-charcoal-light">
           <BrandLockup
             name={settings.siteName}
-            logoUrl={settings.logoUrl}
+            logoUrl={brandMarkUrl}
+            mode="mark"
             textClassName="text-xl text-cream"
             logoClassName="object-contain p-1.5"
           />

@@ -3,13 +3,14 @@ import Script from "next/script";
 import type { ReactNode } from "react";
 
 import Providers from "@/app/providers";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, getEffectiveFaviconUrl } from "@/lib/site";
 import { getSiteSettings } from "@/lib/site/server";
 
 import "../index.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
+  const faviconUrl = getEffectiveFaviconUrl(settings);
   const ogVersion = settings.updatedAt
     ? encodeURIComponent(settings.updatedAt)
     : "default";
@@ -49,9 +50,9 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [ogImageUrl],
     },
     icons: {
-      icon: [{ url: settings.faviconUrl }],
-      shortcut: [{ url: settings.faviconUrl }],
-      apple: [{ url: settings.faviconUrl }],
+      icon: [{ url: faviconUrl }],
+      shortcut: [{ url: faviconUrl }],
+      apple: [{ url: faviconUrl }],
     },
   };
 }

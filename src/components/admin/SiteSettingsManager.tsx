@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
   aboutStatIcons,
+  homeServiceIcons,
   joinKeywords,
   normalizeSiteSettings,
   sanitizeFileName,
@@ -23,6 +24,10 @@ import {
   type AboutStat,
   type AboutStatIcon,
   type AboutStoryParagraph,
+  type HomeService,
+  type HomeServiceHighlight,
+  type HomeServiceIcon,
+  type HomeStoryMetric,
   type SiteSettings,
   type SiteSettingsRow,
 } from "@/lib/site";
@@ -57,10 +62,38 @@ type SiteSettingsDraft = {
   logoStoragePath: string | null;
   faviconUrl: string;
   faviconStoragePath: string | null;
+  lightBackgroundHex: string;
+  lightForegroundHex: string;
+  lightSurfaceHex: string;
+  lightMutedHex: string;
+  lightBorderHex: string;
+  lightAccentHex: string;
+  darkBackgroundHex: string;
+  darkForegroundHex: string;
+  darkSurfaceHex: string;
+  darkMutedHex: string;
+  darkBorderHex: string;
+  darkAccentHex: string;
   aboutHeroTitle: string;
   aboutHeroSubtitle: string;
   aboutHeroImageUrl: string;
   aboutHeroImageStoragePath: string | null;
+  homeStoryEyebrow: string;
+  homeStoryTitle: string;
+  homeStoryParagraphs: AboutStoryParagraph[];
+  homeStoryImageUrl: string;
+  homeStoryImageStoragePath: string | null;
+  homeStoryImageAlt: string;
+  homeStoryMetrics: HomeStoryMetric[];
+  homeStoryPrimaryCtaLabel: string;
+  homeStoryPrimaryCtaHref: string;
+  homeStorySecondaryCtaLabel: string;
+  homeStorySecondaryCtaHref: string;
+  homeServicesEyebrow: string;
+  homeServicesTitle: string;
+  homeServicesBody: string;
+  homeServicesHighlights: HomeServiceHighlight[];
+  homeServices: HomeService[];
   aboutStoryTitle: string;
   aboutStoryParagraphs: AboutStoryParagraph[];
   aboutPortraitUrl: string;
@@ -72,8 +105,8 @@ type SiteSettingsDraft = {
   aboutPhilosophyAttribution: string;
 };
 
-type SettingsTab = "branding" | "contact" | "about";
-type AssetKind = "logo" | "favicon" | "aboutHero" | "aboutPortrait";
+type SettingsTab = "branding" | "contact" | "home" | "about";
+type AssetKind = "logo" | "favicon" | "aboutHero" | "aboutPortrait" | "homeStory";
 
 const aboutIconOptions: Array<{ value: AboutStatIcon; label: string }> = [
   { value: "award", label: "Award" },
@@ -83,6 +116,44 @@ const aboutIconOptions: Array<{ value: AboutStatIcon; label: string }> = [
   { value: "sparkles", label: "Sparkles" },
   { value: "home", label: "Home" },
 ];
+
+const homeServiceIconOptions: Array<{ value: HomeServiceIcon; label: string }> = [
+  { value: "paintbrush", label: "Paintbrush" },
+  { value: "ruler", label: "Ruler" },
+  { value: "lightbulb", label: "Lightbulb" },
+  { value: "sofa", label: "Sofa" },
+];
+
+const paletteSections = [
+  {
+    title: "Light Theme",
+    description: "Used across the website when light mode is active.",
+    fields: [
+      { key: "lightBackgroundHex", label: "Background" },
+      { key: "lightForegroundHex", label: "Foreground" },
+      { key: "lightSurfaceHex", label: "Surface" },
+      { key: "lightMutedHex", label: "Muted" },
+      { key: "lightBorderHex", label: "Border" },
+      { key: "lightAccentHex", label: "Accent" },
+    ],
+  },
+  {
+    title: "Dark Theme",
+    description: "Used across the website when dark mode is active.",
+    fields: [
+      { key: "darkBackgroundHex", label: "Background" },
+      { key: "darkForegroundHex", label: "Foreground" },
+      { key: "darkSurfaceHex", label: "Surface" },
+      { key: "darkMutedHex", label: "Muted" },
+      { key: "darkBorderHex", label: "Border" },
+      { key: "darkAccentHex", label: "Accent" },
+    ],
+  },
+] as const satisfies Array<{
+  title: string;
+  description: string;
+  fields: Array<{ key: keyof SiteSettingsDraft; label: string }>;
+}>;
 
 function createDraft(settings: SiteSettings): SiteSettingsDraft {
   return {
@@ -110,10 +181,38 @@ function createDraft(settings: SiteSettings): SiteSettingsDraft {
     logoStoragePath: settings.logoStoragePath,
     faviconUrl: settings.faviconUrl,
     faviconStoragePath: settings.faviconStoragePath,
+    lightBackgroundHex: settings.lightBackgroundHex,
+    lightForegroundHex: settings.lightForegroundHex,
+    lightSurfaceHex: settings.lightSurfaceHex,
+    lightMutedHex: settings.lightMutedHex,
+    lightBorderHex: settings.lightBorderHex,
+    lightAccentHex: settings.lightAccentHex,
+    darkBackgroundHex: settings.darkBackgroundHex,
+    darkForegroundHex: settings.darkForegroundHex,
+    darkSurfaceHex: settings.darkSurfaceHex,
+    darkMutedHex: settings.darkMutedHex,
+    darkBorderHex: settings.darkBorderHex,
+    darkAccentHex: settings.darkAccentHex,
     aboutHeroTitle: settings.aboutHeroTitle,
     aboutHeroSubtitle: settings.aboutHeroSubtitle,
     aboutHeroImageUrl: settings.aboutHeroImageUrl,
     aboutHeroImageStoragePath: settings.aboutHeroImageStoragePath,
+    homeStoryEyebrow: settings.homeStoryEyebrow,
+    homeStoryTitle: settings.homeStoryTitle,
+    homeStoryParagraphs: settings.homeStoryParagraphs.map((paragraph) => ({ ...paragraph })),
+    homeStoryImageUrl: settings.homeStoryImageUrl,
+    homeStoryImageStoragePath: settings.homeStoryImageStoragePath,
+    homeStoryImageAlt: settings.homeStoryImageAlt,
+    homeStoryMetrics: settings.homeStoryMetrics.map((metric) => ({ ...metric })),
+    homeStoryPrimaryCtaLabel: settings.homeStoryPrimaryCtaLabel,
+    homeStoryPrimaryCtaHref: settings.homeStoryPrimaryCtaHref,
+    homeStorySecondaryCtaLabel: settings.homeStorySecondaryCtaLabel,
+    homeStorySecondaryCtaHref: settings.homeStorySecondaryCtaHref,
+    homeServicesEyebrow: settings.homeServicesEyebrow,
+    homeServicesTitle: settings.homeServicesTitle,
+    homeServicesBody: settings.homeServicesBody,
+    homeServicesHighlights: settings.homeServicesHighlights.map((highlight) => ({ ...highlight })),
+    homeServices: settings.homeServices.map((service) => ({ ...service, deliverables: [...service.deliverables] })),
     aboutStoryTitle: settings.aboutStoryTitle,
     aboutStoryParagraphs: settings.aboutStoryParagraphs.map((paragraph) => ({ ...paragraph })),
     aboutPortraitUrl: settings.aboutPortraitUrl,
@@ -137,8 +236,20 @@ function createStatId() {
   return `about-stat-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function createStoryParagraphId() {
-  return `about-story-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+function createStoryParagraphId(prefix = "about-story") {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createHomeStoryMetricId() {
+  return `home-story-metric-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createHomeServiceHighlightId() {
+  return `home-services-highlight-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createHomeServiceId() {
+  return `home-service-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function readFileAsDataUrl(file: File) {
@@ -177,6 +288,7 @@ export default function SiteSettingsManager({
     logo: initialSettings.logoStoragePath,
     favicon: initialSettings.faviconStoragePath,
     aboutHero: initialSettings.aboutHeroImageStoragePath,
+    homeStory: initialSettings.homeStoryImageStoragePath,
     aboutPortrait: initialSettings.aboutPortraitStoragePath,
   });
 
@@ -208,12 +320,35 @@ export default function SiteSettingsManager({
         };
       }
 
+      if (kind === "homeStory") {
+        return {
+          ...current,
+          homeStoryImageUrl: url,
+          homeStoryImageStoragePath: storagePath,
+        };
+      }
+
       return {
         ...current,
         aboutPortraitUrl: url,
         aboutPortraitStoragePath: storagePath,
       };
     });
+  }
+
+  function getAssetLabel(kind: AssetKind) {
+    switch (kind) {
+      case "logo":
+        return "App logo";
+      case "favicon":
+        return "App favicon";
+      case "aboutHero":
+        return "About hero image";
+      case "homeStory":
+        return "Home Our Story image";
+      default:
+        return "Portrait image";
+    }
   }
 
   async function handleAssetUpload(
@@ -229,7 +364,12 @@ export default function SiteSettingsManager({
     setUploadingAsset(kind);
 
     try {
-      const group = kind === "logo" || kind === "favicon" ? "branding" : "about";
+      const group =
+        kind === "logo" || kind === "favicon"
+          ? "branding"
+          : kind === "homeStory"
+            ? "home"
+            : "about";
       const path = `${group}/${kind}-${Date.now()}-${sanitizeFileName(file.name)}`;
       const { error } = await client.storage
         .from(siteAssetsBucket)
@@ -243,9 +383,7 @@ export default function SiteSettingsManager({
           const inlineAsset = await readFileAsDataUrl(file);
           setAssetFields(kind, inlineAsset, null);
 
-          toast.success(
-            `${kind === "logo" ? "App logo" : kind === "favicon" ? "App favicon" : kind === "aboutHero" ? "About hero image" : "Portrait image"} uploaded with inline fallback storage.`,
-          );
+          toast.success(`${getAssetLabel(kind)} uploaded with inline fallback storage.`);
           return;
         }
 
@@ -265,9 +403,14 @@ export default function SiteSettingsManager({
         );
       }
 
-      toast.success(
-        `${kind === "logo" ? "App logo" : kind === "favicon" ? "App favicon" : kind === "aboutHero" ? "About hero image" : "Portrait image"} uploaded.`,
-      );
+      if (kind === "homeStory" && !draft.homeStoryImageAlt.trim()) {
+        updateDraft(
+          "homeStoryImageAlt",
+          file.name.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ").trim(),
+        );
+      }
+
+      toast.success(`${getAssetLabel(kind)} uploaded.`);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : `Unable to upload ${kind}.`,
@@ -328,6 +471,256 @@ export default function SiteSettingsManager({
     }));
   }
 
+  function updateHomeStoryMetric(index: number, key: keyof HomeStoryMetric, value: string) {
+    setDraft((current) => ({
+      ...current,
+      homeStoryMetrics: current.homeStoryMetrics.map((metric, metricIndex) =>
+        metricIndex === index ? { ...metric, [key]: value } : metric,
+      ),
+    }));
+  }
+
+  function moveHomeStoryMetric(index: number, direction: -1 | 1) {
+    setDraft((current) => {
+      const nextIndex = index + direction;
+
+      if (nextIndex < 0 || nextIndex >= current.homeStoryMetrics.length) {
+        return current;
+      }
+
+      const homeStoryMetrics = [...current.homeStoryMetrics];
+      const [moved] = homeStoryMetrics.splice(index, 1);
+      homeStoryMetrics.splice(nextIndex, 0, moved);
+
+      return {
+        ...current,
+        homeStoryMetrics,
+      };
+    });
+  }
+
+  function addHomeStoryMetric() {
+    setDraft((current) => ({
+      ...current,
+      homeStoryMetrics: [
+        ...current.homeStoryMetrics,
+        {
+          id: createHomeStoryMetricId(),
+          value: "",
+          label: "",
+        },
+      ],
+    }));
+  }
+
+  function removeHomeStoryMetric(index: number) {
+    setDraft((current) => ({
+      ...current,
+      homeStoryMetrics: current.homeStoryMetrics.filter(
+        (_, metricIndex) => metricIndex !== index,
+      ),
+    }));
+  }
+
+  function updateHomeStoryParagraph(index: number, value: string) {
+    setDraft((current) => ({
+      ...current,
+      homeStoryParagraphs: current.homeStoryParagraphs.map((paragraph, paragraphIndex) =>
+        paragraphIndex === index ? { ...paragraph, body: value } : paragraph,
+      ),
+    }));
+  }
+
+  function moveHomeStoryParagraph(index: number, direction: -1 | 1) {
+    setDraft((current) => {
+      const nextIndex = index + direction;
+
+      if (nextIndex < 0 || nextIndex >= current.homeStoryParagraphs.length) {
+        return current;
+      }
+
+      const homeStoryParagraphs = [...current.homeStoryParagraphs];
+      const [moved] = homeStoryParagraphs.splice(index, 1);
+      homeStoryParagraphs.splice(nextIndex, 0, moved);
+
+      return {
+        ...current,
+        homeStoryParagraphs,
+      };
+    });
+  }
+
+  function addHomeStoryParagraph() {
+    setDraft((current) => ({
+      ...current,
+      homeStoryParagraphs: [
+        ...current.homeStoryParagraphs,
+        {
+          id: createStoryParagraphId("home-story"),
+          body: "",
+        },
+      ],
+    }));
+  }
+
+  function removeHomeStoryParagraph(index: number) {
+    setDraft((current) => ({
+      ...current,
+      homeStoryParagraphs: current.homeStoryParagraphs.filter(
+        (_, paragraphIndex) => paragraphIndex !== index,
+      ),
+    }));
+  }
+
+  function updateHomeServiceHighlight(index: number, key: keyof HomeServiceHighlight, value: string) {
+    setDraft((current) => ({
+      ...current,
+      homeServicesHighlights: current.homeServicesHighlights.map((highlight, highlightIndex) =>
+        highlightIndex === index ? { ...highlight, [key]: value } : highlight,
+      ),
+    }));
+  }
+
+  function moveHomeServiceHighlight(index: number, direction: -1 | 1) {
+    setDraft((current) => {
+      const nextIndex = index + direction;
+
+      if (nextIndex < 0 || nextIndex >= current.homeServicesHighlights.length) {
+        return current;
+      }
+
+      const homeServicesHighlights = [...current.homeServicesHighlights];
+      const [moved] = homeServicesHighlights.splice(index, 1);
+      homeServicesHighlights.splice(nextIndex, 0, moved);
+
+      return {
+        ...current,
+        homeServicesHighlights,
+      };
+    });
+  }
+
+  function addHomeServiceHighlight() {
+    setDraft((current) => ({
+      ...current,
+      homeServicesHighlights: [
+        ...current.homeServicesHighlights,
+        {
+          id: createHomeServiceHighlightId(),
+          label: "",
+          text: "",
+        },
+      ],
+    }));
+  }
+
+  function removeHomeServiceHighlight(index: number) {
+    setDraft((current) => ({
+      ...current,
+      homeServicesHighlights: current.homeServicesHighlights.filter(
+        (_, highlightIndex) => highlightIndex !== index,
+      ),
+    }));
+  }
+
+  function updateHomeService(index: number, key: keyof Omit<HomeService, "deliverables">, value: string) {
+    setDraft((current) => ({
+      ...current,
+      homeServices: current.homeServices.map((service, serviceIndex) =>
+        serviceIndex === index ? { ...service, [key]: value } : service,
+      ),
+    }));
+  }
+
+  function updateHomeServiceDeliverable(serviceIndex: number, deliverableIndex: number, value: string) {
+    setDraft((current) => ({
+      ...current,
+      homeServices: current.homeServices.map((service, currentIndex) =>
+        currentIndex === serviceIndex
+          ? {
+              ...service,
+              deliverables: service.deliverables.map((deliverable, currentDeliverableIndex) =>
+                currentDeliverableIndex === deliverableIndex ? value : deliverable,
+              ),
+            }
+          : service,
+      ),
+    }));
+  }
+
+  function addHomeServiceDeliverable(serviceIndex: number) {
+    setDraft((current) => ({
+      ...current,
+      homeServices: current.homeServices.map((service, currentIndex) =>
+        currentIndex === serviceIndex
+          ? {
+              ...service,
+              deliverables: [...service.deliverables, ""],
+            }
+          : service,
+      ),
+    }));
+  }
+
+  function removeHomeServiceDeliverable(serviceIndex: number, deliverableIndex: number) {
+    setDraft((current) => ({
+      ...current,
+      homeServices: current.homeServices.map((service, currentIndex) =>
+        currentIndex === serviceIndex
+          ? {
+              ...service,
+              deliverables: service.deliverables.filter(
+                (_, currentDeliverableIndex) => currentDeliverableIndex !== deliverableIndex,
+              ),
+            }
+          : service,
+      ),
+    }));
+  }
+
+  function moveHomeService(index: number, direction: -1 | 1) {
+    setDraft((current) => {
+      const nextIndex = index + direction;
+
+      if (nextIndex < 0 || nextIndex >= current.homeServices.length) {
+        return current;
+      }
+
+      const homeServices = [...current.homeServices];
+      const [moved] = homeServices.splice(index, 1);
+      homeServices.splice(nextIndex, 0, moved);
+
+      return {
+        ...current,
+        homeServices,
+      };
+    });
+  }
+
+  function addHomeService() {
+    setDraft((current) => ({
+      ...current,
+      homeServices: [
+        ...current.homeServices,
+        {
+          id: createHomeServiceId(),
+          icon: homeServiceIcons[0],
+          title: "",
+          description: "",
+          note: "",
+          deliverables: [""],
+        },
+      ],
+    }));
+  }
+
+  function removeHomeService(index: number) {
+    setDraft((current) => ({
+      ...current,
+      homeServices: current.homeServices.filter((_, serviceIndex) => serviceIndex !== index),
+    }));
+  }
+
   function updateStoryParagraph(index: number, value: string) {
     setDraft((current) => ({
       ...current,
@@ -382,6 +775,46 @@ export default function SiteSettingsManager({
     setIsSaving(true);
 
     try {
+      const cleanedHomeStoryParagraphs = draft.homeStoryParagraphs
+        .map((paragraph, index) => ({
+          id: paragraph.id || `home-story-${index + 1}`,
+          body: paragraph.body.trim(),
+        }))
+        .filter((paragraph) => paragraph.body);
+
+      const cleanedHomeStoryMetrics = draft.homeStoryMetrics
+        .map((metric, index) => ({
+          id: metric.id || `home-story-metric-${index + 1}`,
+          value: metric.value.trim(),
+          label: metric.label.trim(),
+        }))
+        .filter((metric) => metric.value || metric.label);
+
+      const cleanedHomeServiceHighlights = draft.homeServicesHighlights
+        .map((highlight, index) => ({
+          id: highlight.id || `home-services-highlight-${index + 1}`,
+          label: highlight.label.trim(),
+          text: highlight.text.trim(),
+        }))
+        .filter((highlight) => highlight.label || highlight.text);
+
+      const cleanedHomeServices = draft.homeServices
+        .map((service, index) => ({
+          id: service.id || `home-service-${index + 1}`,
+          icon: service.icon,
+          title: service.title.trim(),
+          description: service.description.trim(),
+          note: service.note.trim(),
+          deliverables: service.deliverables.map((item) => item.trim()).filter(Boolean),
+        }))
+        .filter(
+          (service) =>
+            service.title ||
+            service.description ||
+            service.note ||
+            service.deliverables.length > 0,
+        );
+
       const cleanedStoryParagraphs = draft.aboutStoryParagraphs
         .map((paragraph, index) => ({
           id: paragraph.id || `about-story-${index + 1}`,
@@ -427,10 +860,38 @@ export default function SiteSettingsManager({
             logo_storage_path: draft.logoStoragePath,
             favicon_url: draft.faviconUrl.trim(),
             favicon_storage_path: draft.faviconStoragePath,
+            light_background_hex: draft.lightBackgroundHex.trim(),
+            light_foreground_hex: draft.lightForegroundHex.trim(),
+            light_surface_hex: draft.lightSurfaceHex.trim(),
+            light_muted_hex: draft.lightMutedHex.trim(),
+            light_border_hex: draft.lightBorderHex.trim(),
+            light_accent_hex: draft.lightAccentHex.trim(),
+            dark_background_hex: draft.darkBackgroundHex.trim(),
+            dark_foreground_hex: draft.darkForegroundHex.trim(),
+            dark_surface_hex: draft.darkSurfaceHex.trim(),
+            dark_muted_hex: draft.darkMutedHex.trim(),
+            dark_border_hex: draft.darkBorderHex.trim(),
+            dark_accent_hex: draft.darkAccentHex.trim(),
             about_hero_title: draft.aboutHeroTitle.trim(),
             about_hero_subtitle: draft.aboutHeroSubtitle.trim(),
             about_hero_image_url: draft.aboutHeroImageUrl.trim(),
             about_hero_image_storage_path: draft.aboutHeroImageStoragePath,
+            home_story_eyebrow: draft.homeStoryEyebrow.trim(),
+            home_story_title: draft.homeStoryTitle.trim(),
+            home_story_paragraphs: cleanedHomeStoryParagraphs,
+            home_story_image_url: draft.homeStoryImageUrl.trim(),
+            home_story_image_storage_path: draft.homeStoryImageStoragePath,
+            home_story_image_alt: draft.homeStoryImageAlt.trim(),
+            home_story_metrics: cleanedHomeStoryMetrics,
+            home_story_primary_cta_label: draft.homeStoryPrimaryCtaLabel.trim(),
+            home_story_primary_cta_href: draft.homeStoryPrimaryCtaHref.trim(),
+            home_story_secondary_cta_label: draft.homeStorySecondaryCtaLabel.trim(),
+            home_story_secondary_cta_href: draft.homeStorySecondaryCtaHref.trim(),
+            home_services_eyebrow: draft.homeServicesEyebrow.trim(),
+            home_services_title: draft.homeServicesTitle.trim(),
+            home_services_body: draft.homeServicesBody.trim(),
+            home_services_highlights: cleanedHomeServiceHighlights,
+            home_services: cleanedHomeServices,
             about_story_title: draft.aboutStoryTitle.trim(),
             about_story_paragraphs: cleanedStoryParagraphs,
             about_story_body_primary: cleanedStoryParagraphs[0]?.body ?? "",
@@ -461,6 +922,7 @@ export default function SiteSettingsManager({
         logo: normalized.logoStoragePath,
         favicon: normalized.faviconStoragePath,
         aboutHero: normalized.aboutHeroImageStoragePath,
+        homeStory: normalized.homeStoryImageStoragePath,
         aboutPortrait: normalized.aboutPortraitStoragePath,
       });
       setErrorMessage(null);
@@ -469,6 +931,7 @@ export default function SiteSettingsManager({
         oldPaths.logo && oldPaths.logo !== normalized.logoStoragePath ? oldPaths.logo : null,
         oldPaths.favicon && oldPaths.favicon !== normalized.faviconStoragePath ? oldPaths.favicon : null,
         oldPaths.aboutHero && oldPaths.aboutHero !== normalized.aboutHeroImageStoragePath ? oldPaths.aboutHero : null,
+        oldPaths.homeStory && oldPaths.homeStory !== normalized.homeStoryImageStoragePath ? oldPaths.homeStory : null,
         oldPaths.aboutPortrait && oldPaths.aboutPortrait !== normalized.aboutPortraitStoragePath ? oldPaths.aboutPortrait : null,
       ].filter((value): value is string => Boolean(value));
 
@@ -508,12 +971,13 @@ export default function SiteSettingsManager({
             <div className="max-w-2xl">
               <p className="font-display text-3xl text-foreground">Site Content Manager</p>
               <p className="mt-2 font-body text-sm leading-relaxed text-muted-foreground">
-                Manage global branding, contact details, and the About page from one place.
+                Manage global branding, contact details, home-page content, and the About page from one place.
               </p>
             </div>
-            <TabsList className="grid h-auto w-full grid-cols-3 rounded-[1rem] bg-background/70 p-1 lg:w-[420px]">
+            <TabsList className="grid h-auto w-full grid-cols-4 rounded-[1rem] bg-background/70 p-1 lg:w-[560px]">
               <TabsTrigger value="branding" className="rounded-[0.8rem]">Branding</TabsTrigger>
               <TabsTrigger value="contact" className="rounded-[0.8rem]">Contact</TabsTrigger>
+              <TabsTrigger value="home" className="rounded-[0.8rem]">Home</TabsTrigger>
               <TabsTrigger value="about" className="rounded-[0.8rem]">About</TabsTrigger>
             </TabsList>
           </div>
@@ -588,6 +1052,53 @@ export default function SiteSettingsManager({
                       />
                     </label>
                   </div>
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
+                <p className="font-display text-2xl text-foreground">Theme Palette</p>
+                <p className="mt-1 max-w-2xl font-body text-sm text-muted-foreground">
+                  Adjust the website color system for both light mode and dark mode. Changes apply to the
+                  public site and the active theme toggle.
+                </p>
+
+                <div className="mt-6 grid gap-5 xl:grid-cols-2">
+                  {paletteSections.map((section) => (
+                    <div
+                      key={section.title}
+                      className="rounded-[1.25rem] border border-border bg-background/80 p-5"
+                    >
+                      <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        {section.title}
+                      </p>
+                      <p className="mt-2 font-body text-sm leading-6 text-muted-foreground">
+                        {section.description}
+                      </p>
+
+                      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                        {section.fields.map((field) => (
+                          <div key={field.key} className="space-y-2">
+                            <label className="font-body text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+                              {field.label}
+                            </label>
+                            <div className="flex items-center gap-3 rounded-[1rem] border border-border bg-card/70 px-3 py-3">
+                              <Input
+                                type="color"
+                                value={draft[field.key] as string}
+                                onChange={(event) => updateDraft(field.key, event.target.value)}
+                                className="h-10 w-12 shrink-0 cursor-pointer rounded-md border-0 bg-transparent p-0"
+                              />
+                              <Input
+                                value={draft[field.key] as string}
+                                onChange={(event) => updateDraft(field.key, event.target.value)}
+                                className="h-10 border-0 bg-transparent px-0 font-body text-sm uppercase tracking-[0.08em] shadow-none focus-visible:ring-0"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -803,6 +1314,608 @@ export default function SiteSettingsManager({
                     value={draft.linkedinUrl}
                     onChange={(event) => updateDraft("linkedinUrl", event.target.value)}
                   />
+                </div>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="home" className="space-y-6">
+          <div className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
+            <div className="space-y-6">
+              <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
+                <p className="font-display text-2xl text-foreground">Home Our Story</p>
+                <p className="mt-1 font-body text-sm text-muted-foreground">
+                  Control the home-page Our Story section independently from the About page.
+                </p>
+
+                <div className="mt-6 grid gap-5">
+                  <div className="relative h-[320px] overflow-hidden rounded-[1.2rem] border border-border bg-background">
+                    {draft.homeStoryImageUrl ? (
+                      <Image
+                        src={draft.homeStoryImageUrl}
+                        alt={draft.homeStoryImageAlt || "Home Our Story preview"}
+                        fill
+                        sizes="900px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center bg-background/80 font-body text-sm text-muted-foreground">
+                        Upload an image for the home-page Our Story section.
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 font-body text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:border-accent">
+                      {uploadingAsset === "homeStory" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                      Upload Story Image
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/avif"
+                        className="hidden"
+                        onChange={(event) => void handleAssetUpload(event, "homeStory")}
+                      />
+                    </label>
+                    <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Displays in the home-page story split layout
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Story Image Alt Text
+                    </label>
+                    <Input
+                      value={draft.homeStoryImageAlt}
+                      onChange={(event) => updateDraft("homeStoryImageAlt", event.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Eyebrow
+                    </label>
+                    <Input
+                      value={draft.homeStoryEyebrow}
+                      onChange={(event) => updateDraft("homeStoryEyebrow", event.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Title
+                    </label>
+                    <Textarea
+                      rows={3}
+                      value={draft.homeStoryTitle}
+                      onChange={(event) => updateDraft("homeStoryTitle", event.target.value)}
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Primary CTA Label
+                      </label>
+                      <Input
+                        value={draft.homeStoryPrimaryCtaLabel}
+                        onChange={(event) => updateDraft("homeStoryPrimaryCtaLabel", event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Primary CTA Link
+                      </label>
+                      <Input
+                        value={draft.homeStoryPrimaryCtaHref}
+                        onChange={(event) => updateDraft("homeStoryPrimaryCtaHref", event.target.value)}
+                        placeholder="/about"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Secondary CTA Label
+                      </label>
+                      <Input
+                        value={draft.homeStorySecondaryCtaLabel}
+                        onChange={(event) => updateDraft("homeStorySecondaryCtaLabel", event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Secondary CTA Link
+                      </label>
+                      <Input
+                        value={draft.homeStorySecondaryCtaHref}
+                        onChange={(event) => updateDraft("homeStorySecondaryCtaHref", event.target.value)}
+                        placeholder="/contact"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-display text-2xl text-foreground">Home Story Paragraphs</p>
+                    <p className="mt-1 font-body text-sm text-muted-foreground">
+                      Add, remove, and reorder the copy blocks shown in the home-page Our Story section.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addHomeStoryParagraph}
+                    className="w-full sm:w-auto"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Paragraph
+                  </Button>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  {draft.homeStoryParagraphs.length ? (
+                    draft.homeStoryParagraphs.map((paragraph, index) => (
+                      <div
+                        key={paragraph.id}
+                        className="rounded-[1.15rem] border border-border/70 bg-background/70 p-4"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                            Paragraph {index + 1}
+                          </p>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveHomeStoryParagraph(index, -1)}
+                              disabled={index === 0}
+                              className="text-muted-foreground"
+                            >
+                              <ArrowUp className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveHomeStoryParagraph(index, 1)}
+                              disabled={index === draft.homeStoryParagraphs.length - 1}
+                              className="text-muted-foreground"
+                            >
+                              <ArrowDown className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeHomeStoryParagraph(index)}
+                              className="text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="mt-4 space-y-2">
+                          <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                            Copy
+                          </label>
+                          <Textarea
+                            rows={5}
+                            value={paragraph.body}
+                            onChange={(event) => updateHomeStoryParagraph(index, event.target.value)}
+                            placeholder="Write the paragraph shown in the home-page Our Story section."
+                          />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="rounded-[1.15rem] border border-dashed border-border bg-background/40 p-5 font-body text-sm text-muted-foreground">
+                      No home story paragraphs yet. Add one to populate the home-page section.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-display text-2xl text-foreground">Story Metrics</p>
+                    <p className="mt-1 font-body text-sm text-muted-foreground">
+                      Edit the small cards shown beside the home-page story content.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addHomeStoryMetric}
+                    className="w-full sm:w-auto"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Metric
+                  </Button>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  {draft.homeStoryMetrics.length ? (
+                    draft.homeStoryMetrics.map((metric, index) => (
+                      <div
+                        key={metric.id}
+                        className="rounded-[1.15rem] border border-border/70 bg-background/70 p-4"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                            Metric {index + 1}
+                          </p>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveHomeStoryMetric(index, -1)}
+                              disabled={index === 0}
+                              className="text-muted-foreground"
+                            >
+                              <ArrowUp className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveHomeStoryMetric(index, 1)}
+                              disabled={index === draft.homeStoryMetrics.length - 1}
+                              className="text-muted-foreground"
+                            >
+                              <ArrowDown className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeHomeStoryMetric(index)}
+                              className="text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="mt-4 grid gap-4 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                              Value
+                            </label>
+                            <Input
+                              value={metric.value}
+                              onChange={(event) => updateHomeStoryMetric(index, "value", event.target.value)}
+                              placeholder="84"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                              Label
+                            </label>
+                            <Input
+                              value={metric.label}
+                              onChange={(event) => updateHomeStoryMetric(index, "label", event.target.value)}
+                              placeholder="Projects Delivered"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="rounded-[1.15rem] border border-dashed border-border bg-background/40 p-5 font-body text-sm text-muted-foreground">
+                      No metrics yet. Add one to populate the right-side cards.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
+                <p className="font-display text-2xl text-foreground">Home Services Intro</p>
+                <p className="mt-1 font-body text-sm text-muted-foreground">
+                  Edit the heading and supporting copy for the What We Handle section.
+                </p>
+
+                <div className="mt-6 grid gap-4">
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Eyebrow
+                    </label>
+                    <Input
+                      value={draft.homeServicesEyebrow}
+                      onChange={(event) => updateDraft("homeServicesEyebrow", event.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Title
+                    </label>
+                    <Textarea
+                      rows={3}
+                      value={draft.homeServicesTitle}
+                      onChange={(event) => updateDraft("homeServicesTitle", event.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Body Copy
+                    </label>
+                    <Textarea
+                      rows={5}
+                      value={draft.homeServicesBody}
+                      onChange={(event) => updateDraft("homeServicesBody", event.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-display text-2xl text-foreground">Service Highlights</p>
+                    <p className="mt-1 font-body text-sm text-muted-foreground">
+                      Edit the two compact support cards shown beside the services intro.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addHomeServiceHighlight}
+                    className="w-full sm:w-auto"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Highlight
+                  </Button>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  {draft.homeServicesHighlights.length ? (
+                    draft.homeServicesHighlights.map((highlight, index) => (
+                      <div
+                        key={highlight.id}
+                        className="rounded-[1.15rem] border border-border/70 bg-background/70 p-4"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                            Highlight {index + 1}
+                          </p>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveHomeServiceHighlight(index, -1)}
+                              disabled={index === 0}
+                              className="text-muted-foreground"
+                            >
+                              <ArrowUp className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveHomeServiceHighlight(index, 1)}
+                              disabled={index === draft.homeServicesHighlights.length - 1}
+                              className="text-muted-foreground"
+                            >
+                              <ArrowDown className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeHomeServiceHighlight(index)}
+                              className="text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="mt-4 grid gap-4">
+                          <div className="space-y-2">
+                            <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                              Label
+                            </label>
+                            <Input
+                              value={highlight.label}
+                              onChange={(event) => updateHomeServiceHighlight(index, "label", event.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                              Copy
+                            </label>
+                            <Textarea
+                              rows={4}
+                              value={highlight.text}
+                              onChange={(event) => updateHomeServiceHighlight(index, "text", event.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="rounded-[1.15rem] border border-dashed border-border bg-background/40 p-5 font-body text-sm text-muted-foreground">
+                      No highlights yet. Add one to populate the support cards.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-display text-2xl text-foreground">Home Services</p>
+                    <p className="mt-1 font-body text-sm text-muted-foreground">
+                      Edit, reorder, and expand the service cards shown in the What We Handle section.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addHomeService}
+                    className="w-full sm:w-auto"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Service
+                  </Button>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  {draft.homeServices.length ? (
+                    draft.homeServices.map((service, index) => (
+                      <div
+                        key={service.id}
+                        className="rounded-[1.15rem] border border-border/70 bg-background/70 p-4"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                            Service {index + 1}
+                          </p>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveHomeService(index, -1)}
+                              disabled={index === 0}
+                              className="text-muted-foreground"
+                            >
+                              <ArrowUp className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveHomeService(index, 1)}
+                              disabled={index === draft.homeServices.length - 1}
+                              className="text-muted-foreground"
+                            >
+                              <ArrowDown className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeHomeService(index)}
+                              className="text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 grid gap-4">
+                          <div className="space-y-2">
+                            <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                              Icon
+                            </label>
+                            <Select
+                              value={service.icon}
+                              onValueChange={(value) => updateHomeService(index, "icon", value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Choose an icon" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {homeServiceIconOptions.map((option) => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                              Title
+                            </label>
+                            <Input
+                              value={service.title}
+                              onChange={(event) => updateHomeService(index, "title", event.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                              Description
+                            </label>
+                            <Textarea
+                              rows={4}
+                              value={service.description}
+                              onChange={(event) => updateHomeService(index, "description", event.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                              Scope Note
+                            </label>
+                            <Textarea
+                              rows={3}
+                              value={service.note}
+                              onChange={(event) => updateHomeService(index, "note", event.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                                Deliverables
+                              </label>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => addHomeServiceDeliverable(index)}
+                              >
+                                <Plus className="h-4 w-4" />
+                                Add
+                              </Button>
+                            </div>
+                            <div className="space-y-3">
+                              {service.deliverables.length ? (
+                                service.deliverables.map((deliverable, deliverableIndex) => (
+                                  <div key={`${service.id}-${deliverableIndex}`} className="flex gap-2">
+                                    <Input
+                                      value={deliverable}
+                                      onChange={(event) =>
+                                        updateHomeServiceDeliverable(index, deliverableIndex, event.target.value)
+                                      }
+                                      placeholder="Deliverable"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => removeHomeServiceDeliverable(index, deliverableIndex)}
+                                      className="shrink-0 text-muted-foreground hover:text-destructive"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="rounded-[1rem] border border-dashed border-border bg-background/30 p-3 font-body text-sm text-muted-foreground">
+                                  No deliverables yet. Add one to populate the service tags.
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="rounded-[1.15rem] border border-dashed border-border bg-background/40 p-5 font-body text-sm text-muted-foreground">
+                      No services yet. Add one to populate the What We Handle cards.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

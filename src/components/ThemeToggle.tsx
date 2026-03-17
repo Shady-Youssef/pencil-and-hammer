@@ -20,7 +20,7 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
       aria-label={mounted ? `Switch to ${isDark ? "light" : "dark"} mode` : "Toggle theme"}
       aria-pressed={mounted ? isDark : undefined}
       className={cn(
-        "relative inline-flex h-8 w-[4.5rem] items-center overflow-hidden rounded-full border border-border/80 bg-secondary/75 p-1 text-foreground shadow-[0_12px_35px_rgba(8,8,8,0.18)] backdrop-blur-xl transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "relative inline-flex h-8 w-[4.5rem] items-center overflow-hidden rounded-full border border-border/80 bg-background/82 p-1 text-foreground shadow-[0_12px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-black/42 dark:text-cream dark:shadow-[0_16px_36px_rgba(0,0,0,0.35)]",
         className,
       )}
     >
@@ -31,9 +31,9 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
             "transition-all duration-300",
             mounted
               ? isDark
-                ? "opacity-30 text-foreground"
-                : "opacity-90 text-gold"
-              : "opacity-50 text-foreground",
+                ? "opacity-30 text-current"
+                : "opacity-95 text-current"
+              : "opacity-50 text-current",
           )}
         />
         <Moon
@@ -42,9 +42,9 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
             "transition-all duration-300",
             mounted
               ? isDark
-                ? "opacity-85 text-gold-light"
-                : "opacity-30 text-foreground"
-              : "opacity-50 text-foreground",
+                ? "opacity-95 text-current"
+                : "opacity-30 text-current"
+              : "opacity-50 text-current",
           )}
         />
       </span>
@@ -53,7 +53,7 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
         initial={false}
         animate={{ x: mounted && isDark ? 40 : 0 }}
         transition={{ type: "spring", stiffness: 450, damping: 32 }}
-        className="relative z-10 block h-6 w-6 rounded-full bg-gradient-gold shadow-[0_8px_24px_rgba(255,255,255,0.2)]"
+        className="relative z-10 block h-6 w-6 rounded-full bg-current shadow-[0_10px_24px_rgba(0,0,0,0.14)] dark:shadow-[0_10px_24px_rgba(255,255,255,0.08)]"
       />
     </button>
   );

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type SyntheticEvent } from "react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
+
+type BrandLockupMode = "auto" | "mark" | "lockup";
 
 type BrandLockupProps = {
   name: string;
@@ -11,6 +13,9 @@ type BrandLockupProps = {
   className?: string;
   textClassName?: string;
   logoClassName?: string;
+  markClassName?: string;
+  fallbackTextClassName?: string;
+  mode?: BrandLockupMode;
   priority?: boolean;
 };
 
@@ -24,22 +29,109 @@ function getInitials(name: string) {
   return `${parts[0]?.[0] ?? "P"}${parts[parts.length - 1]?.[0] ?? "H"}`.toUpperCase();
 }
 
+function inferLockupMode(url: string) {
+  const asset = url.trim().toLowerCase();
+
+  if (!asset) {
+    return "mark" as const;
+  }
+
+  if (asset.includes("mark") || asset.includes("icon") || asset.endsWith(".ico")) {
+    return "mark" as const;
+  }
+
+  if (asset.includes("logo") || asset.includes("wordmark") || asset.includes("lockup")) {
+    return "lockup" as const;
+  }
+
+  return "mark" as const;
+}
+
 export default function BrandLockup({
   name,
   logoUrl,
   className,
   textClassName,
   logoClassName,
+  markClassName,
+  fallbackTextClassName,
+  mode = "auto",
   priority = false,
 }: BrandLockupProps) {
   const initials = getInitials(name);
   const [imageFailed, setImageFailed] = useState(!logoUrl);
+  const [resolvedMode, setResolvedMode] = useState<Exclude<BrandLockupMode, "auto">>(
+    mode === "auto" ? inferLockupMode(logoUrl) : mode,
+  );
+
+  const presentationMode = mode === "auto" ? resolvedMode : mode;
+
+  useEffect(() => {
+    setImageFailed(!logoUrl);
+
+    if (mode === "auto") {
+      setResolvedMode(inferLockupMode(logoUrl));
+    }
+  }, [logoUrl, mode]);
+
+  const handleImageLoad = ({
+    currentTarget,
+  }: SyntheticEvent<HTMLImageElement>) => {
+    if (mode !== "auto") {
+      return;
+    }
+
+    const naturalWidth = currentTarget.naturalWidth;
+    const naturalHeight = currentTarget.naturalHeight;
+
+    if (!naturalWidth || !naturalHeight) {
+      return;
+    }
+
+    const aspectRatio = naturalWidth / naturalHeight;
+    setResolvedMode(aspectRatio > 1.12 ? "lockup" : "mark");
+  };
+
+  if (presentationMode === "lockup" && !imageFailed) {
+    return (
+      <span className={cn("inline-flex min-w-0 items-center", className)}>
+        <span
+          className={cn(
+            "flex h-10 max-w-[11rem] items-center rounded-2xl sm:h-12 sm:max-w-[13rem]",
+            markClassName,
+          )}
+        >
+          <Image
+            src={logoUrl}
+            alt={`${name} logo`}
+            width={320}
+            height={120}
+            sizes="(max-width: 640px) 176px, 208px"
+            priority={priority}
+            onError={() => setImageFailed(true)}
+            onLoad={handleImageLoad}
+            className={cn("h-full w-auto max-w-full object-contain object-left", logoClassName)}
+          />
+        </span>
+      </span>
+    );
+  }
 
   return (
-    <span className={cn("inline-flex items-center gap-3", className)}>
-      <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-background/70">
+    <span className={cn("inline-flex min-w-0 items-center gap-3", className)}>
+      <span
+        className={cn(
+          "relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-background/70 sm:h-10 sm:w-10",
+          markClassName,
+        )}
+      >
         {imageFailed ? (
-          <span className="font-body text-xs font-semibold uppercase tracking-[0.22em] text-foreground/80">
+          <span
+            className={cn(
+              "font-body text-xs font-semibold uppercase tracking-[0.22em] text-foreground/80",
+              fallbackTextClassName,
+            )}
+          >
             {initials}
           </span>
         ) : (
@@ -50,11 +142,17 @@ export default function BrandLockup({
             sizes="40px"
             priority={priority}
             onError={() => setImageFailed(true)}
+            onLoad={handleImageLoad}
             className={cn("object-cover", logoClassName)}
           />
         )}
       </span>
-      <span className={cn("font-display text-2xl font-medium tracking-[0.02em]", textClassName)}>
+      <span
+        className={cn(
+          "block min-w-0 truncate font-display text-xl font-medium leading-none tracking-[0.02em] sm:text-2xl",
+          textClassName,
+        )}
+      >
         {name}
       </span>
     </span>

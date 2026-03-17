@@ -7,7 +7,11 @@ import {
   type ReactNode,
 } from "react";
 
-import type { SiteSettings } from "@/lib/site";
+import {
+  getEffectiveFaviconUrl,
+  getThemeCssVariables,
+  type SiteSettings,
+} from "@/lib/site";
 
 import { SiteSettingsContext } from "@/components/site/site-settings-context";
 
@@ -31,16 +35,26 @@ export default function SiteSettingsProvider({
   children: ReactNode;
 }) {
   const [settings, setSettings] = useState(initialSettings);
+  const faviconUrl = getEffectiveFaviconUrl(settings);
 
   useEffect(() => {
-    if (!settings.faviconUrl) {
+    if (!faviconUrl) {
       return;
     }
 
-    upsertLink("icon", settings.faviconUrl);
-    upsertLink("shortcut icon", settings.faviconUrl);
-    upsertLink("apple-touch-icon", settings.faviconUrl);
-  }, [settings.faviconUrl]);
+    upsertLink("icon", faviconUrl);
+    upsertLink("shortcut icon", faviconUrl);
+    upsertLink("apple-touch-icon", faviconUrl);
+  }, [faviconUrl]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const cssVariables = getThemeCssVariables(settings);
+
+    Object.entries(cssVariables).forEach(([key, value]) => {
+      root.style.setProperty(key, value);
+    });
+  }, [settings]);
 
   const value = useMemo(
     () => ({

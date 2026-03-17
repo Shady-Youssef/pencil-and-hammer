@@ -82,15 +82,15 @@ export default function ScrollToTopButton() {
           whileTap={{ scale: 0.97 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           onClick={handleScrollToTop}
-          className="fixed bottom-5 right-5 z-[70] flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-white/12 bg-black/45 text-gold-light shadow-[0_24px_60px_-28px_rgba(0,0,0,0.85)] backdrop-blur-xl transition-colors hover:border-white/30 hover:bg-black/60 sm:bottom-7 sm:right-7 sm:h-14 sm:w-14"
+          className="fixed bottom-5 right-5 z-[70] flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-border/80 bg-background/82 text-foreground shadow-[0_24px_60px_-28px_rgba(0,0,0,0.24)] backdrop-blur-xl transition-colors hover:border-foreground/22 hover:bg-background sm:bottom-7 sm:right-7 sm:h-14 sm:w-14 dark:border-white/12 dark:bg-black/55 dark:text-cream dark:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.85)] dark:hover:border-white/28 dark:hover:bg-black/65"
         >
           <motion.span
             className="pointer-events-none absolute inset-0 rounded-full"
             style={{
-              background: `conic-gradient(rgba(255,255,255,0.9) ${scrollPercent}%, rgba(255,255,255,0.08) ${scrollPercent}% 100%)`,
+              background: `conic-gradient(hsl(var(--foreground) / 0.92) ${scrollPercent}%, hsl(var(--foreground) / 0.1) ${scrollPercent}% 100%)`,
             }}
           />
-          <span className="absolute inset-[1px] rounded-full bg-[rgba(8,8,8,0.9)]" />
+          <span className="absolute inset-[1px] rounded-full bg-background dark:bg-[rgba(8,8,8,0.92)]" />
           <AnimatePresence mode="wait" initial={false}>
             {isComplete ? (
               <motion.span
@@ -99,7 +99,7 @@ export default function ScrollToTopButton() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.75, y: -8 }}
                 transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="relative z-10 flex items-center justify-center text-gold-light"
+                className="relative z-10 flex items-center justify-center text-foreground dark:text-cream"
               >
                 <ArrowUp size={18} strokeWidth={2} />
               </motion.span>
@@ -110,7 +110,7 @@ export default function ScrollToTopButton() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.82, y: -8 }}
                 transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="relative z-10 font-body text-[10px] font-medium uppercase tracking-[0.06em] text-gold-light sm:text-[11px]"
+                className="relative z-10 font-body text-[10px] font-medium uppercase tracking-[0.06em] text-foreground dark:text-cream sm:text-[11px]"
               >
                 {scrollPercent}%
               </motion.span>

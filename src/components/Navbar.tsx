@@ -7,10 +7,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 import BrandLockup from "@/components/BrandLockup";
-import { useSiteSettings } from "@/components/site/site-settings-context";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useSiteSettings } from "@/components/site/site-settings-context";
+import { getEffectiveFaviconUrl } from "@/lib/site";
 
-const heroOverlayRoutes = new Set(["/", "/about"]);
+const heroOverlayRoutes = new Set(["/"]);
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -40,6 +41,7 @@ function getActivePath(pathname: string) {
 
 export default function Navbar() {
   const { settings } = useSiteSettings();
+  const brandMarkUrl = getEffectiveFaviconUrl(settings);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [indicator, setIndicator] = useState<IndicatorState>({ left: 0, width: 0 });
@@ -91,9 +93,15 @@ export default function Navbar() {
   }, [activePath]);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const updateScrolled = () => {
+      const nextScrolled = window.scrollY > 24;
+      setScrolled((current) => (current === nextScrolled ? current : nextScrolled));
+    };
+
+    updateScrolled();
+    window.addEventListener("scroll", updateScrolled, { passive: true });
+
+    return () => window.removeEventListener("scroll", updateScrolled);
   }, []);
 
   useEffect(() => {
@@ -102,16 +110,16 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+      className={`fixed left-0 right-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-500 ${
         scrolled || isOpen || !hasHeroOverlay
-          ? "border-b border-border/50 bg-background/84 backdrop-blur-2xl shadow-sm"
+          ? "border-b border-border/70 bg-background/90 shadow-[0_18px_44px_-28px_rgba(0,0,0,0.16)] backdrop-blur-2xl dark:bg-background/84 dark:shadow-[0_20px_48px_-28px_rgba(0,0,0,0.45)]"
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-12">
+      <div className="mx-auto flex h-[4.75rem] max-w-7xl items-center justify-between gap-4 px-4 sm:h-20 sm:px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:px-12">
         <Link
           href="/"
-          className={`transition-colors duration-500 ${
+          className={`min-w-0 flex-1 transition-colors duration-500 lg:justify-self-start ${
             useOverlayPalette
               ? "text-cream drop-shadow-[0_4px_18px_rgba(0,0,0,0.35)]"
               : "text-foreground"
@@ -119,17 +127,30 @@ export default function Navbar() {
         >
           <BrandLockup
             name={settings.siteName}
-            logoUrl={settings.logoUrl}
+            logoUrl={brandMarkUrl}
+            mode="mark"
             priority
-            className="gap-3"
-            textClassName={`${useOverlayPalette ? "text-cream" : "text-foreground"} text-xl sm:text-[1.75rem]`}
-            logoClassName="object-contain p-1.5"
+            className="max-w-full gap-3 sm:gap-3.5 lg:gap-4"
+            textClassName={`${useOverlayPalette ? "text-cream" : "text-foreground"} max-w-[10.5rem] text-[0.95rem] sm:max-w-[13rem] sm:text-[1.15rem] lg:max-w-none lg:text-[1.45rem] xl:text-[1.6rem]`}
+            logoClassName="object-contain object-center rounded-[0.85rem] p-0.5"
+            markClassName={`h-11 w-11 rounded-[0.95rem] border sm:h-12 sm:w-12 lg:h-[3.5rem] lg:w-[3.5rem] ${
+              useOverlayPalette
+                ? "h-12 w-12 border-transparent bg-black/18 shadow-[0_12px_26px_rgba(0,0,0,0.22)] sm:h-[3.1rem] sm:w-[3.1rem] lg:h-[3.9rem] lg:w-[3.9rem]"
+                : "h-12 w-12 border-transparent bg-card/72 shadow-[0_10px_22px_rgba(0,0,0,0.1)] dark:bg-black/18 dark:shadow-[0_14px_28px_rgba(0,0,0,0.22)] sm:h-[3.1rem] sm:w-[3.1rem] lg:h-[3.9rem] lg:w-[3.9rem]"
+            }`}
+            fallbackTextClassName={useOverlayPalette ? "text-cream/84" : undefined}
           />
         </Link>
 
-        {/* Desktop */}
-        <div className="hidden md:flex items-center gap-8">
-          <div ref={desktopNavRef} className="relative flex items-center gap-8 pb-3">
+        <div className="hidden items-center justify-center lg:flex lg:justify-self-center">
+          <div
+            ref={desktopNavRef}
+            className={`relative flex items-center gap-8 rounded-full border px-7 py-4 backdrop-blur-xl transition-colors ${
+              useOverlayPalette
+                ? "border-white/26 bg-black/42 text-white shadow-[0_24px_60px_-36px_rgba(0,0,0,0.62)]"
+                : "border-border/80 bg-card/82 shadow-[0_18px_45px_-30px_rgba(0,0,0,0.16)] dark:border-white/10 dark:bg-black/18 dark:shadow-[0_18px_45px_-30px_rgba(0,0,0,0.32)]"
+            }`}
+          >
             {navLinks.map((link) => (
               <div key={link.path} className="relative">
                 <Link
@@ -137,13 +158,13 @@ export default function Navbar() {
                   ref={(node) => {
                     linkRefs.current[link.path] = node;
                   }}
-                  className={`relative font-body text-[13px] font-medium tracking-[0.22em] uppercase transition-colors duration-300 ${
+                  className={`relative font-body text-[13px] font-medium tracking-[0.24em] uppercase transition-colors duration-300 ${
                     activePath === link.path
                       ? useOverlayPalette
-                        ? "text-gold-light"
-                        : "text-accent"
+                        ? "font-semibold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
+                        : "text-foreground"
                       : useOverlayPalette
-                        ? "text-cream/72 hover:text-cream"
+                        ? "text-white/92 drop-shadow-[0_2px_8px_rgba(0,0,0,0.28)] hover:text-white"
                         : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -151,10 +172,10 @@ export default function Navbar() {
                 </Link>
               </div>
             ))}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-4">
+            <div className="pointer-events-none absolute inset-x-0 bottom-2 h-3">
               <motion.span
-                className={`absolute bottom-[1px] h-[2px] rounded-full ${
-                  useOverlayPalette ? "bg-gold-light" : "bg-accent"
+                className={`absolute bottom-0 h-[2px] rounded-full ${
+                  useOverlayPalette ? "bg-white" : "bg-foreground"
                 }`}
                 animate={{
                   x: indicator.left,
@@ -170,47 +191,56 @@ export default function Navbar() {
               />
             </div>
           </div>
-          <ThemeToggle
-            className={
-              useOverlayPalette
-                ? "border-white/10 bg-charcoal/45 text-cream shadow-[0_16px_40px_rgba(0,0,0,0.28)]"
-                : undefined
-            }
-          />
         </div>
 
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex shrink-0 items-center gap-2.5 lg:justify-self-end">
           <ThemeToggle
             className={
               useOverlayPalette
-                ? "border-white/10 bg-charcoal/45 text-cream shadow-[0_16px_40px_rgba(0,0,0,0.28)]"
-                : undefined
+                ? "border-white/14 bg-black/20 text-cream shadow-[0_16px_40px_rgba(0,0,0,0.28)]"
+                : "border-border/80 bg-card/80 text-foreground shadow-[0_12px_30px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-black/24 dark:text-cream dark:shadow-[0_16px_40px_rgba(0,0,0,0.28)]"
             }
           />
-          <button
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className={`p-2 transition-colors duration-500 ${
-              useOverlayPalette ? "text-cream" : "text-foreground"
-            }`}
-            aria-label="Toggle menu"
-          >
-            <AnimatePresence mode="wait">
-              {isOpen ? (
-                <motion.div key="close" initial={{ rotate: -90 }} animate={{ rotate: 0 }} exit={{ rotate: 90 }} transition={{ duration: 0.2 }}>
-                  <X size={24} />
-                </motion.div>
-              ) : (
-                <motion.div key="menu" initial={{ rotate: 90 }} animate={{ rotate: 0 }} exit={{ rotate: -90 }} transition={{ duration: 0.2 }}>
-                  <Menu size={24} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </button>
+
+          <div className="lg:hidden">
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className={`rounded-full border px-3 py-2 transition-colors duration-500 ${
+                useOverlayPalette
+                  ? "border-white/14 bg-black/20 text-cream"
+                  : "border-border/80 bg-card/80 text-foreground shadow-[0_12px_30px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-black/24 dark:text-cream dark:shadow-[0_16px_40px_rgba(0,0,0,0.28)]"
+              }`}
+              aria-label="Toggle menu"
+            >
+              <AnimatePresence mode="wait">
+                {isOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ rotate: -90 }}
+                    animate={{ rotate: 0 }}
+                    exit={{ rotate: 90 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X size={18} />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: 90 }}
+                    animate={{ rotate: 0 }}
+                    exit={{ rotate: -90 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu size={18} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -218,7 +248,7 @@ export default function Navbar() {
             animate={{ opacity: 1, height: "auto", filter: "blur(0px)" }}
             exit={{ opacity: 0, height: 0, filter: "blur(10px)" }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="md:hidden bg-background/95 backdrop-blur-2xl border-b border-border overflow-hidden"
+            className="overflow-hidden border-b border-border/70 bg-background/96 backdrop-blur-2xl dark:bg-background/94 lg:hidden"
           >
             <div className="flex flex-col gap-1 px-6 py-6">
               {navLinks.map((link, i) => (
@@ -231,9 +261,7 @@ export default function Navbar() {
                   <Link
                     href={link.path}
                     className={`block py-3 font-body text-sm tracking-widest uppercase transition-colors ${
-                      activePath === link.path
-                        ? "text-accent"
-                        : "text-muted-foreground"
+                      activePath === link.path ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
                     {link.name}

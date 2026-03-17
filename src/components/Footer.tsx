@@ -6,7 +6,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import BrandLockup from "@/components/BrandLockup";
 import { useSiteSettings } from "@/components/site/site-settings-context";
 import { motion } from "framer-motion";
-import { getAddressLines } from "@/lib/site";
+import { getAddressLines, getEffectiveFaviconUrl } from "@/lib/site";
 
 const footerLinks = [
   { label: "Home", href: "/" },
@@ -17,6 +17,7 @@ const footerLinks = [
 
 export default function Footer() {
   const { settings } = useSiteSettings();
+  const brandMarkUrl = getEffectiveFaviconUrl(settings);
   const socialLinks = [
     { href: settings.instagramUrl, label: "Instagram", icon: Instagram },
     { href: settings.facebookUrl, label: "Facebook", icon: Facebook },
@@ -25,10 +26,10 @@ export default function Footer() {
   const addressLines = getAddressLines(settings);
 
   return (
-    <footer className="relative overflow-hidden bg-charcoal text-primary-foreground">
+    <footer className="relative overflow-hidden bg-background text-foreground dark:bg-charcoal dark:text-primary-foreground">
       <div
         className="absolute left-1/2 top-0 h-px w-[800px] -translate-x-1/2"
-        style={{ background: "linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.2), transparent)" }}
+        style={{ background: "linear-gradient(90deg, transparent, hsl(var(--gold) / 0.28), transparent)" }}
       />
 
       <div className="section-padding mx-auto max-w-7xl">
@@ -36,23 +37,25 @@ export default function Footer() {
           <AnimatedSection direction="left">
             <BrandLockup
               name={settings.siteName}
-              logoUrl={settings.logoUrl}
-              className="gap-3"
-              textClassName="text-2xl text-cream sm:text-[2rem]"
-              logoClassName="object-contain p-1.5"
+              logoUrl={brandMarkUrl}
+              mode="mark"
+              className="gap-3.5 sm:gap-4"
+              textClassName="text-[1.6rem] text-foreground sm:text-[1.9rem] dark:text-cream"
+              logoClassName="object-contain object-center p-1"
+              markClassName="h-12 w-12 rounded-[0.95rem] border border-border/70 bg-card/88 shadow-[0_12px_24px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-black/24 dark:shadow-[0_14px_28px_rgba(0,0,0,0.26)] sm:h-[3.5rem] sm:w-[3.5rem]"
             />
-            <p className="mt-6 max-w-md font-body text-sm leading-8 text-warm-gray">
+            <p className="mt-6 max-w-md font-body text-sm leading-8 text-muted-foreground dark:text-warm-gray">
               Pencil And Hammer develops residential, hospitality, and workplace interiors with a process built around clarity, coordination, and a more refined final result.
             </p>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
-            <h4 className="mb-6 font-body text-[11px] uppercase tracking-[0.24em] text-cream/58">Navigation</h4>
+            <h4 className="mb-6 font-body text-[11px] uppercase tracking-[0.24em] text-muted-foreground dark:text-cream/58">Navigation</h4>
             <div className="flex flex-col gap-3">
               {footerLinks.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="group flex items-center gap-1 font-body text-sm text-warm-gray transition-colors hover:text-cream"
+                  className="group flex items-center gap-1 font-body text-sm text-muted-foreground transition-colors hover:text-foreground dark:text-warm-gray dark:hover:text-cream"
                 >
                   {item.label}
                   <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -61,8 +64,8 @@ export default function Footer() {
             </div>
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
-            <h4 className="mb-6 font-body text-[11px] uppercase tracking-[0.24em] text-cream/58">Contact</h4>
-            <div className="flex flex-col gap-3 font-body text-sm text-warm-gray">
+            <h4 className="mb-6 font-body text-[11px] uppercase tracking-[0.24em] text-muted-foreground dark:text-cream/58">Contact</h4>
+            <div className="flex flex-col gap-3 font-body text-sm text-muted-foreground dark:text-warm-gray">
               <p>{settings.contactEmail}</p>
               <p>{settings.contactPhone}</p>
               <div>
@@ -75,8 +78,8 @@ export default function Footer() {
             </div>
           </AnimatedSection>
         </div>
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-charcoal-light pt-8 md:flex-row">
-          <p className="font-body text-xs text-warm-gray">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-border/70 pt-8 dark:border-charcoal-light md:flex-row">
+          <p className="font-body text-xs text-muted-foreground dark:text-warm-gray">
             © {new Date().getFullYear()} {settings.siteName}. All rights reserved.
           </p>
           <div className="flex gap-4">
@@ -89,7 +92,7 @@ export default function Footer() {
                 aria-label={label}
                 whileHover={{ y: -3, scale: 1.1 }}
                 transition={{ duration: 0.2 }}
-                className="text-warm-gray transition-colors hover:text-cream"
+                className="text-muted-foreground transition-colors hover:text-foreground dark:text-warm-gray dark:hover:text-cream"
               >
                 <Icon size={18} />
               </motion.a>

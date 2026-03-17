@@ -3,8 +3,10 @@ import { env } from "@/lib/env";
 export const siteSettingsRecordId = 1;
 export const siteAssetsBucket = "site-assets";
 export const aboutStatIcons = ["award", "users", "clock", "globe", "sparkles", "home"] as const;
+export const homeServiceIcons = ["paintbrush", "ruler", "lightbulb", "sofa"] as const;
 
 export type AboutStatIcon = (typeof aboutStatIcons)[number];
+export type HomeServiceIcon = (typeof homeServiceIcons)[number];
 
 export type AboutStoryParagraph = {
   id: string;
@@ -16,6 +18,27 @@ export type AboutStat = {
   icon: AboutStatIcon;
   title: string;
   description: string;
+};
+
+export type HomeStoryMetric = {
+  id: string;
+  value: string;
+  label: string;
+};
+
+export type HomeServiceHighlight = {
+  id: string;
+  label: string;
+  text: string;
+};
+
+export type HomeService = {
+  id: string;
+  icon: HomeServiceIcon;
+  title: string;
+  description: string;
+  note: string;
+  deliverables: string[];
 };
 
 export type SiteSettings = {
@@ -45,10 +68,38 @@ export type SiteSettings = {
   logoStoragePath: string | null;
   faviconUrl: string;
   faviconStoragePath: string | null;
+  lightBackgroundHex: string;
+  lightForegroundHex: string;
+  lightSurfaceHex: string;
+  lightMutedHex: string;
+  lightBorderHex: string;
+  lightAccentHex: string;
+  darkBackgroundHex: string;
+  darkForegroundHex: string;
+  darkSurfaceHex: string;
+  darkMutedHex: string;
+  darkBorderHex: string;
+  darkAccentHex: string;
   aboutHeroTitle: string;
   aboutHeroSubtitle: string;
   aboutHeroImageUrl: string;
   aboutHeroImageStoragePath: string | null;
+  homeStoryEyebrow: string;
+  homeStoryTitle: string;
+  homeStoryParagraphs: AboutStoryParagraph[];
+  homeStoryImageUrl: string;
+  homeStoryImageStoragePath: string | null;
+  homeStoryImageAlt: string;
+  homeStoryMetrics: HomeStoryMetric[];
+  homeStoryPrimaryCtaLabel: string;
+  homeStoryPrimaryCtaHref: string;
+  homeStorySecondaryCtaLabel: string;
+  homeStorySecondaryCtaHref: string;
+  homeServicesEyebrow: string;
+  homeServicesTitle: string;
+  homeServicesBody: string;
+  homeServicesHighlights: HomeServiceHighlight[];
+  homeServices: HomeService[];
   aboutStoryTitle: string;
   aboutStoryParagraphs: AboutStoryParagraph[];
   aboutPortraitUrl: string;
@@ -87,10 +138,38 @@ export type SiteSettingsRow = {
   logo_storage_path: string | null;
   favicon_url: string | null;
   favicon_storage_path: string | null;
+  light_background_hex: string | null;
+  light_foreground_hex: string | null;
+  light_surface_hex: string | null;
+  light_muted_hex: string | null;
+  light_border_hex: string | null;
+  light_accent_hex: string | null;
+  dark_background_hex: string | null;
+  dark_foreground_hex: string | null;
+  dark_surface_hex: string | null;
+  dark_muted_hex: string | null;
+  dark_border_hex: string | null;
+  dark_accent_hex: string | null;
   about_hero_title: string | null;
   about_hero_subtitle: string | null;
   about_hero_image_url: string | null;
   about_hero_image_storage_path: string | null;
+  home_story_eyebrow: string | null;
+  home_story_title: string | null;
+  home_story_paragraphs: unknown;
+  home_story_image_url: string | null;
+  home_story_image_storage_path: string | null;
+  home_story_image_alt: string | null;
+  home_story_metrics: unknown;
+  home_story_primary_cta_label: string | null;
+  home_story_primary_cta_href: string | null;
+  home_story_secondary_cta_label: string | null;
+  home_story_secondary_cta_href: string | null;
+  home_services_eyebrow: string | null;
+  home_services_title: string | null;
+  home_services_body: string | null;
+  home_services_highlights: unknown;
+  home_services: unknown;
   about_story_title: string | null;
   about_story_paragraphs: unknown;
   about_story_body_primary: string | null;
@@ -131,10 +210,38 @@ export const siteSettingsSelect = `
   logo_storage_path,
   favicon_url,
   favicon_storage_path,
+  light_background_hex,
+  light_foreground_hex,
+  light_surface_hex,
+  light_muted_hex,
+  light_border_hex,
+  light_accent_hex,
+  dark_background_hex,
+  dark_foreground_hex,
+  dark_surface_hex,
+  dark_muted_hex,
+  dark_border_hex,
+  dark_accent_hex,
   about_hero_title,
   about_hero_subtitle,
   about_hero_image_url,
   about_hero_image_storage_path,
+  home_story_eyebrow,
+  home_story_title,
+  home_story_paragraphs,
+  home_story_image_url,
+  home_story_image_storage_path,
+  home_story_image_alt,
+  home_story_metrics,
+  home_story_primary_cta_label,
+  home_story_primary_cta_href,
+  home_story_secondary_cta_label,
+  home_story_secondary_cta_href,
+  home_services_eyebrow,
+  home_services_title,
+  home_services_body,
+  home_services_highlights,
+  home_services,
   about_story_title,
   about_story_paragraphs,
   about_story_body_primary,
@@ -210,8 +317,159 @@ function normalizeBrandAssetUrl(
   return candidate;
 }
 
+function normalizeHexColor(value: string | null | undefined, fallback: string) {
+  const candidate = value?.trim();
+
+  if (!candidate) {
+    return fallback;
+  }
+
+  const normalized = candidate.startsWith("#") ? candidate : `#${candidate}`;
+
+  if (!/^#[0-9a-fA-F]{6}$/.test(normalized)) {
+    return fallback;
+  }
+
+  return normalized.toLowerCase();
+}
+
+function hexToRgb(hex: string) {
+  const normalized = hex.replace("#", "");
+  const value = Number.parseInt(normalized, 16);
+
+  return {
+    r: (value >> 16) & 255,
+    g: (value >> 8) & 255,
+    b: value & 255,
+  };
+}
+
+function rgbToHex({ r, g, b }: { r: number; g: number; b: number }) {
+  return `#${[r, g, b]
+    .map((channel) => Math.max(0, Math.min(255, Math.round(channel))).toString(16).padStart(2, "0"))
+    .join("")}`;
+}
+
+function mixHexColors(fromHex: string, toHex: string, weight: number) {
+  const from = hexToRgb(fromHex);
+  const to = hexToRgb(toHex);
+
+  return rgbToHex({
+    r: from.r + (to.r - from.r) * weight,
+    g: from.g + (to.g - from.g) * weight,
+    b: from.b + (to.b - from.b) * weight,
+  });
+}
+
+function getContrastHex(backgroundHex: string) {
+  const { r, g, b } = hexToRgb(backgroundHex);
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+  return luminance > 0.56 ? "#0f0f0f" : "#f5f5f5";
+}
+
+export function hexToHslChannels(hex: string) {
+  const { r, g, b } = hexToRgb(hex);
+  const red = r / 255;
+  const green = g / 255;
+  const blue = b / 255;
+  const max = Math.max(red, green, blue);
+  const min = Math.min(red, green, blue);
+  const delta = max - min;
+  const lightness = (max + min) / 2;
+
+  let hue = 0;
+  let saturation = 0;
+
+  if (delta !== 0) {
+    saturation = delta / (1 - Math.abs(2 * lightness - 1));
+
+    switch (max) {
+      case red:
+        hue = ((green - blue) / delta) % 6;
+        break;
+      case green:
+        hue = (blue - red) / delta + 2;
+        break;
+      default:
+        hue = (red - green) / delta + 4;
+        break;
+    }
+  }
+
+  const normalizedHue = Math.round((hue * 60 + 360) % 360);
+  const normalizedSaturation = Math.round(saturation * 1000) / 10;
+  const normalizedLightness = Math.round(lightness * 1000) / 10;
+
+  return `${normalizedHue} ${normalizedSaturation}% ${normalizedLightness}%`;
+}
+
+export function getThemeCssVariables(
+  settings: Pick<
+    SiteSettings,
+    | "lightBackgroundHex"
+    | "lightForegroundHex"
+    | "lightSurfaceHex"
+    | "lightMutedHex"
+    | "lightBorderHex"
+    | "lightAccentHex"
+    | "darkBackgroundHex"
+    | "darkForegroundHex"
+    | "darkSurfaceHex"
+    | "darkMutedHex"
+    | "darkBorderHex"
+    | "darkAccentHex"
+  >,
+) {
+  const lightMutedForeground = mixHexColors(settings.lightForegroundHex, settings.lightBackgroundHex, 0.56);
+  const darkMutedForeground = mixHexColors(settings.darkForegroundHex, settings.darkBackgroundHex, 0.58);
+  const lightAccentForeground = getContrastHex(settings.lightAccentHex);
+  const darkAccentForeground = getContrastHex(settings.darkAccentHex);
+
+  return {
+    "--theme-light-background": hexToHslChannels(settings.lightBackgroundHex),
+    "--theme-light-foreground": hexToHslChannels(settings.lightForegroundHex),
+    "--theme-light-surface": hexToHslChannels(settings.lightSurfaceHex),
+    "--theme-light-muted": hexToHslChannels(settings.lightMutedHex),
+    "--theme-light-border": hexToHslChannels(settings.lightBorderHex),
+    "--theme-light-accent": hexToHslChannels(settings.lightAccentHex),
+    "--theme-light-muted-foreground": hexToHslChannels(lightMutedForeground),
+    "--theme-light-accent-foreground": hexToHslChannels(lightAccentForeground),
+    "--theme-dark-background": hexToHslChannels(settings.darkBackgroundHex),
+    "--theme-dark-foreground": hexToHslChannels(settings.darkForegroundHex),
+    "--theme-dark-surface": hexToHslChannels(settings.darkSurfaceHex),
+    "--theme-dark-muted": hexToHslChannels(settings.darkMutedHex),
+    "--theme-dark-border": hexToHslChannels(settings.darkBorderHex),
+    "--theme-dark-accent": hexToHslChannels(settings.darkAccentHex),
+    "--theme-dark-muted-foreground": hexToHslChannels(darkMutedForeground),
+    "--theme-dark-accent-foreground": hexToHslChannels(darkAccentForeground),
+  } satisfies Record<string, string>;
+}
+
+export function getEffectiveFaviconUrl({
+  faviconUrl,
+  faviconStoragePath,
+  logoUrl,
+  logoStoragePath,
+}: Pick<SiteSettings, "faviconUrl" | "faviconStoragePath" | "logoUrl" | "logoStoragePath">) {
+  const normalizedFaviconUrl = faviconUrl?.trim() || defaultSiteSettings.faviconUrl;
+  const usesSameUploadedAsset =
+    (faviconStoragePath && logoStoragePath && faviconStoragePath === logoStoragePath) ||
+    normalizedFaviconUrl === logoUrl;
+
+  if (usesSameUploadedAsset) {
+    return defaultSiteSettings.faviconUrl;
+  }
+
+  return normalizedFaviconUrl;
+}
+
 function isAboutStatIcon(value: string): value is AboutStatIcon {
   return aboutStatIcons.includes(value as AboutStatIcon);
+}
+
+function isHomeServiceIcon(value: string): value is HomeServiceIcon {
+  return homeServiceIcons.includes(value as HomeServiceIcon);
 }
 
 export const defaultAboutStats: AboutStat[] = [
@@ -254,27 +512,114 @@ export const defaultAboutStoryParagraphs: AboutStoryParagraph[] = [
   },
 ];
 
+export const defaultHomeStoryParagraphs: AboutStoryParagraph[] = [
+  {
+    id: "home-story-1",
+    body:
+      "Pencil And Hammer was built for clients who want one team thinking clearly from concept through delivery. We connect atmosphere, planning, technical coordination, and procurement into one disciplined process.",
+  },
+  {
+    id: "home-story-2",
+    body:
+      "That structure creates interiors that feel calm and resolved because the design ambition and the practical site decisions are developed together, not patched in later.",
+  },
+];
+
+export const defaultHomeStoryMetrics: HomeStoryMetric[] = [
+  {
+    id: "home-story-metric-1",
+    value: "84",
+    label: "Projects Delivered",
+  },
+  {
+    id: "home-story-metric-2",
+    value: "11",
+    label: "Design + Site Specialists",
+  },
+  {
+    id: "home-story-metric-3",
+    value: "96%",
+    label: "Repeat And Referral Work",
+  },
+];
+
+export const defaultHomeServiceHighlights: HomeServiceHighlight[] = [
+  {
+    id: "home-services-highlight-1",
+    label: "Working Model",
+    text: "Design decisions are handled in sequence, so planning, mood, detailing, and procurement reinforce one another.",
+  },
+  {
+    id: "home-services-highlight-2",
+    label: "Project Result",
+    text: "The final interior feels more resolved because the practical logic is addressed early rather than patched in later.",
+  },
+];
+
+export const defaultHomeServices: HomeService[] = [
+  {
+    id: "home-service-1",
+    icon: "paintbrush",
+    title: "Interior Design",
+    description:
+      "Concept direction, material thinking, and spatial language shaped for real project conditions.",
+    note: "From concept boards to coordinated design intent.",
+    deliverables: ["Concept narrative", "Material direction", "Visual language"],
+  },
+  {
+    id: "home-service-2",
+    icon: "ruler",
+    title: "Space Planning",
+    description:
+      "Layouts are resolved for movement, visibility, furniture logic, and everyday use.",
+    note: "Flow, zoning, and operational clarity.",
+    deliverables: ["Room adjacencies", "Furniture layouts", "Circulation planning"],
+  },
+  {
+    id: "home-service-3",
+    icon: "lightbulb",
+    title: "Lighting Strategy",
+    description:
+      "Layered lighting schemes that define mood while supporting technical and functional needs.",
+    note: "Ambient, accent, and task lighting in one system.",
+    deliverables: ["Fixture direction", "Layered scenes", "Mood and function"],
+  },
+  {
+    id: "home-service-4",
+    icon: "sofa",
+    title: "Furniture + Styling",
+    description:
+      "Curated selections, custom pieces, and finishing layers that complete the atmosphere.",
+    note: "Procurement-minded recommendations with a cohesive final read.",
+    deliverables: ["Furniture curation", "Custom pieces", "Final styling"],
+  },
+];
+
 function createStoryParagraphFallbacks(
+  prefix: string,
+  defaults: AboutStoryParagraph[],
   primary?: string | null,
   secondary?: string | null,
 ) {
   const paragraphs = [primary?.trim(), secondary?.trim()]
     .filter((entry): entry is string => Boolean(entry))
     .map((body, index) => ({
-      id: `about-story-${index + 1}`,
+      id: `${prefix}-${index + 1}`,
       body,
     }));
 
-  return paragraphs.length ? paragraphs : defaultAboutStoryParagraphs;
+  return paragraphs.length ? paragraphs : defaults;
 }
 
-function normalizeAboutStoryParagraphs(
+function normalizeStoryParagraphs(
   value: unknown,
+  defaults: AboutStoryParagraph[],
+  prefix: string,
   primary?: string | null,
   secondary?: string | null,
 ) {
   if (!Array.isArray(value)) {
-    return createStoryParagraphFallbacks(primary, secondary);
+    return createStoryParagraphFallbacks(prefix, defaults, primary, secondary);
   }
 
   const paragraphs = value
@@ -287,7 +632,7 @@ function normalizeAboutStoryParagraphs(
         }
 
         return {
-          id: `about-story-${index + 1}`,
+          id: `${prefix}-${index + 1}`,
           body,
         };
       }
@@ -307,13 +652,35 @@ function normalizeAboutStoryParagraphs(
         id:
           typeof candidate.id === "string" && candidate.id.trim()
             ? candidate.id.trim()
-            : `about-story-${index + 1}`,
+            : `${prefix}-${index + 1}`,
         body,
       };
     })
     .filter((entry): entry is AboutStoryParagraph => Boolean(entry));
 
   return paragraphs;
+}
+
+function normalizeAboutStoryParagraphs(
+  value: unknown,
+  primary?: string | null,
+  secondary?: string | null,
+) {
+  return normalizeStoryParagraphs(
+    value,
+    defaultAboutStoryParagraphs,
+    "about-story",
+    primary,
+    secondary,
+  );
+}
+
+function normalizeHomeStoryParagraphs(value: unknown) {
+  return normalizeStoryParagraphs(
+    value,
+    defaultHomeStoryParagraphs,
+    "home-story",
+  );
 }
 
 function normalizeAboutStats(value: unknown) {
@@ -365,6 +732,128 @@ function normalizeAboutStats(value: unknown) {
   return stats;
 }
 
+function normalizeHomeStoryMetrics(value: unknown) {
+  if (!Array.isArray(value)) {
+    return defaultHomeStoryMetrics;
+  }
+
+  return value
+    .map((entry, index) => {
+      if (!entry || typeof entry !== "object") {
+        return null;
+      }
+
+      const candidate = entry as Partial<HomeStoryMetric>;
+      const rawCandidate = entry as Record<string, unknown>;
+      const legacyValue =
+        typeof rawCandidate.title === "string" ? rawCandidate.title.trim() : "";
+      const legacyLabel =
+        typeof rawCandidate.description === "string" ? rawCandidate.description.trim() : "";
+      const valueText =
+        typeof candidate.value === "string" ? candidate.value.trim() : legacyValue;
+      const labelText =
+        typeof candidate.label === "string" ? candidate.label.trim() : legacyLabel;
+
+      if (!valueText && !labelText) {
+        return null;
+      }
+
+      return {
+        id:
+          typeof candidate.id === "string" && candidate.id.trim()
+            ? candidate.id.trim()
+            : `home-story-metric-${index + 1}`,
+        value: valueText || defaultHomeStoryMetrics[index % defaultHomeStoryMetrics.length]?.value || "",
+        label: labelText || defaultHomeStoryMetrics[index % defaultHomeStoryMetrics.length]?.label || "",
+      };
+    })
+    .filter((entry): entry is HomeStoryMetric => Boolean(entry));
+}
+
+function normalizeHomeServiceHighlights(value: unknown) {
+  if (!Array.isArray(value)) {
+    return defaultHomeServiceHighlights;
+  }
+
+  const highlights = value
+    .map((entry, index) => {
+      if (!entry || typeof entry !== "object") {
+        return null;
+      }
+
+      const candidate = entry as Partial<HomeServiceHighlight>;
+      const label = typeof candidate.label === "string" ? candidate.label.trim() : "";
+      const text = typeof candidate.text === "string" ? candidate.text.trim() : "";
+
+      if (!label && !text) {
+        return null;
+      }
+
+      return {
+        id:
+          typeof candidate.id === "string" && candidate.id.trim()
+            ? candidate.id.trim()
+            : `home-services-highlight-${index + 1}`,
+        label: label || defaultHomeServiceHighlights[index % defaultHomeServiceHighlights.length]?.label || "",
+        text: text || defaultHomeServiceHighlights[index % defaultHomeServiceHighlights.length]?.text || "",
+      };
+    })
+    .filter((entry): entry is HomeServiceHighlight => Boolean(entry));
+
+  return highlights;
+}
+
+function normalizeHomeServices(value: unknown) {
+  if (!Array.isArray(value)) {
+    return defaultHomeServices;
+  }
+
+  const services = value
+    .map((entry, index) => {
+      if (!entry || typeof entry !== "object") {
+        return null;
+      }
+
+      const candidate = entry as Partial<HomeService>;
+      const rawCandidate = entry as Record<string, unknown>;
+      const icon =
+        typeof candidate.icon === "string" && isHomeServiceIcon(candidate.icon)
+          ? candidate.icon
+          : defaultHomeServices[index % defaultHomeServices.length]?.icon ?? "paintbrush";
+      const deliverables = Array.isArray(rawCandidate.deliverables)
+        ? rawCandidate.deliverables
+            .map((item) => (typeof item === "string" ? item.trim() : ""))
+            .filter(Boolean)
+        : [];
+      const title = typeof candidate.title === "string" ? candidate.title.trim() : "";
+      const description = typeof candidate.description === "string" ? candidate.description.trim() : "";
+      const note = typeof candidate.note === "string" ? candidate.note.trim() : "";
+
+      if (!title && !description && !note && deliverables.length === 0) {
+        return null;
+      }
+
+      return {
+        id:
+          typeof candidate.id === "string" && candidate.id.trim()
+            ? candidate.id.trim()
+            : `home-service-${index + 1}`,
+        icon,
+        title: title || defaultHomeServices[index % defaultHomeServices.length]?.title || "",
+        description:
+          description || defaultHomeServices[index % defaultHomeServices.length]?.description || "",
+        note: note || defaultHomeServices[index % defaultHomeServices.length]?.note || "",
+        deliverables:
+          deliverables.length > 0
+            ? deliverables
+            : defaultHomeServices[index % defaultHomeServices.length]?.deliverables || [],
+      };
+    })
+    .filter((entry): entry is HomeService => Boolean(entry));
+
+  return services;
+}
+
 export const defaultSiteSettings: SiteSettings = {
   id: siteSettingsRecordId,
   updatedAt: null,
@@ -399,12 +888,41 @@ export const defaultSiteSettings: SiteSettings = {
   ogTagline: "Strategy. Design. Delivery.",
   logoUrl: "/pencil-and-hammer-mark.svg",
   logoStoragePath: null,
-  faviconUrl: "/pencil-and-hammer-mark.svg",
+  faviconUrl: "/pencil-and-hammer-favicon.png",
   faviconStoragePath: null,
+  lightBackgroundHex: "#f5f5f5",
+  lightForegroundHex: "#141414",
+  lightSurfaceHex: "#ffffff",
+  lightMutedHex: "#ebebeb",
+  lightBorderHex: "#d9d9d9",
+  lightAccentHex: "#2f2f2f",
+  darkBackgroundHex: "#090909",
+  darkForegroundHex: "#f3f3f3",
+  darkSurfaceHex: "#171717",
+  darkMutedHex: "#232323",
+  darkBorderHex: "#2f2f2f",
+  darkAccentHex: "#d7d7d7",
   aboutHeroTitle: "Built from strategy, not styling.",
   aboutHeroSubtitle: "One team for concept design, coordination, and site delivery.",
   aboutHeroImageUrl: "",
   aboutHeroImageStoragePath: null,
+  homeStoryEyebrow: "Our Story",
+  homeStoryTitle: "A studio shaped around design clarity, site rigor, and calm execution.",
+  homeStoryParagraphs: defaultHomeStoryParagraphs,
+  homeStoryImageUrl: "",
+  homeStoryImageStoragePath: null,
+  homeStoryImageAlt: "Pencil And Hammer studio story image",
+  homeStoryMetrics: defaultHomeStoryMetrics,
+  homeStoryPrimaryCtaLabel: "Explore The Studio",
+  homeStoryPrimaryCtaHref: "/about",
+  homeStorySecondaryCtaLabel: "Start A Conversation",
+  homeStorySecondaryCtaHref: "/contact",
+  homeServicesEyebrow: "What We Handle",
+  homeServicesTitle: "A clearer structure for concept, planning, lighting, and finish.",
+  homeServicesBody:
+    "Every project is developed as one connected interior system. Layout, materials, lighting, and furnishing are resolved together so the final result feels calm, coherent, and commercially sound.",
+  homeServicesHighlights: defaultHomeServiceHighlights,
+  homeServices: defaultHomeServices,
   aboutStoryTitle: "How Pencil And Hammer Works",
   aboutStoryParagraphs: defaultAboutStoryParagraphs,
   aboutPortraitUrl: "",
@@ -467,12 +985,90 @@ export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSetting
       ["/icon.svg", "/MBM-logo.webp", "/MBM-logo.svg"],
     ),
     faviconStoragePath: row?.favicon_storage_path ?? null,
+    lightBackgroundHex: normalizeHexColor(
+      row?.light_background_hex,
+      defaultSiteSettings.lightBackgroundHex,
+    ),
+    lightForegroundHex: normalizeHexColor(
+      row?.light_foreground_hex,
+      defaultSiteSettings.lightForegroundHex,
+    ),
+    lightSurfaceHex: normalizeHexColor(
+      row?.light_surface_hex,
+      defaultSiteSettings.lightSurfaceHex,
+    ),
+    lightMutedHex: normalizeHexColor(
+      row?.light_muted_hex,
+      defaultSiteSettings.lightMutedHex,
+    ),
+    lightBorderHex: normalizeHexColor(
+      row?.light_border_hex,
+      defaultSiteSettings.lightBorderHex,
+    ),
+    lightAccentHex: normalizeHexColor(
+      row?.light_accent_hex,
+      defaultSiteSettings.lightAccentHex,
+    ),
+    darkBackgroundHex: normalizeHexColor(
+      row?.dark_background_hex,
+      defaultSiteSettings.darkBackgroundHex,
+    ),
+    darkForegroundHex: normalizeHexColor(
+      row?.dark_foreground_hex,
+      defaultSiteSettings.darkForegroundHex,
+    ),
+    darkSurfaceHex: normalizeHexColor(
+      row?.dark_surface_hex,
+      defaultSiteSettings.darkSurfaceHex,
+    ),
+    darkMutedHex: normalizeHexColor(
+      row?.dark_muted_hex,
+      defaultSiteSettings.darkMutedHex,
+    ),
+    darkBorderHex: normalizeHexColor(
+      row?.dark_border_hex,
+      defaultSiteSettings.darkBorderHex,
+    ),
+    darkAccentHex: normalizeHexColor(
+      row?.dark_accent_hex,
+      defaultSiteSettings.darkAccentHex,
+    ),
     aboutHeroTitle:
       row?.about_hero_title?.trim() || defaultSiteSettings.aboutHeroTitle,
     aboutHeroSubtitle:
       row?.about_hero_subtitle?.trim() || defaultSiteSettings.aboutHeroSubtitle,
     aboutHeroImageUrl: row?.about_hero_image_url?.trim() || "",
     aboutHeroImageStoragePath: row?.about_hero_image_storage_path ?? null,
+    homeStoryEyebrow:
+      row?.home_story_eyebrow?.trim() || defaultSiteSettings.homeStoryEyebrow,
+    homeStoryTitle:
+      row?.home_story_title?.trim() || defaultSiteSettings.homeStoryTitle,
+    homeStoryParagraphs: normalizeHomeStoryParagraphs(row?.home_story_paragraphs),
+    homeStoryImageUrl: row?.home_story_image_url?.trim() || "",
+    homeStoryImageStoragePath: row?.home_story_image_storage_path ?? null,
+    homeStoryImageAlt:
+      row?.home_story_image_alt?.trim() || defaultSiteSettings.homeStoryImageAlt,
+    homeStoryMetrics: normalizeHomeStoryMetrics(row?.home_story_metrics),
+    homeStoryPrimaryCtaLabel:
+      row?.home_story_primary_cta_label?.trim() ||
+      defaultSiteSettings.homeStoryPrimaryCtaLabel,
+    homeStoryPrimaryCtaHref:
+      row?.home_story_primary_cta_href?.trim() ||
+      defaultSiteSettings.homeStoryPrimaryCtaHref,
+    homeStorySecondaryCtaLabel:
+      row?.home_story_secondary_cta_label?.trim() ||
+      defaultSiteSettings.homeStorySecondaryCtaLabel,
+    homeStorySecondaryCtaHref:
+      row?.home_story_secondary_cta_href?.trim() ||
+      defaultSiteSettings.homeStorySecondaryCtaHref,
+    homeServicesEyebrow:
+      row?.home_services_eyebrow?.trim() || defaultSiteSettings.homeServicesEyebrow,
+    homeServicesTitle:
+      row?.home_services_title?.trim() || defaultSiteSettings.homeServicesTitle,
+    homeServicesBody:
+      row?.home_services_body?.trim() || defaultSiteSettings.homeServicesBody,
+    homeServicesHighlights: normalizeHomeServiceHighlights(row?.home_services_highlights),
+    homeServices: normalizeHomeServices(row?.home_services),
     aboutStoryTitle:
       row?.about_story_title?.trim() || defaultSiteSettings.aboutStoryTitle,
     aboutStoryParagraphs: normalizeAboutStoryParagraphs(

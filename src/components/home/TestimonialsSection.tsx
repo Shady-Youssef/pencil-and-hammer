@@ -18,120 +18,162 @@ export default function TestimonialsSection({
   }
 
   const [leadTestimonial, ...supportingTestimonials] = testimonials;
+  const visibleSupportingTestimonials = supportingTestimonials.slice(0, 2);
 
   return (
-    <section className="section-padding relative overflow-hidden bg-background">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_25%,rgba(0,0,0,0.05),transparent_24%),radial-gradient(circle_at_82%_70%,rgba(255,255,255,0.1),transparent_20%)]" />
+    <section className="section-padding relative overflow-hidden bg-background text-foreground dark:text-cream">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.22),transparent_22%),radial-gradient(circle_at_82%_78%,rgba(0,0,0,0.05),transparent_24%)] dark:bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.05),transparent_24%),radial-gradient(circle_at_82%_78%,rgba(255,255,255,0.03),transparent_22%)]" />
 
-      <div className="relative mx-auto grid max-w-7xl gap-10 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
-        <AnimatedSection className="xl:sticky xl:top-28 xl:self-start">
-          <p className="font-body text-[11px] uppercase tracking-[0.34em] text-muted-foreground">
+      <div className="relative mx-auto max-w-7xl">
+        <AnimatedSection className="max-w-4xl">
+          <p className="font-body text-[11px] uppercase tracking-[0.34em] text-muted-foreground dark:text-cream/56">
             Client Perspective
           </p>
-          <h2 className="mt-5 max-w-md font-display text-4xl font-light leading-tight text-foreground sm:text-5xl md:text-6xl">
-            Trusted because the process feels clear as well as beautiful.
+          <h2 className="display-section-title mt-5 max-w-3xl font-display font-light text-foreground dark:text-cream">
+            Trusted because the process feels clear, controlled, and beautifully resolved.
           </h2>
-          <p className="mt-6 max-w-md font-body text-base leading-8 text-muted-foreground">
-            Clients stay confident when design, coordination, and delivery
-            are connected. That confidence shows up in the work and in the reviews.
+          <p className="mt-6 max-w-2xl font-body text-base leading-8 text-muted-foreground dark:text-cream/68">
+            The strongest feedback is consistent: clients feel guided, informed, and more confident
+            because design, coordination, and delivery are treated as one connected process.
           </p>
+        </AnimatedSection>
 
-          <div className="mt-10 rounded-[1.8rem] border border-border/70 bg-card/75 p-6 backdrop-blur-xl">
-            <p className="font-body text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-              Reputation Snapshot
-            </p>
-            <div className="mt-4 flex items-end gap-4">
-              <p className="font-display text-5xl text-foreground">4.9</p>
-              <div className="pb-2">
-                <div className="flex gap-1">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Star
-                      key={index}
-                      size={14}
-                      className="fill-foreground text-foreground"
-                    />
-                  ))}
-                </div>
-                <p className="mt-2 font-body text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                  Average client rating
+        <AnimatedSection delay={0.06} className="mt-10">
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="rounded-[1.7rem] border border-border/70 bg-card/86 p-6 dark:border-white/10 dark:bg-white/[0.05]">
+              <p className="font-body text-[10px] uppercase tracking-[0.24em] text-muted-foreground dark:text-cream/50">
+                Average Rating
+              </p>
+              <div className="mt-4 flex items-end gap-4">
+                <p className="font-display text-[2.75rem] leading-none text-foreground dark:text-cream">
+                  4.9
                 </p>
+                <div className="pb-1">
+                  <div className="flex gap-1">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <Star
+                        key={index}
+                        size={14}
+                        className="fill-foreground text-foreground dark:fill-cream dark:text-cream"
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-2 font-body text-[11px] uppercase tracking-[0.16em] text-muted-foreground dark:text-cream/48">
+                    Consistent client score
+                  </p>
+                </div>
               </div>
+            </div>
+
+            <div className="rounded-[1.7rem] border border-border/70 bg-card/86 p-6 dark:border-white/10 dark:bg-white/[0.05]">
+              <p className="font-body text-[10px] uppercase tracking-[0.24em] text-muted-foreground dark:text-cream/50">
+                Working Result
+              </p>
+              <p className="mt-4 font-body text-sm leading-7 text-foreground/78 dark:text-cream/72">
+                The process feels calmer because decisions are made early, explained clearly, and
+                carried through without disconnect between concept and delivery.
+              </p>
+            </div>
+
+            <div className="rounded-[1.7rem] border border-border/70 bg-card/86 p-6 dark:border-white/10 dark:bg-white/[0.05]">
+              <p className="font-body text-[10px] uppercase tracking-[0.24em] text-muted-foreground dark:text-cream/50">
+                Why It Matters
+              </p>
+              <p className="mt-4 font-body text-sm leading-7 text-foreground/78 dark:text-cream/72">
+                Better coordination protects both the atmosphere of the project and the client’s
+                confidence while the work is moving.
+              </p>
             </div>
           </div>
         </AnimatedSection>
 
-        <div className="grid gap-5 md:grid-cols-2">
-          <AnimatedSection scale className="md:row-span-2">
-            <motion.article
-              whileHover={{ y: -8 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="relative flex h-full min-h-[28rem] flex-col rounded-[2.2rem] border border-border/70 bg-charcoal p-7 text-cream shadow-[0_30px_80px_-42px_rgba(0,0,0,0.8)] sm:p-8"
-            >
-              <Quote size={34} className="text-cream/18" />
-              <p className="mt-8 font-display text-[2rem] leading-tight text-cream sm:text-[2.5rem]">
-                “{leadTestimonial.quote}”
-              </p>
-              <div className="mt-auto pt-10">
-                <div className="flex gap-1">
+        <AnimatedSection delay={0.1} scale className="mt-10">
+          <motion.article
+            whileHover={{ y: -6 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="rounded-[2.2rem] border border-border/70 bg-foreground p-7 text-primary-foreground shadow-[0_30px_80px_-42px_rgba(0,0,0,0.32)] dark:border-white/10 dark:bg-charcoal dark:text-cream dark:shadow-[0_30px_80px_-42px_rgba(0,0,0,0.8)] sm:p-9"
+          >
+            <div className="grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-10">
+              <div className="flex items-start justify-between gap-4 lg:flex-col lg:justify-start">
+                <div className="flex h-14 w-14 items-center justify-center rounded-[1.15rem] border border-white/10 bg-white/[0.04]">
+                  <Quote size={28} className="text-primary-foreground/20 dark:text-cream/18" />
+                </div>
+                <div className="flex gap-1 lg:pt-6">
                   {Array.from({ length: leadTestimonial.rating }).map((_, index) => (
                     <Star
                       key={index}
                       size={14}
-                      className="fill-cream text-cream"
+                      className="fill-primary-foreground text-primary-foreground dark:fill-cream dark:text-cream"
                     />
                   ))}
                 </div>
-                <p className="mt-5 font-display text-2xl text-cream">
-                  {leadTestimonial.name}
-                </p>
-                <p className="mt-2 font-body text-[11px] uppercase tracking-[0.22em] text-cream/54">
-                  {leadTestimonial.role}
-                </p>
               </div>
-            </motion.article>
-          </AnimatedSection>
 
-          {supportingTestimonials.slice(0, 2).map((testimonial, index) => (
-            <AnimatedSection
-              key={testimonial.id}
-              delay={0.08 + index * 0.08}
-              scale
-              className={index === 1 ? "md:translate-y-10" : ""}
-            >
-              <motion.article
-                whileHover={{ y: -8 }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className="flex h-full min-h-[18rem] flex-col rounded-[1.9rem] border border-border/70 bg-card/80 p-6 backdrop-blur-xl sm:p-7"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border/70 bg-background/80">
-                    <span className="font-body text-xs font-medium uppercase tracking-[0.2em] text-foreground/82">
-                      {testimonial.initials}
-                    </span>
-                  </div>
-                  <div className="flex gap-1">
-                    {Array.from({ length: testimonial.rating }).map((_, starIndex) => (
-                      <Star
-                        key={starIndex}
-                        size={13}
-                        className="fill-foreground text-foreground"
-                      />
-                    ))}
-                  </div>
-                </div>
-                <p className="mt-8 flex-1 font-body text-sm leading-7 text-foreground/82">
-                  “{testimonial.quote}”
+              <div>
+                <p className="font-display text-[1.9rem] leading-[1.02] text-primary-foreground sm:text-[2.15rem] lg:text-[2.45rem] dark:text-cream">
+                  “{leadTestimonial.quote}”
                 </p>
-                <div className="mt-8 border-t border-border/70 pt-4">
-                  <p className="font-display text-xl text-foreground">{testimonial.name}</p>
-                  <p className="mt-2 font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    {testimonial.role}
+
+                <div className="mt-8 border-t border-white/10 pt-5">
+                  <p className="font-display text-[1.7rem] leading-tight text-primary-foreground dark:text-cream">
+                    {leadTestimonial.name}
+                  </p>
+                  <p className="mt-2 font-body text-[11px] uppercase tracking-[0.22em] text-primary-foreground/54 dark:text-cream/54">
+                    {leadTestimonial.role}
                   </p>
                 </div>
-              </motion.article>
-            </AnimatedSection>
-          ))}
-        </div>
+              </div>
+            </div>
+          </motion.article>
+        </AnimatedSection>
+
+        {visibleSupportingTestimonials.length > 0 ? (
+          <div className="mt-6 grid gap-5 md:grid-cols-2">
+            {visibleSupportingTestimonials.map((testimonial, index) => (
+              <AnimatedSection
+                key={testimonial.id}
+                delay={0.14 + index * 0.06}
+                scale
+              >
+                <motion.article
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex h-full min-h-[16rem] flex-col rounded-[1.85rem] border border-border/70 bg-card/88 p-6 text-foreground shadow-[0_24px_60px_-40px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-white/[0.05] dark:text-cream dark:shadow-none sm:p-7"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full border border-border/70 bg-background/80 dark:border-white/10 dark:bg-black/20">
+                      <span className="font-body text-xs font-medium uppercase tracking-[0.18em] text-foreground/82 dark:text-cream/82">
+                        {testimonial.initials}
+                      </span>
+                    </div>
+                    <div className="flex gap-1">
+                      {Array.from({ length: testimonial.rating }).map((_, starIndex) => (
+                        <Star
+                          key={starIndex}
+                          size={13}
+                          className="fill-foreground text-foreground dark:fill-cream dark:text-cream"
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <p className="mt-6 flex-1 font-body text-sm leading-7 text-foreground/78 dark:text-cream/74">
+                    “{testimonial.quote}”
+                  </p>
+
+                  <div className="mt-6 border-t border-border/70 pt-4 dark:border-white/10">
+                    <p className="font-display text-[1.45rem] leading-tight text-foreground dark:text-cream">
+                      {testimonial.name}
+                    </p>
+                    <p className="mt-2 font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground dark:text-cream/44">
+                      {testimonial.role}
+                    </p>
+                  </div>
+                </motion.article>
+              </AnimatedSection>
+            ))}
+          </div>
+        ) : null}
       </div>
     </section>
   );
