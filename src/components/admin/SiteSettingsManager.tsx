@@ -78,6 +78,18 @@ type SiteSettingsDraft = {
   aboutHeroSubtitle: string;
   aboutHeroImageUrl: string;
   aboutHeroImageStoragePath: string | null;
+  homeHeroEyebrow: string;
+  homeHeroTitleLineOne: string;
+  homeHeroTitleLineTwo: string;
+  homeHeroBody: string;
+  homeHeroImageUrl: string;
+  homeHeroImageStoragePath: string | null;
+  homeHeroImageAlt: string;
+  homeHeroPrimaryCtaLabel: string;
+  homeHeroPrimaryCtaHref: string;
+  homeHeroSecondaryCtaLabel: string;
+  homeHeroSecondaryCtaHref: string;
+  homeHeroScrollLabel: string;
   homeStoryEyebrow: string;
   homeStoryTitle: string;
   homeStoryParagraphs: AboutStoryParagraph[];
@@ -106,7 +118,7 @@ type SiteSettingsDraft = {
 };
 
 type SettingsTab = "branding" | "contact" | "home" | "about";
-type AssetKind = "logo" | "favicon" | "aboutHero" | "aboutPortrait" | "homeStory";
+type AssetKind = "logo" | "favicon" | "aboutHero" | "aboutPortrait" | "homeStory" | "homeHero";
 
 const aboutIconOptions: Array<{ value: AboutStatIcon; label: string }> = [
   { value: "award", label: "Award" },
@@ -197,6 +209,18 @@ function createDraft(settings: SiteSettings): SiteSettingsDraft {
     aboutHeroSubtitle: settings.aboutHeroSubtitle,
     aboutHeroImageUrl: settings.aboutHeroImageUrl,
     aboutHeroImageStoragePath: settings.aboutHeroImageStoragePath,
+    homeHeroEyebrow: settings.homeHeroEyebrow,
+    homeHeroTitleLineOne: settings.homeHeroTitleLineOne,
+    homeHeroTitleLineTwo: settings.homeHeroTitleLineTwo,
+    homeHeroBody: settings.homeHeroBody,
+    homeHeroImageUrl: settings.homeHeroImageUrl,
+    homeHeroImageStoragePath: settings.homeHeroImageStoragePath,
+    homeHeroImageAlt: settings.homeHeroImageAlt,
+    homeHeroPrimaryCtaLabel: settings.homeHeroPrimaryCtaLabel,
+    homeHeroPrimaryCtaHref: settings.homeHeroPrimaryCtaHref,
+    homeHeroSecondaryCtaLabel: settings.homeHeroSecondaryCtaLabel,
+    homeHeroSecondaryCtaHref: settings.homeHeroSecondaryCtaHref,
+    homeHeroScrollLabel: settings.homeHeroScrollLabel,
     homeStoryEyebrow: settings.homeStoryEyebrow,
     homeStoryTitle: settings.homeStoryTitle,
     homeStoryParagraphs: settings.homeStoryParagraphs.map((paragraph) => ({ ...paragraph })),
@@ -288,6 +312,7 @@ export default function SiteSettingsManager({
     logo: initialSettings.logoStoragePath,
     favicon: initialSettings.faviconStoragePath,
     aboutHero: initialSettings.aboutHeroImageStoragePath,
+    homeHero: initialSettings.homeHeroImageStoragePath,
     homeStory: initialSettings.homeStoryImageStoragePath,
     aboutPortrait: initialSettings.aboutPortraitStoragePath,
   });
@@ -320,6 +345,14 @@ export default function SiteSettingsManager({
         };
       }
 
+      if (kind === "homeHero") {
+        return {
+          ...current,
+          homeHeroImageUrl: url,
+          homeHeroImageStoragePath: storagePath,
+        };
+      }
+
       if (kind === "homeStory") {
         return {
           ...current,
@@ -344,6 +377,8 @@ export default function SiteSettingsManager({
         return "App favicon";
       case "aboutHero":
         return "About hero image";
+      case "homeHero":
+        return "Home hero image";
       case "homeStory":
         return "Home Our Story image";
       default:
@@ -367,7 +402,7 @@ export default function SiteSettingsManager({
       const group =
         kind === "logo" || kind === "favicon"
           ? "branding"
-          : kind === "homeStory"
+          : kind === "homeStory" || kind === "homeHero"
             ? "home"
             : "about";
       const path = `${group}/${kind}-${Date.now()}-${sanitizeFileName(file.name)}`;
@@ -406,6 +441,13 @@ export default function SiteSettingsManager({
       if (kind === "homeStory" && !draft.homeStoryImageAlt.trim()) {
         updateDraft(
           "homeStoryImageAlt",
+          file.name.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ").trim(),
+        );
+      }
+
+      if (kind === "homeHero" && !draft.homeHeroImageAlt.trim()) {
+        updateDraft(
+          "homeHeroImageAlt",
           file.name.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ").trim(),
         );
       }
@@ -876,6 +918,18 @@ export default function SiteSettingsManager({
             about_hero_subtitle: draft.aboutHeroSubtitle.trim(),
             about_hero_image_url: draft.aboutHeroImageUrl.trim(),
             about_hero_image_storage_path: draft.aboutHeroImageStoragePath,
+            home_hero_eyebrow: draft.homeHeroEyebrow.trim(),
+            home_hero_title_line_one: draft.homeHeroTitleLineOne.trim(),
+            home_hero_title_line_two: draft.homeHeroTitleLineTwo.trim(),
+            home_hero_body: draft.homeHeroBody.trim(),
+            home_hero_image_url: draft.homeHeroImageUrl.trim(),
+            home_hero_image_storage_path: draft.homeHeroImageStoragePath,
+            home_hero_image_alt: draft.homeHeroImageAlt.trim(),
+            home_hero_primary_cta_label: draft.homeHeroPrimaryCtaLabel.trim(),
+            home_hero_primary_cta_href: draft.homeHeroPrimaryCtaHref.trim(),
+            home_hero_secondary_cta_label: draft.homeHeroSecondaryCtaLabel.trim(),
+            home_hero_secondary_cta_href: draft.homeHeroSecondaryCtaHref.trim(),
+            home_hero_scroll_label: draft.homeHeroScrollLabel.trim(),
             home_story_eyebrow: draft.homeStoryEyebrow.trim(),
             home_story_title: draft.homeStoryTitle.trim(),
             home_story_paragraphs: cleanedHomeStoryParagraphs,
@@ -922,6 +976,7 @@ export default function SiteSettingsManager({
         logo: normalized.logoStoragePath,
         favicon: normalized.faviconStoragePath,
         aboutHero: normalized.aboutHeroImageStoragePath,
+        homeHero: normalized.homeHeroImageStoragePath,
         homeStory: normalized.homeStoryImageStoragePath,
         aboutPortrait: normalized.aboutPortraitStoragePath,
       });
@@ -931,6 +986,7 @@ export default function SiteSettingsManager({
         oldPaths.logo && oldPaths.logo !== normalized.logoStoragePath ? oldPaths.logo : null,
         oldPaths.favicon && oldPaths.favicon !== normalized.faviconStoragePath ? oldPaths.favicon : null,
         oldPaths.aboutHero && oldPaths.aboutHero !== normalized.aboutHeroImageStoragePath ? oldPaths.aboutHero : null,
+        oldPaths.homeHero && oldPaths.homeHero !== normalized.homeHeroImageStoragePath ? oldPaths.homeHero : null,
         oldPaths.homeStory && oldPaths.homeStory !== normalized.homeStoryImageStoragePath ? oldPaths.homeStory : null,
         oldPaths.aboutPortrait && oldPaths.aboutPortrait !== normalized.aboutPortraitStoragePath ? oldPaths.aboutPortrait : null,
       ].filter((value): value is string => Boolean(value));
@@ -1323,6 +1379,154 @@ export default function SiteSettingsManager({
         <TabsContent value="home" className="space-y-6">
           <div className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
             <div className="space-y-6">
+              <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
+                <p className="font-display text-2xl text-foreground">Home Hero</p>
+                <p className="mt-1 font-body text-sm text-muted-foreground">
+                  Control the hero image, copy, and CTA buttons at the top of the home page.
+                </p>
+
+                <div className="mt-6 grid gap-5">
+                  <div className="relative h-[320px] overflow-hidden rounded-[1.2rem] border border-border bg-background">
+                    {draft.homeHeroImageUrl ? (
+                      <Image
+                        src={draft.homeHeroImageUrl}
+                        alt={draft.homeHeroImageAlt || "Home hero preview"}
+                        fill
+                        sizes="900px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center bg-background/80 font-body text-sm text-muted-foreground">
+                        Upload an image for the home-page hero section.
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 font-body text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:border-accent">
+                      {uploadingAsset === "homeHero" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                      Upload Hero Image
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/avif"
+                        className="hidden"
+                        onChange={(event) => void handleAssetUpload(event, "homeHero")}
+                      />
+                    </label>
+                    <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Displays behind the home-page hero copy
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Hero Image Alt Text
+                    </label>
+                    <Input
+                      value={draft.homeHeroImageAlt}
+                      onChange={(event) => updateDraft("homeHeroImageAlt", event.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Eyebrow
+                    </label>
+                    <Input
+                      value={draft.homeHeroEyebrow}
+                      onChange={(event) => updateDraft("homeHeroEyebrow", event.target.value)}
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Title Line One
+                      </label>
+                      <Input
+                        value={draft.homeHeroTitleLineOne}
+                        onChange={(event) => updateDraft("homeHeroTitleLineOne", event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Title Line Two
+                      </label>
+                      <Input
+                        value={draft.homeHeroTitleLineTwo}
+                        onChange={(event) => updateDraft("homeHeroTitleLineTwo", event.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Body Copy
+                    </label>
+                    <Textarea
+                      rows={4}
+                      value={draft.homeHeroBody}
+                      onChange={(event) => updateDraft("homeHeroBody", event.target.value)}
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Primary CTA Label
+                      </label>
+                      <Input
+                        value={draft.homeHeroPrimaryCtaLabel}
+                        onChange={(event) => updateDraft("homeHeroPrimaryCtaLabel", event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Primary CTA Link
+                      </label>
+                      <Input
+                        value={draft.homeHeroPrimaryCtaHref}
+                        onChange={(event) => updateDraft("homeHeroPrimaryCtaHref", event.target.value)}
+                        placeholder="/portfolio"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Secondary CTA Label
+                      </label>
+                      <Input
+                        value={draft.homeHeroSecondaryCtaLabel}
+                        onChange={(event) => updateDraft("homeHeroSecondaryCtaLabel", event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Secondary CTA Link
+                      </label>
+                      <Input
+                        value={draft.homeHeroSecondaryCtaHref}
+                        onChange={(event) => updateDraft("homeHeroSecondaryCtaHref", event.target.value)}
+                        placeholder="/contact"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Scroll Label
+                    </label>
+                    <Input
+                      value={draft.homeHeroScrollLabel}
+                      onChange={(event) => updateDraft("homeHeroScrollLabel", event.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
                 <p className="font-display text-2xl text-foreground">Home Our Story</p>
                 <p className="mt-1 font-body text-sm text-muted-foreground">

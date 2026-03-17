@@ -102,9 +102,9 @@ export default function ServicesSection() {
                   </div>
 
                   <div className="mt-6 flex flex-wrap gap-2">
-                    {service.deliverables.filter(Boolean).map((item) => (
+                    {service.deliverables.filter(Boolean).map((item, deliverableIndex) => (
                       <span
-                        key={item}
+                        key={`${service.id}-deliverable-${deliverableIndex}`}
                         className="rounded-full border border-border/70 bg-secondary/55 px-3 py-1.5 font-body text-[11px] uppercase tracking-[0.14em] text-foreground/68 dark:border-white/10 dark:bg-black/16 dark:text-cream/64"
                       >
                         {item}

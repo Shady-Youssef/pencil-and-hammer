@@ -84,6 +84,18 @@ export type SiteSettings = {
   aboutHeroSubtitle: string;
   aboutHeroImageUrl: string;
   aboutHeroImageStoragePath: string | null;
+  homeHeroEyebrow: string;
+  homeHeroTitleLineOne: string;
+  homeHeroTitleLineTwo: string;
+  homeHeroBody: string;
+  homeHeroImageUrl: string;
+  homeHeroImageStoragePath: string | null;
+  homeHeroImageAlt: string;
+  homeHeroPrimaryCtaLabel: string;
+  homeHeroPrimaryCtaHref: string;
+  homeHeroSecondaryCtaLabel: string;
+  homeHeroSecondaryCtaHref: string;
+  homeHeroScrollLabel: string;
   homeStoryEyebrow: string;
   homeStoryTitle: string;
   homeStoryParagraphs: AboutStoryParagraph[];
@@ -154,6 +166,18 @@ export type SiteSettingsRow = {
   about_hero_subtitle: string | null;
   about_hero_image_url: string | null;
   about_hero_image_storage_path: string | null;
+  home_hero_eyebrow: string | null;
+  home_hero_title_line_one: string | null;
+  home_hero_title_line_two: string | null;
+  home_hero_body: string | null;
+  home_hero_image_url: string | null;
+  home_hero_image_storage_path: string | null;
+  home_hero_image_alt: string | null;
+  home_hero_primary_cta_label: string | null;
+  home_hero_primary_cta_href: string | null;
+  home_hero_secondary_cta_label: string | null;
+  home_hero_secondary_cta_href: string | null;
+  home_hero_scroll_label: string | null;
   home_story_eyebrow: string | null;
   home_story_title: string | null;
   home_story_paragraphs: unknown;
@@ -226,6 +250,18 @@ export const siteSettingsSelect = `
   about_hero_subtitle,
   about_hero_image_url,
   about_hero_image_storage_path,
+  home_hero_eyebrow,
+  home_hero_title_line_one,
+  home_hero_title_line_two,
+  home_hero_body,
+  home_hero_image_url,
+  home_hero_image_storage_path,
+  home_hero_image_alt,
+  home_hero_primary_cta_label,
+  home_hero_primary_cta_href,
+  home_hero_secondary_cta_label,
+  home_hero_secondary_cta_href,
+  home_hero_scroll_label,
   home_story_eyebrow,
   home_story_title,
   home_story_paragraphs,
@@ -906,6 +942,19 @@ export const defaultSiteSettings: SiteSettings = {
   aboutHeroSubtitle: "One team for concept design, coordination, and site delivery.",
   aboutHeroImageUrl: "",
   aboutHeroImageStoragePath: null,
+  homeHeroEyebrow: "Interior Design Studio",
+  homeHeroTitleLineOne: "Crafting Spaces",
+  homeHeroTitleLineTwo: "That Inspire",
+  homeHeroBody:
+    "Pencil And Hammer shapes residential, hospitality, and workplace interiors with a disciplined design-build process that keeps concept, coordination, and delivery aligned from the first conversation.",
+  homeHeroImageUrl: "",
+  homeHeroImageStoragePath: null,
+  homeHeroImageAlt: "Pencil And Hammer studio team at work",
+  homeHeroPrimaryCtaLabel: "View Our Work",
+  homeHeroPrimaryCtaHref: "/portfolio",
+  homeHeroSecondaryCtaLabel: "Get In Touch",
+  homeHeroSecondaryCtaHref: "/contact",
+  homeHeroScrollLabel: "Scroll",
   homeStoryEyebrow: "Our Story",
   homeStoryTitle: "A studio shaped around design clarity, site rigor, and calm execution.",
   homeStoryParagraphs: defaultHomeStoryParagraphs,
@@ -1039,6 +1088,30 @@ export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSetting
       row?.about_hero_subtitle?.trim() || defaultSiteSettings.aboutHeroSubtitle,
     aboutHeroImageUrl: row?.about_hero_image_url?.trim() || "",
     aboutHeroImageStoragePath: row?.about_hero_image_storage_path ?? null,
+    homeHeroEyebrow:
+      row?.home_hero_eyebrow?.trim() || defaultSiteSettings.homeHeroEyebrow,
+    homeHeroTitleLineOne:
+      row?.home_hero_title_line_one?.trim() || defaultSiteSettings.homeHeroTitleLineOne,
+    homeHeroTitleLineTwo:
+      row?.home_hero_title_line_two?.trim() || defaultSiteSettings.homeHeroTitleLineTwo,
+    homeHeroBody:
+      row?.home_hero_body?.trim() || defaultSiteSettings.homeHeroBody,
+    homeHeroImageUrl: row?.home_hero_image_url?.trim() || "",
+    homeHeroImageStoragePath: row?.home_hero_image_storage_path ?? null,
+    homeHeroImageAlt:
+      row?.home_hero_image_alt?.trim() || defaultSiteSettings.homeHeroImageAlt,
+    homeHeroPrimaryCtaLabel:
+      row?.home_hero_primary_cta_label?.trim() || defaultSiteSettings.homeHeroPrimaryCtaLabel,
+    homeHeroPrimaryCtaHref:
+      row?.home_hero_primary_cta_href?.trim() || defaultSiteSettings.homeHeroPrimaryCtaHref,
+    homeHeroSecondaryCtaLabel:
+      row?.home_hero_secondary_cta_label?.trim() ||
+      defaultSiteSettings.homeHeroSecondaryCtaLabel,
+    homeHeroSecondaryCtaHref:
+      row?.home_hero_secondary_cta_href?.trim() ||
+      defaultSiteSettings.homeHeroSecondaryCtaHref,
+    homeHeroScrollLabel:
+      row?.home_hero_scroll_label?.trim() || defaultSiteSettings.homeHeroScrollLabel,
     homeStoryEyebrow:
       row?.home_story_eyebrow?.trim() || defaultSiteSettings.homeStoryEyebrow,
     homeStoryTitle:
