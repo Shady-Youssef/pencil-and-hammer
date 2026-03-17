@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   aboutStatIcons,
   homeServiceIcons,
+  isVideoAssetUrl,
   joinKeywords,
   normalizeSiteSettings,
   sanitizeFileName,
@@ -82,6 +83,8 @@ type SiteSettingsDraft = {
   homeHeroTitleLineOne: string;
   homeHeroTitleLineTwo: string;
   homeHeroBody: string;
+  homeHeroVideoUrl: string;
+  homeHeroVideoStoragePath: string | null;
   homeHeroImageUrl: string;
   homeHeroImageStoragePath: string | null;
   homeHeroImageAlt: string;
@@ -118,7 +121,14 @@ type SiteSettingsDraft = {
 };
 
 type SettingsTab = "branding" | "contact" | "home" | "about";
-type AssetKind = "logo" | "favicon" | "aboutHero" | "aboutPortrait" | "homeStory" | "homeHero";
+type AssetKind =
+  | "logo"
+  | "favicon"
+  | "aboutHero"
+  | "aboutPortrait"
+  | "homeStory"
+  | "homeHero"
+  | "homeHeroVideo";
 
 const aboutIconOptions: Array<{ value: AboutStatIcon; label: string }> = [
   { value: "award", label: "Award" },
@@ -213,6 +223,8 @@ function createDraft(settings: SiteSettings): SiteSettingsDraft {
     homeHeroTitleLineOne: settings.homeHeroTitleLineOne,
     homeHeroTitleLineTwo: settings.homeHeroTitleLineTwo,
     homeHeroBody: settings.homeHeroBody,
+    homeHeroVideoUrl: settings.homeHeroVideoUrl,
+    homeHeroVideoStoragePath: settings.homeHeroVideoStoragePath,
     homeHeroImageUrl: settings.homeHeroImageUrl,
     homeHeroImageStoragePath: settings.homeHeroImageStoragePath,
     homeHeroImageAlt: settings.homeHeroImageAlt,
@@ -313,6 +325,7 @@ export default function SiteSettingsManager({
     favicon: initialSettings.faviconStoragePath,
     aboutHero: initialSettings.aboutHeroImageStoragePath,
     homeHero: initialSettings.homeHeroImageStoragePath,
+    homeHeroVideo: initialSettings.homeHeroVideoStoragePath,
     homeStory: initialSettings.homeStoryImageStoragePath,
     aboutPortrait: initialSettings.aboutPortraitStoragePath,
   });
@@ -353,6 +366,14 @@ export default function SiteSettingsManager({
         };
       }
 
+      if (kind === "homeHeroVideo") {
+        return {
+          ...current,
+          homeHeroVideoUrl: url,
+          homeHeroVideoStoragePath: storagePath,
+        };
+      }
+
       if (kind === "homeStory") {
         return {
           ...current,
@@ -379,6 +400,8 @@ export default function SiteSettingsManager({
         return "About hero image";
       case "homeHero":
         return "Home hero image";
+      case "homeHeroVideo":
+        return "Home hero video";
       case "homeStory":
         return "Home Our Story image";
       default:
@@ -402,7 +425,7 @@ export default function SiteSettingsManager({
       const group =
         kind === "logo" || kind === "favicon"
           ? "branding"
-          : kind === "homeStory" || kind === "homeHero"
+          : kind === "homeStory" || kind === "homeHero" || kind === "homeHeroVideo"
             ? "home"
             : "about";
       const path = `${group}/${kind}-${Date.now()}-${sanitizeFileName(file.name)}`;
@@ -415,6 +438,12 @@ export default function SiteSettingsManager({
 
       if (error) {
         if (error.message.toLowerCase().includes("bucket not found")) {
+          if (kind === "homeHeroVideo") {
+            throw new Error(
+              "The site-assets bucket is missing. Create it before uploading hero videos.",
+            );
+          }
+
           const inlineAsset = await readFileAsDataUrl(file);
           setAssetFields(kind, inlineAsset, null);
 
@@ -922,6 +951,8 @@ export default function SiteSettingsManager({
             home_hero_title_line_one: draft.homeHeroTitleLineOne.trim(),
             home_hero_title_line_two: draft.homeHeroTitleLineTwo.trim(),
             home_hero_body: draft.homeHeroBody.trim(),
+            home_hero_video_url: draft.homeHeroVideoUrl.trim(),
+            home_hero_video_storage_path: draft.homeHeroVideoStoragePath,
             home_hero_image_url: draft.homeHeroImageUrl.trim(),
             home_hero_image_storage_path: draft.homeHeroImageStoragePath,
             home_hero_image_alt: draft.homeHeroImageAlt.trim(),
@@ -977,6 +1008,7 @@ export default function SiteSettingsManager({
         favicon: normalized.faviconStoragePath,
         aboutHero: normalized.aboutHeroImageStoragePath,
         homeHero: normalized.homeHeroImageStoragePath,
+        homeHeroVideo: normalized.homeHeroVideoStoragePath,
         homeStory: normalized.homeStoryImageStoragePath,
         aboutPortrait: normalized.aboutPortraitStoragePath,
       });
@@ -987,6 +1019,9 @@ export default function SiteSettingsManager({
         oldPaths.favicon && oldPaths.favicon !== normalized.faviconStoragePath ? oldPaths.favicon : null,
         oldPaths.aboutHero && oldPaths.aboutHero !== normalized.aboutHeroImageStoragePath ? oldPaths.aboutHero : null,
         oldPaths.homeHero && oldPaths.homeHero !== normalized.homeHeroImageStoragePath ? oldPaths.homeHero : null,
+        oldPaths.homeHeroVideo && oldPaths.homeHeroVideo !== normalized.homeHeroVideoStoragePath
+          ? oldPaths.homeHeroVideo
+          : null,
         oldPaths.homeStory && oldPaths.homeStory !== normalized.homeStoryImageStoragePath ? oldPaths.homeStory : null,
         oldPaths.aboutPortrait && oldPaths.aboutPortrait !== normalized.aboutPortraitStoragePath ? oldPaths.aboutPortrait : null,
       ].filter((value): value is string => Boolean(value));
@@ -1382,12 +1417,24 @@ export default function SiteSettingsManager({
               <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
                 <p className="font-display text-2xl text-foreground">Home Hero</p>
                 <p className="mt-1 font-body text-sm text-muted-foreground">
-                  Control the hero image, copy, and CTA buttons at the top of the home page.
+                  Control the hero video, fallback image, copy, and CTA buttons at the top of the
+                  home page.
                 </p>
 
                 <div className="mt-6 grid gap-5">
                   <div className="relative h-[320px] overflow-hidden rounded-[1.2rem] border border-border bg-background">
-                    {draft.homeHeroImageUrl ? (
+                    {draft.homeHeroVideoUrl && isVideoAssetUrl(draft.homeHeroVideoUrl) ? (
+                      <video
+                        key={draft.homeHeroVideoUrl}
+                        src={draft.homeHeroVideoUrl}
+                        poster={draft.homeHeroImageUrl || undefined}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="h-full w-full object-cover object-center"
+                      />
+                    ) : draft.homeHeroImageUrl ? (
                       <Image
                         src={draft.homeHeroImageUrl}
                         alt={draft.homeHeroImageAlt || "Home hero preview"}
@@ -1397,12 +1444,26 @@ export default function SiteSettingsManager({
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center bg-background/80 font-body text-sm text-muted-foreground">
-                        Upload an image for the home-page hero section.
+                        Upload a video for the home-page hero section.
                       </div>
                     )}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3">
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 font-body text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:border-accent">
+                      {uploadingAsset === "homeHeroVideo" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                      Upload Hero Video
+                      <input
+                        type="file"
+                        accept="video/mp4,video/webm,video/quicktime,video/ogg"
+                        className="hidden"
+                        onChange={(event) => void handleAssetUpload(event, "homeHeroVideo")}
+                      />
+                    </label>
                     <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 font-body text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:border-accent">
                       {uploadingAsset === "homeHero" ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -1418,13 +1479,13 @@ export default function SiteSettingsManager({
                       />
                     </label>
                     <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                      Displays behind the home-page hero copy
+                      Video is used first. Image remains as poster and fallback.
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                      Hero Image Alt Text
+                      Fallback Image Alt Text
                     </label>
                     <Input
                       value={draft.homeHeroImageAlt}
@@ -2056,16 +2117,6 @@ export default function SiteSettingsManager({
                               rows={4}
                               value={service.description}
                               onChange={(event) => updateHomeService(index, "description", event.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                              Scope Note
-                            </label>
-                            <Textarea
-                              rows={3}
-                              value={service.note}
-                              onChange={(event) => updateHomeService(index, "note", event.target.value)}
                             />
                           </div>
                           <div className="space-y-3">

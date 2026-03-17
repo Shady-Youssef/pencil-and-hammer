@@ -4,6 +4,7 @@ export const siteSettingsRecordId = 1;
 export const siteAssetsBucket = "site-assets";
 export const aboutStatIcons = ["award", "users", "clock", "globe", "sparkles", "home"] as const;
 export const homeServiceIcons = ["paintbrush", "ruler", "lightbulb", "sofa"] as const;
+const videoAssetPattern = /\.(mp4|webm|ogg|ogv|mov|m4v)(?:[?#].*)?$/i;
 
 export type AboutStatIcon = (typeof aboutStatIcons)[number];
 export type HomeServiceIcon = (typeof homeServiceIcons)[number];
@@ -88,6 +89,8 @@ export type SiteSettings = {
   homeHeroTitleLineOne: string;
   homeHeroTitleLineTwo: string;
   homeHeroBody: string;
+  homeHeroVideoUrl: string;
+  homeHeroVideoStoragePath: string | null;
   homeHeroImageUrl: string;
   homeHeroImageStoragePath: string | null;
   homeHeroImageAlt: string;
@@ -170,6 +173,8 @@ export type SiteSettingsRow = {
   home_hero_title_line_one: string | null;
   home_hero_title_line_two: string | null;
   home_hero_body: string | null;
+  home_hero_video_url: string | null;
+  home_hero_video_storage_path: string | null;
   home_hero_image_url: string | null;
   home_hero_image_storage_path: string | null;
   home_hero_image_alt: string | null;
@@ -254,6 +259,8 @@ export const siteSettingsSelect = `
   home_hero_title_line_one,
   home_hero_title_line_two,
   home_hero_body,
+  home_hero_video_url,
+  home_hero_video_storage_path,
   home_hero_image_url,
   home_hero_image_storage_path,
   home_hero_image_alt,
@@ -947,6 +954,8 @@ export const defaultSiteSettings: SiteSettings = {
   homeHeroTitleLineTwo: "That Inspire",
   homeHeroBody:
     "Pencil And Hammer shapes residential, hospitality, and workplace interiors with a disciplined design-build process that keeps concept, coordination, and delivery aligned from the first conversation.",
+  homeHeroVideoUrl: "",
+  homeHeroVideoStoragePath: null,
   homeHeroImageUrl: "",
   homeHeroImageStoragePath: null,
   homeHeroImageAlt: "Pencil And Hammer studio team at work",
@@ -1096,6 +1105,8 @@ export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSetting
       row?.home_hero_title_line_two?.trim() || defaultSiteSettings.homeHeroTitleLineTwo,
     homeHeroBody:
       row?.home_hero_body?.trim() || defaultSiteSettings.homeHeroBody,
+    homeHeroVideoUrl: row?.home_hero_video_url?.trim() || "",
+    homeHeroVideoStoragePath: row?.home_hero_video_storage_path ?? null,
     homeHeroImageUrl: row?.home_hero_image_url?.trim() || "",
     homeHeroImageStoragePath: row?.home_hero_image_storage_path ?? null,
     homeHeroImageAlt:
@@ -1164,6 +1175,16 @@ export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSetting
       row?.about_philosophy_attribution?.trim() ||
       defaultSiteSettings.aboutPhilosophyAttribution,
   };
+}
+
+export function isVideoAssetUrl(value?: string | null) {
+  const trimmed = value?.trim();
+
+  if (!trimmed) {
+    return false;
+  }
+
+  return trimmed.startsWith("data:video/") || videoAssetPattern.test(trimmed);
 }
 
 export function absoluteUrl(path = "", baseUrl = defaultSiteSettings.siteUrl) {

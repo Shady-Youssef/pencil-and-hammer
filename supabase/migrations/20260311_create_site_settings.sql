@@ -77,7 +77,7 @@ values (
   'site-assets',
   'site-assets',
   true,
-  10485760,
+  52428800,
   array[
     'image/jpeg',
     'image/png',
@@ -85,7 +85,11 @@ values (
     'image/avif',
     'image/svg+xml',
     'image/x-icon',
-    'image/vnd.microsoft.icon'
+    'image/vnd.microsoft.icon',
+    'video/mp4',
+    'video/webm',
+    'video/ogg',
+    'video/quicktime'
   ]
 )
 on conflict (id) do nothing;

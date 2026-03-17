@@ -8,10 +8,13 @@ import { ArrowDown, ArrowUpRight } from "lucide-react";
 import heroImg from "@/assets/about-team.jpg";
 import MagneticButton from "@/components/MagneticButton";
 import { useSiteSettings } from "@/components/site/site-settings-context";
+import { isVideoAssetUrl } from "@/lib/site";
 
 export default function HeroSection() {
   const ref = useRef<HTMLElement | null>(null);
   const { settings } = useSiteSettings();
+  const heroPoster = settings.homeHeroImageUrl || heroImg.src;
+  const hasHeroVideo = isVideoAssetUrl(settings.homeHeroVideoUrl);
   const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -21,7 +24,7 @@ export default function HeroSection() {
   const imageY = useTransform(
     scrollYProgress,
     [0, 1],
-    ["0%", shouldReduceMotion ? "0%" : "8%"],
+    ["0%", shouldReduceMotion ? "0%" : "6%"],
   );
   const contentY = useTransform(
     scrollYProgress,
@@ -31,15 +34,30 @@ export default function HeroSection() {
 
   return (
     <section ref={ref} className="relative min-h-screen overflow-hidden bg-background text-foreground">
-      <motion.div style={{ y: imageY }} className="absolute inset-0">
-        <Image
-          src={settings.homeHeroImageUrl || heroImg}
-          alt={settings.homeHeroImageAlt || "Pencil And Hammer studio team at work"}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+      <motion.div style={{ y: imageY }} className="absolute -inset-x-0 -inset-y-8 md:-inset-y-12">
+        {hasHeroVideo ? (
+          <video
+            key={settings.homeHeroVideoUrl}
+            src={settings.homeHeroVideoUrl}
+            poster={heroPoster}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            className="h-full w-full scale-[1.03] object-cover object-[center_top] md:object-center"
+          />
+        ) : (
+          <Image
+            src={settings.homeHeroImageUrl || heroImg}
+            alt={settings.homeHeroImageAlt || "Pencil And Hammer studio team at work"}
+            fill
+            priority
+            sizes="100vw"
+            className="scale-[1.03] object-cover object-[center_top] md:object-center"
+          />
+        )}
       </motion.div>
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.18)_28%,rgba(0,0,0,0.42)_62%,rgba(0,0,0,0.72)_100%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04),transparent_36%)]" />

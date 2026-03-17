@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, Lightbulb, Paintbrush, Ruler, Sofa } from "lucide-react";
+import { Lightbulb, Paintbrush, Ruler, Sofa } from "lucide-react";
 
 import AnimatedSection from "@/components/AnimatedSection";
 import { useSiteSettings } from "@/components/site/site-settings-context";
@@ -14,6 +14,34 @@ const serviceIconMap: Record<HomeServiceIcon, typeof Paintbrush> = {
   sofa: Sofa,
 };
 
+function getServiceCardSpan(total: number, index: number) {
+  if (total <= 1) {
+    return "xl:col-span-6";
+  }
+
+  if (total === 2) {
+    return "xl:col-span-3";
+  }
+
+  if (total === 3) {
+    return "xl:col-span-2";
+  }
+
+  const remainder = total % 3;
+
+  if (remainder === 1) {
+    const splitIndex = total - 4;
+    return index >= splitIndex ? "xl:col-span-3" : "xl:col-span-2";
+  }
+
+  if (remainder === 2) {
+    const splitIndex = total - 2;
+    return index >= splitIndex ? "xl:col-span-3" : "xl:col-span-2";
+  }
+
+  return "xl:col-span-2";
+}
+
 export default function ServicesSection() {
   const { settings } = useSiteSettings();
   const sectionHighlights = settings.homeServicesHighlights.filter(
@@ -23,7 +51,6 @@ export default function ServicesSection() {
     (service) =>
       service.title.trim() ||
       service.description.trim() ||
-      service.note.trim() ||
       service.deliverables.some((item) => item.trim()),
   );
 
@@ -62,22 +89,28 @@ export default function ServicesSection() {
           </div>
         </AnimatedSection>
 
-        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:gap-6">
+        <div className="mt-10 grid gap-4 md:grid-cols-2 xl:mt-12 xl:grid-cols-6 xl:gap-5">
           {services.map((service, index) => {
             const Icon = serviceIconMap[service.icon] ?? Paintbrush;
+            const spanClassName = getServiceCardSpan(services.length, index);
 
             return (
-              <AnimatedSection key={service.id} delay={index * 0.08} scale>
+              <AnimatedSection
+                key={service.id}
+                delay={index * 0.08}
+                scale
+                className={spanClassName}
+              >
                 <motion.article
-                  whileHover={{ y: -6 }}
+                  whileHover={{ y: -4 }}
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="group flex h-full min-h-[22rem] flex-col rounded-[2rem] border border-border/70 bg-card/90 p-5 shadow-[0_28px_80px_-56px_rgba(0,0,0,0.16)] sm:p-7 dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.025)_100%)] dark:shadow-[0_28px_80px_-56px_rgba(0,0,0,0.56)]"
+                  className="group flex h-full min-h-[16rem] flex-col rounded-[1.75rem] border border-border/70 bg-card/90 p-4 shadow-[0_24px_72px_-56px_rgba(0,0,0,0.16)] sm:p-5 xl:min-h-[15rem] dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.025)_100%)] dark:shadow-[0_24px_72px_-56px_rgba(0,0,0,0.56)]"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1rem] border border-border/70 bg-background/82 dark:border-white/10 dark:bg-black/18">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.95rem] border border-border/70 bg-background/82 dark:border-white/10 dark:bg-black/18">
                         <Icon
-                          size={22}
+                          size={20}
                           strokeWidth={1.4}
                           className="text-foreground transition-transform duration-500 group-hover:scale-110 dark:text-cream"
                         />
@@ -87,46 +120,29 @@ export default function ServicesSection() {
                       </p>
                     </div>
 
-                    <span className="font-display text-[2.6rem] leading-none tracking-[-0.06em] text-foreground/[0.08] dark:text-cream/14">
+                    <span className="font-display text-[2.15rem] leading-none tracking-[-0.06em] text-foreground/[0.08] xl:text-[2rem] dark:text-cream/14">
                       0{index + 1}
                     </span>
                   </div>
 
-                  <div className="mt-7">
-                    <h3 className="display-card-title font-display text-foreground dark:text-cream">
+                  <div className="mt-5">
+                    <h3 className="font-display text-[clamp(2rem,2.2vw,2.85rem)] leading-[0.94] tracking-[-0.04em] text-foreground dark:text-cream">
                       {service.title}
                     </h3>
-                    <p className="mt-4 max-w-[34rem] font-body text-sm leading-7 text-muted-foreground dark:text-cream/70">
+                    <p className="mt-3 max-w-[28rem] font-body text-sm leading-6 text-muted-foreground dark:text-cream/70">
                       {service.description}
                     </p>
                   </div>
 
-                  <div className="mt-6 flex flex-wrap gap-2">
+                  <div className="mt-5 flex flex-wrap gap-2">
                     {service.deliverables.filter(Boolean).map((item, deliverableIndex) => (
                       <span
                         key={`${service.id}-deliverable-${deliverableIndex}`}
-                        className="rounded-full border border-border/70 bg-secondary/55 px-3 py-1.5 font-body text-[11px] uppercase tracking-[0.14em] text-foreground/68 dark:border-white/10 dark:bg-black/16 dark:text-cream/64"
+                        className="rounded-full border border-border/70 bg-secondary/55 px-2.5 py-1 font-body text-[10px] uppercase tracking-[0.14em] text-foreground/68 dark:border-white/10 dark:bg-black/16 dark:text-cream/64"
                       >
                         {item}
                       </span>
                     ))}
-                  </div>
-
-                  <div className="mt-auto pt-8">
-                    <div className="flex items-start justify-between gap-4 border-t border-border/70 pt-5 dark:border-white/10">
-                      <div>
-                        <p className="font-body text-[10px] uppercase tracking-[0.22em] text-muted-foreground dark:text-cream/46">
-                          Scope Note
-                        </p>
-                        <p className="mt-2 max-w-[26rem] font-body text-sm leading-6 text-foreground/82 dark:text-cream/78">
-                          {service.note}
-                        </p>
-                      </div>
-                      <ArrowUpRight
-                        size={15}
-                        className="mt-0.5 shrink-0 text-foreground/42 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-cream/42"
-                      />
-                    </div>
                   </div>
                 </motion.article>
               </AnimatedSection>
