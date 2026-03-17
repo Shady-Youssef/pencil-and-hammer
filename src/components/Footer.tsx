@@ -6,7 +6,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import BrandLockup from "@/components/BrandLockup";
 import { useSiteSettings } from "@/components/site/site-settings-context";
 import { motion } from "framer-motion";
-import { getAddressLines, getEffectiveFaviconUrl } from "@/lib/site";
+import { getAddressLines, getEffectiveBrandMarkUrl } from "@/lib/site";
 
 const footerLinks = [
   { label: "Home", href: "/" },
@@ -17,7 +17,7 @@ const footerLinks = [
 
 export default function Footer() {
   const { settings } = useSiteSettings();
-  const brandMarkUrl = getEffectiveFaviconUrl(settings);
+  const brandMarkUrl = getEffectiveBrandMarkUrl(settings);
   const socialLinks = [
     { href: settings.instagramUrl, label: "Instagram", icon: Instagram },
     { href: settings.facebookUrl, label: "Facebook", icon: Facebook },
@@ -39,10 +39,10 @@ export default function Footer() {
               name={settings.siteName}
               logoUrl={brandMarkUrl}
               mode="mark"
-              className="gap-3.5 sm:gap-4"
-              textClassName="text-[1.6rem] text-foreground sm:text-[1.9rem] dark:text-cream"
-              logoClassName="object-contain object-center p-1"
-              markClassName="h-12 w-12 rounded-[0.95rem] border border-border/70 bg-card/88 shadow-[0_12px_24px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-black/24 dark:shadow-[0_14px_28px_rgba(0,0,0,0.26)] sm:h-[3.5rem] sm:w-[3.5rem]"
+              className="gap-3 sm:gap-3.5"
+              textClassName="text-[1.45rem] text-foreground sm:text-[1.75rem] dark:text-cream"
+              logoClassName="object-contain object-center"
+              markClassName="h-[3.25rem] w-[4rem] rounded-[1.05rem] border border-black/5 bg-white/94 shadow-[0_14px_28px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-white/92 dark:shadow-[0_18px_34px_rgba(0,0,0,0.24)] sm:h-[3.75rem] sm:w-[4.7rem]"
             />
             <p className="mt-6 max-w-md font-body text-sm leading-8 text-muted-foreground dark:text-warm-gray">
               Pencil And Hammer develops residential, hospitality, and workplace interiors with a process built around clarity, coordination, and a more refined final result.

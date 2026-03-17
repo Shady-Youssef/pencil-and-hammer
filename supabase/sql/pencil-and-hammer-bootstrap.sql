@@ -24,7 +24,7 @@ create table if not exists public.site_settings (
   address_region text not null default 'NY',
   address_postal_code text not null default '10001',
   address_country text not null default 'US',
-  instagram_url text not null default 'https://instagram.com',
+  instagram_url text not null default 'https://www.instagram.com/pencil.hammer.qa/',
   facebook_url text not null default 'https://facebook.com',
   linkedin_url text not null default 'https://linkedin.com',
   seo_keywords text[] not null default array[

@@ -9,7 +9,7 @@ import { Menu, X } from "lucide-react";
 import BrandLockup from "@/components/BrandLockup";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useSiteSettings } from "@/components/site/site-settings-context";
-import { getEffectiveFaviconUrl } from "@/lib/site";
+import { getEffectiveBrandMarkUrl } from "@/lib/site";
 
 const heroOverlayRoutes = new Set(["/"]);
 
@@ -41,7 +41,7 @@ function getActivePath(pathname: string) {
 
 export default function Navbar() {
   const { settings } = useSiteSettings();
-  const brandMarkUrl = getEffectiveFaviconUrl(settings);
+  const brandMarkUrl = getEffectiveBrandMarkUrl(settings);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [indicator, setIndicator] = useState<IndicatorState>({ left: 0, width: 0 });
@@ -130,13 +130,13 @@ export default function Navbar() {
             logoUrl={brandMarkUrl}
             mode="mark"
             priority
-            className="max-w-full gap-3 sm:gap-3.5 lg:gap-4"
-            textClassName={`${useOverlayPalette ? "text-cream" : "text-foreground"} max-w-[10.5rem] text-[0.95rem] sm:max-w-[13rem] sm:text-[1.15rem] lg:max-w-none lg:text-[1.45rem] xl:text-[1.6rem]`}
-            logoClassName="object-contain object-center rounded-[0.85rem] p-0.5"
-            markClassName={`h-11 w-11 rounded-[0.95rem] border sm:h-12 sm:w-12 lg:h-[3.5rem] lg:w-[3.5rem] ${
+            className="max-w-full gap-2.5 sm:gap-3 lg:gap-4"
+            textClassName={`${useOverlayPalette ? "text-cream" : "text-foreground"} max-w-[9.5rem] text-[0.88rem] sm:max-w-[11.75rem] sm:text-[1rem] lg:max-w-none lg:text-[1.18rem] xl:text-[1.34rem]`}
+            logoClassName="object-contain object-center"
+            markClassName={`h-[3.4rem] w-[4.15rem] rounded-[1.1rem] border sm:h-[3.95rem] sm:w-[4.9rem] lg:h-[4.9rem] lg:w-[6rem] ${
               useOverlayPalette
-                ? "h-12 w-12 border-transparent bg-black/18 shadow-[0_12px_26px_rgba(0,0,0,0.22)] sm:h-[3.1rem] sm:w-[3.1rem] lg:h-[3.9rem] lg:w-[3.9rem]"
-                : "h-12 w-12 border-transparent bg-card/72 shadow-[0_10px_22px_rgba(0,0,0,0.1)] dark:bg-black/18 dark:shadow-[0_14px_28px_rgba(0,0,0,0.22)] sm:h-[3.1rem] sm:w-[3.1rem] lg:h-[3.9rem] lg:w-[3.9rem]"
+                ? "border-white/18 bg-white/92 shadow-[0_18px_34px_rgba(0,0,0,0.18)] backdrop-blur-md"
+                : "border-black/5 bg-white/94 shadow-[0_14px_28px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-white/92 dark:shadow-[0_18px_36px_rgba(0,0,0,0.24)]"
             }`}
             fallbackTextClassName={useOverlayPalette ? "text-cream/84" : undefined}
           />

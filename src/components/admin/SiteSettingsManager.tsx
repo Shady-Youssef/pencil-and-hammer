@@ -2545,7 +2545,7 @@ export default function SiteSettingsManager({
           type="button"
           onClick={() => void handleSave()}
           disabled={isSaving}
-          className="w-full bg-gradient-gold text-charcoal hover:opacity-95 sm:w-auto"
+          className="w-full bg-gradient-gold text-cream hover:opacity-95 sm:w-auto"
         >
           {isSaving ? <Loader2 className="animate-spin" /> : <Save />}
           Save Settings

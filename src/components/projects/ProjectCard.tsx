@@ -161,7 +161,7 @@ export default function ProjectCard({
                   <h3 className="font-display text-xl text-cream sm:text-2xl md:text-[2rem]">
                     {project.title}
                   </h3>
-                  <div className="mt-3 flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.16em] text-gold-light/90 sm:mt-4 sm:text-xs sm:tracking-[0.24em]">
+                  <div className="mt-3 flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.16em] text-cream/74 sm:mt-4 sm:text-xs sm:tracking-[0.24em]">
                     <MapPin size={13} />
                     <span>{project.location}</span>
                   </div>

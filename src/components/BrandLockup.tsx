@@ -135,16 +135,18 @@ export default function BrandLockup({
             {initials}
           </span>
         ) : (
-          <Image
-            src={logoUrl}
-            alt={`${name} logo`}
-            fill
-            sizes="40px"
-            priority={priority}
-            onError={() => setImageFailed(true)}
-            onLoad={handleImageLoad}
-            className={cn("object-cover", logoClassName)}
-          />
+          <span className="absolute inset-[10%]">
+            <Image
+              src={logoUrl}
+              alt={`${name} logo`}
+              fill
+              sizes="64px"
+              priority={priority}
+              onError={() => setImageFailed(true)}
+              onLoad={handleImageLoad}
+              className={cn("object-contain object-center", logoClassName)}
+            />
+          </span>
         )}
       </span>
       <span

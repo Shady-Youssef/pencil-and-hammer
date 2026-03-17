@@ -34,31 +34,22 @@ export default function OurStorySection() {
         <AnimatedSection direction="left">
           <div className="relative h-full min-h-[26rem] overflow-hidden rounded-[2.4rem] border border-border/70 bg-card shadow-[0_28px_70px_-46px_rgba(0,0,0,0.18)] dark:border-white/10 dark:bg-card">
             {hasStoryImage ? (
-              <img
-                src={settings.homeStoryImageUrl}
-                alt={settings.homeStoryImageAlt || settings.siteName}
-                className="h-full w-full object-cover object-center"
-              />
+              <div className="absolute inset-0">
+                <img
+                  src={settings.homeStoryImageUrl}
+                  alt={settings.homeStoryImageAlt || settings.siteName}
+                  className="h-full w-full object-cover object-center"
+                />
+              </div>
             ) : (
               <Image
                 src={aboutTeamImage}
                 alt={`${settings.siteName} team`}
                 fill
                 sizes="(max-width: 1024px) 100vw, 42vw"
-                className="object-cover"
+                className="object-cover object-center"
               />
             )}
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,0,0,0.44)_100%)] dark:bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.62)_100%)]" />
-            <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-              <div className="max-w-md rounded-[1.8rem] border border-white/14 bg-black/28 p-5 text-cream backdrop-blur-xl">
-                <p className="font-body text-[10px] uppercase tracking-[0.28em] text-cream/58">
-                  Pencil And Hammer
-                </p>
-                <p className="display-card-title mt-4 font-display text-cream">
-                  A studio shaped around design clarity, site rigor, and calm execution.
-                </p>
-              </div>
-            </div>
           </div>
         </AnimatedSection>
 
@@ -68,7 +59,7 @@ export default function OurStorySection() {
               <p className="font-body text-[11px] uppercase tracking-[0.34em] text-muted-foreground dark:text-cream/56">
                 {storyEyebrow}
               </p>
-              <h2 className="display-section-title mt-5 max-w-3xl font-display font-light text-foreground dark:text-cream">
+              <h2 className="mt-5 max-w-3xl font-display text-[clamp(2.75rem,4.8vw,5.2rem)] font-light leading-[0.94] tracking-[-0.04em] text-foreground dark:text-cream">
                 {storyTitle}
               </h2>
               <div className="mt-7 space-y-5">

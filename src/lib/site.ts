@@ -507,6 +507,24 @@ export function getEffectiveFaviconUrl({
   return normalizedFaviconUrl;
 }
 
+export function getEffectiveBrandMarkUrl({
+  faviconUrl,
+  faviconStoragePath,
+  logoUrl,
+  logoStoragePath,
+}: Pick<SiteSettings, "faviconUrl" | "faviconStoragePath" | "logoUrl" | "logoStoragePath">) {
+  const normalizedFaviconUrl = faviconUrl?.trim() || defaultSiteSettings.faviconUrl;
+  const usesSameUploadedAsset =
+    (faviconStoragePath && logoStoragePath && faviconStoragePath === logoStoragePath) ||
+    normalizedFaviconUrl === logoUrl;
+
+  if (usesSameUploadedAsset) {
+    return defaultSiteSettings.logoUrl;
+  }
+
+  return normalizedFaviconUrl || defaultSiteSettings.logoUrl;
+}
+
 function isAboutStatIcon(value: string): value is AboutStatIcon {
   return aboutStatIcons.includes(value as AboutStatIcon);
 }
@@ -913,7 +931,7 @@ export const defaultSiteSettings: SiteSettings = {
   addressRegion: "NY",
   addressPostalCode: "11201",
   addressCountry: "US",
-  instagramUrl: "https://instagram.com",
+  instagramUrl: "https://www.instagram.com/pencil.hammer.qa/",
   facebookUrl: "https://facebook.com",
   linkedinUrl: "https://linkedin.com",
   seoKeywords: [
@@ -931,7 +949,7 @@ export const defaultSiteSettings: SiteSettings = {
   ogTagline: "Strategy. Design. Delivery.",
   logoUrl: "/pencil-and-hammer-mark.svg",
   logoStoragePath: null,
-  faviconUrl: "/pencil-and-hammer-favicon.png",
+  faviconUrl: "/pencil-and-hammer-mark.svg",
   faviconStoragePath: null,
   lightBackgroundHex: "#f5f5f5",
   lightForegroundHex: "#141414",
