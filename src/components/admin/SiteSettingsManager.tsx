@@ -61,6 +61,8 @@ type SiteSettingsDraft = {
   ogTagline: string;
   logoUrl: string;
   logoStoragePath: string | null;
+  logoDarkUrl: string;
+  logoDarkStoragePath: string | null;
   faviconUrl: string;
   faviconStoragePath: string | null;
   lightBackgroundHex: string;
@@ -98,6 +100,8 @@ type SiteSettingsDraft = {
   homeStoryParagraphs: AboutStoryParagraph[];
   homeStoryImageUrl: string;
   homeStoryImageStoragePath: string | null;
+  homeStoryImageDarkUrl: string;
+  homeStoryImageDarkStoragePath: string | null;
   homeStoryImageAlt: string;
   homeStoryMetrics: HomeStoryMetric[];
   homeStoryPrimaryCtaLabel: string;
@@ -130,10 +134,12 @@ type SiteSettingsDraft = {
 type SettingsTab = "branding" | "contact" | "home" | "about";
 type AssetKind =
   | "logo"
+  | "logoDark"
   | "favicon"
   | "aboutHero"
   | "aboutPortrait"
   | "homeStory"
+  | "homeStoryDark"
   | "homeHero"
   | "homeHeroVideo";
 
@@ -208,6 +214,8 @@ function createDraft(settings: SiteSettings): SiteSettingsDraft {
     ogTagline: settings.ogTagline,
     logoUrl: settings.logoUrl,
     logoStoragePath: settings.logoStoragePath,
+    logoDarkUrl: settings.logoDarkUrl,
+    logoDarkStoragePath: settings.logoDarkStoragePath,
     faviconUrl: settings.faviconUrl,
     faviconStoragePath: settings.faviconStoragePath,
     lightBackgroundHex: settings.lightBackgroundHex,
@@ -245,6 +253,8 @@ function createDraft(settings: SiteSettings): SiteSettingsDraft {
     homeStoryParagraphs: settings.homeStoryParagraphs.map((paragraph) => ({ ...paragraph })),
     homeStoryImageUrl: settings.homeStoryImageUrl,
     homeStoryImageStoragePath: settings.homeStoryImageStoragePath,
+    homeStoryImageDarkUrl: settings.homeStoryImageDarkUrl,
+    homeStoryImageDarkStoragePath: settings.homeStoryImageDarkStoragePath,
     homeStoryImageAlt: settings.homeStoryImageAlt,
     homeStoryMetrics: settings.homeStoryMetrics.map((metric) => ({ ...metric })),
     homeStoryPrimaryCtaLabel: settings.homeStoryPrimaryCtaLabel,
@@ -336,11 +346,13 @@ export default function SiteSettingsManager({
   const [uploadingAsset, setUploadingAsset] = useState<AssetKind | null>(null);
   const [savedAssetPaths, setSavedAssetPaths] = useState({
     logo: initialSettings.logoStoragePath,
+    logoDark: initialSettings.logoDarkStoragePath,
     favicon: initialSettings.faviconStoragePath,
     aboutHero: initialSettings.aboutHeroImageStoragePath,
     homeHero: initialSettings.homeHeroImageStoragePath,
     homeHeroVideo: initialSettings.homeHeroVideoStoragePath,
     homeStory: initialSettings.homeStoryImageStoragePath,
+    homeStoryDark: initialSettings.homeStoryImageDarkStoragePath,
     aboutPortrait: initialSettings.aboutPortraitStoragePath,
   });
 
@@ -358,6 +370,10 @@ export default function SiteSettingsManager({
     setDraft((current) => {
       if (kind === "logo") {
         return { ...current, logoUrl: url, logoStoragePath: storagePath };
+      }
+
+      if (kind === "logoDark") {
+        return { ...current, logoDarkUrl: url, logoDarkStoragePath: storagePath };
       }
 
       if (kind === "favicon") {
@@ -396,6 +412,14 @@ export default function SiteSettingsManager({
         };
       }
 
+      if (kind === "homeStoryDark") {
+        return {
+          ...current,
+          homeStoryImageDarkUrl: url,
+          homeStoryImageDarkStoragePath: storagePath,
+        };
+      }
+
       return {
         ...current,
         aboutPortraitUrl: url,
@@ -407,7 +431,9 @@ export default function SiteSettingsManager({
   function getAssetLabel(kind: AssetKind) {
     switch (kind) {
       case "logo":
-        return "App logo";
+        return "Light theme navbar logo";
+      case "logoDark":
+        return "Dark theme navbar logo";
       case "favicon":
         return "App favicon";
       case "aboutHero":
@@ -417,7 +443,9 @@ export default function SiteSettingsManager({
       case "homeHeroVideo":
         return "Home hero video";
       case "homeStory":
-        return "Home Our Story image";
+        return "Home Our Story light image";
+      case "homeStoryDark":
+        return "Home Our Story dark image";
       default:
         return "Portrait image";
     }
@@ -437,9 +465,9 @@ export default function SiteSettingsManager({
 
     try {
       const group =
-        kind === "logo" || kind === "favicon"
+        kind === "logo" || kind === "logoDark" || kind === "favicon"
           ? "branding"
-          : kind === "homeStory" || kind === "homeHero" || kind === "homeHeroVideo"
+          : kind === "homeStory" || kind === "homeStoryDark" || kind === "homeHero" || kind === "homeHeroVideo"
             ? "home"
             : "about";
       const path = `${group}/${kind}-${Date.now()}-${sanitizeFileName(file.name)}`;
@@ -481,7 +509,7 @@ export default function SiteSettingsManager({
         );
       }
 
-      if (kind === "homeStory" && !draft.homeStoryImageAlt.trim()) {
+      if ((kind === "homeStory" || kind === "homeStoryDark") && !draft.homeStoryImageAlt.trim()) {
         updateDraft(
           "homeStoryImageAlt",
           file.name.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ").trim(),
@@ -943,6 +971,8 @@ export default function SiteSettingsManager({
             og_tagline: draft.ogTagline.trim(),
             logo_url: draft.logoUrl.trim(),
             logo_storage_path: draft.logoStoragePath,
+            logo_dark_url: draft.logoDarkUrl.trim(),
+            logo_dark_storage_path: draft.logoDarkStoragePath,
             favicon_url: draft.faviconUrl.trim(),
             favicon_storage_path: draft.faviconStoragePath,
             light_background_hex: draft.lightBackgroundHex.trim(),
@@ -980,6 +1010,8 @@ export default function SiteSettingsManager({
             home_story_paragraphs: cleanedHomeStoryParagraphs,
             home_story_image_url: draft.homeStoryImageUrl.trim(),
             home_story_image_storage_path: draft.homeStoryImageStoragePath,
+            home_story_image_dark_url: draft.homeStoryImageDarkUrl.trim(),
+            home_story_image_dark_storage_path: draft.homeStoryImageDarkStoragePath,
             home_story_image_alt: draft.homeStoryImageAlt.trim(),
             home_story_metrics: cleanedHomeStoryMetrics,
             home_story_primary_cta_label: draft.homeStoryPrimaryCtaLabel.trim(),
@@ -1026,17 +1058,22 @@ export default function SiteSettingsManager({
       setDraft(createDraft(normalized));
       setSavedAssetPaths({
         logo: normalized.logoStoragePath,
+        logoDark: normalized.logoDarkStoragePath,
         favicon: normalized.faviconStoragePath,
         aboutHero: normalized.aboutHeroImageStoragePath,
         homeHero: normalized.homeHeroImageStoragePath,
         homeHeroVideo: normalized.homeHeroVideoStoragePath,
         homeStory: normalized.homeStoryImageStoragePath,
+        homeStoryDark: normalized.homeStoryImageDarkStoragePath,
         aboutPortrait: normalized.aboutPortraitStoragePath,
       });
       setErrorMessage(null);
 
       const obsoletePaths = [
         oldPaths.logo && oldPaths.logo !== normalized.logoStoragePath ? oldPaths.logo : null,
+        oldPaths.logoDark && oldPaths.logoDark !== normalized.logoDarkStoragePath
+          ? oldPaths.logoDark
+          : null,
         oldPaths.favicon && oldPaths.favicon !== normalized.faviconStoragePath ? oldPaths.favicon : null,
         oldPaths.aboutHero && oldPaths.aboutHero !== normalized.aboutHeroImageStoragePath ? oldPaths.aboutHero : null,
         oldPaths.homeHero && oldPaths.homeHero !== normalized.homeHeroImageStoragePath ? oldPaths.homeHero : null,
@@ -1044,6 +1081,9 @@ export default function SiteSettingsManager({
           ? oldPaths.homeHeroVideo
           : null,
         oldPaths.homeStory && oldPaths.homeStory !== normalized.homeStoryImageStoragePath ? oldPaths.homeStory : null,
+        oldPaths.homeStoryDark && oldPaths.homeStoryDark !== normalized.homeStoryImageDarkStoragePath
+          ? oldPaths.homeStoryDark
+          : null,
         oldPaths.aboutPortrait && oldPaths.aboutPortrait !== normalized.aboutPortraitStoragePath ? oldPaths.aboutPortrait : null,
       ].filter((value): value is string => Boolean(value));
 
@@ -1101,18 +1141,18 @@ export default function SiteSettingsManager({
               <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
                 <p className="font-display text-2xl text-foreground">Brand Assets</p>
                 <p className="mt-1 font-body text-sm text-muted-foreground">
-                  Update the app logo and favicon used across navigation, footer, and metadata.
+                  Update the public brand mark for light and dark themes, plus the favicon used in metadata.
                 </p>
 
-                <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   <div className="rounded-[1.25rem] border border-border bg-background/80 p-5">
                     <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                      App Logo
+                      Light Theme Navbar Logo
                     </p>
                     <div className="relative mt-4 flex h-28 items-center justify-center overflow-hidden rounded-[1rem] border border-border bg-background">
                       <Image
                         src={draft.logoUrl}
-                        alt="App logo preview"
+                        alt="Light theme navbar logo preview"
                         fill
                         sizes="320px"
                         className="object-contain p-4"
@@ -1130,6 +1170,41 @@ export default function SiteSettingsManager({
                         accept="image/png,image/jpeg,image/webp,image/avif,image/svg+xml"
                         className="hidden"
                         onChange={(event) => void handleAssetUpload(event, "logo")}
+                      />
+                    </label>
+                  </div>
+
+                  <div className="rounded-[1.25rem] border border-border bg-background/80 p-5">
+                    <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Dark Theme Navbar Logo
+                    </p>
+                    <div className="relative mt-4 flex h-28 items-center justify-center overflow-hidden rounded-[1rem] border border-border bg-charcoal/92">
+                      {draft.logoDarkUrl ? (
+                        <Image
+                          src={draft.logoDarkUrl}
+                          alt="Dark theme navbar logo preview"
+                          fill
+                          sizes="320px"
+                          className="object-contain p-4"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center px-4 text-center font-body text-sm text-warm-gray">
+                          Optional dark-mode override. The light logo is used until you upload one.
+                        </div>
+                      )}
+                    </div>
+                    <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 font-body text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:border-accent">
+                      {uploadingAsset === "logoDark" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                      Upload Dark Logo
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/avif,image/svg+xml"
+                        className="hidden"
+                        onChange={(event) => void handleAssetUpload(event, "logoDark")}
                       />
                     </label>
                   </div>
@@ -1616,41 +1691,81 @@ export default function SiteSettingsManager({
                 </p>
 
                 <div className="mt-6 grid gap-5">
-                  <div className="relative h-[320px] overflow-hidden rounded-[1.2rem] border border-border bg-background">
-                    {draft.homeStoryImageUrl ? (
-                      <Image
-                        src={draft.homeStoryImageUrl}
-                        alt={draft.homeStoryImageAlt || "Home Our Story preview"}
-                        fill
-                        sizes="900px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center bg-background/80 font-body text-sm text-muted-foreground">
-                        Upload an image for the home-page Our Story section.
+                  <div className="grid gap-5 lg:grid-cols-2">
+                    <div className="rounded-[1.2rem] border border-border bg-background/80 p-4">
+                      <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Light Theme Image
+                      </p>
+                      <div className="relative mt-4 h-[320px] overflow-hidden rounded-[1rem] border border-border bg-background">
+                        {draft.homeStoryImageUrl ? (
+                          <Image
+                            src={draft.homeStoryImageUrl}
+                            alt={draft.homeStoryImageAlt || "Home Our Story light preview"}
+                            fill
+                            sizes="900px"
+                            className="object-contain p-4"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center bg-background/80 px-4 text-center font-body text-sm text-muted-foreground">
+                            Upload the default image for the home-page Our Story section.
+                          </div>
+                        )}
                       </div>
-                    )}
+                      <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 font-body text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:border-accent">
+                        {uploadingAsset === "homeStory" ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Upload className="h-4 w-4" />
+                        )}
+                        Upload Light Image
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/avif"
+                          className="hidden"
+                          onChange={(event) => void handleAssetUpload(event, "homeStory")}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="rounded-[1.2rem] border border-border bg-background/80 p-4">
+                      <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                        Dark Theme Image
+                      </p>
+                      <div className="relative mt-4 h-[320px] overflow-hidden rounded-[1rem] border border-border bg-charcoal/92">
+                        {draft.homeStoryImageDarkUrl ? (
+                          <Image
+                            src={draft.homeStoryImageDarkUrl}
+                            alt={draft.homeStoryImageAlt || "Home Our Story dark preview"}
+                            fill
+                            sizes="900px"
+                            className="object-contain p-4"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center px-4 text-center font-body text-sm text-warm-gray">
+                            Optional dark-mode override. The light image is used until you upload one.
+                          </div>
+                        )}
+                      </div>
+                      <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 font-body text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:border-accent">
+                        {uploadingAsset === "homeStoryDark" ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Upload className="h-4 w-4" />
+                        )}
+                        Upload Dark Image
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/avif"
+                          className="hidden"
+                          onChange={(event) => void handleAssetUpload(event, "homeStoryDark")}
+                        />
+                      </label>
+                    </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3">
-                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 font-body text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:border-accent">
-                      {uploadingAsset === "homeStory" ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Upload className="h-4 w-4" />
-                      )}
-                      Upload Story Image
-                      <input
-                        type="file"
-                        accept="image/png,image/jpeg,image/webp,image/avif"
-                        className="hidden"
-                        onChange={(event) => void handleAssetUpload(event, "homeStory")}
-                      />
-                    </label>
-                    <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                      Displays in the home-page story split layout
-                    </p>
-                  </div>
+                  <p className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    The light image is the default. The dark image replaces it only when dark mode is active.
+                  </p>
 
                   <div className="space-y-2">
                     <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">

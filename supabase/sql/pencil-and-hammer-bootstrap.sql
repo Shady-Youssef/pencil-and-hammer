@@ -41,6 +41,8 @@ create table if not exists public.site_settings (
   og_tagline text not null default 'Strategy. Design. Delivery.',
   logo_url text not null default '/pencil-and-hammer-mark.svg',
   logo_storage_path text,
+  logo_dark_url text not null default '',
+  logo_dark_storage_path text,
   favicon_url text not null default '/pencil-and-hammer-mark.svg',
   favicon_storage_path text,
   created_at timestamptz not null default timezone('utc', now()),
@@ -390,6 +392,18 @@ set
   end;
 
 alter table public.site_settings
+  add column if not exists logo_dark_url text not null default '',
+  add column if not exists logo_dark_storage_path text,
+  add column if not exists home_story_image_dark_url text not null default '',
+  add column if not exists home_story_image_dark_storage_path text;
+
+update public.site_settings
+set
+  logo_dark_url = coalesce(nullif(trim(logo_dark_url), ''), ''),
+  home_story_image_dark_url = coalesce(nullif(trim(home_story_image_dark_url), ''), '')
+where id = 1;
+
+alter table public.site_settings
   alter column site_name set default 'Pencil And Hammer',
   alter column site_title set default 'Pencil And Hammer | Design-Build Studio',
   alter column site_description set default 'Pencil And Hammer is a design-build company delivering residential, hospitality, retail, and workplace interiors with strategic planning and a clean material point of view.',
@@ -400,6 +414,7 @@ alter table public.site_settings
   alter column og_kicker set default 'Design-Build Company',
   alter column og_tagline set default 'Strategy. Design. Delivery.',
   alter column logo_url set default '/pencil-and-hammer-mark.svg',
+  alter column logo_dark_url set default '',
   alter column favicon_url set default '/pencil-and-hammer-mark.svg',
   alter column about_hero_title set default 'Built from strategy, not styling.',
   alter column about_hero_subtitle set default 'One team for concept design, coordination, and site delivery.',
@@ -430,6 +445,7 @@ set
   og_kicker = 'Design-Build Company',
   og_tagline = 'Strategy. Design. Delivery.',
   logo_url = '/pencil-and-hammer-mark.svg',
+  logo_dark_url = '',
   favicon_url = '/pencil-and-hammer-mark.svg',
   about_hero_title = 'Built from strategy, not styling.',
   about_hero_subtitle = 'One team for concept design, coordination, and site delivery.',

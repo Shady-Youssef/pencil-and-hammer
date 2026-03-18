@@ -7,9 +7,13 @@ import { motion } from "framer-motion";
 import aboutTeamImage from "@/assets/about-team.jpg";
 import AnimatedSection from "@/components/AnimatedSection";
 import { useSiteSettings } from "@/components/site/site-settings-context";
+import { useTheme } from "@/components/theme-context";
+import { getThemeAssetUrl } from "@/lib/site";
 
 export default function OurStorySection() {
   const { settings } = useSiteSettings();
+  const { theme, mounted } = useTheme();
+  const resolvedTheme = mounted ? theme : "light";
   const storyEyebrow = settings.homeStoryEyebrow.trim() || "Our Story";
   const storyTitle =
     settings.homeStoryTitle.trim() ||
@@ -18,7 +22,12 @@ export default function OurStorySection() {
     paragraph.body.trim(),
   );
   const storyStats = settings.homeStoryMetrics;
-  const hasStoryImage = Boolean(settings.homeStoryImageUrl);
+  const storyImageUrl = getThemeAssetUrl(
+    settings.homeStoryImageUrl,
+    settings.homeStoryImageDarkUrl,
+    resolvedTheme,
+  );
+  const hasStoryImage = Boolean(storyImageUrl);
   const primaryCtaLabel =
     settings.homeStoryPrimaryCtaLabel.trim() || "Explore The Studio";
   const primaryCtaHref = settings.homeStoryPrimaryCtaHref.trim() || "/about";
@@ -32,14 +41,19 @@ export default function OurStorySection() {
 
       <div className="relative mx-auto grid max-w-7xl gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-stretch">
         <AnimatedSection direction="left">
-          <div className="relative h-full min-h-[26rem] overflow-hidden rounded-[2.4rem] border border-border/70 bg-card shadow-[0_28px_70px_-46px_rgba(0,0,0,0.18)] dark:border-white/10 dark:bg-card">
+          <div className="relative aspect-[4/5] min-h-[26rem] overflow-hidden rounded-[2.4rem] border border-border/70 bg-card shadow-[0_28px_70px_-46px_rgba(0,0,0,0.18)] sm:min-h-[30rem] dark:border-white/10 dark:bg-card">
             {hasStoryImage ? (
-              <div className="absolute inset-0">
-                <img
-                  src={settings.homeStoryImageUrl}
-                  alt={settings.homeStoryImageAlt || settings.siteName}
-                  className="h-full w-full object-cover object-center"
-                />
+              <div className="absolute inset-0 p-3 sm:p-4">
+                <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-background/92 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] dark:bg-black/42">
+                  <Image
+                    src={storyImageUrl}
+                    alt={settings.homeStoryImageAlt || settings.siteName}
+                    fill
+                    quality={100}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 86vw, 42vw"
+                    className="object-contain object-center"
+                  />
+                </div>
               </div>
             ) : (
               <Image

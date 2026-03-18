@@ -67,6 +67,8 @@ export type SiteSettings = {
   ogTagline: string;
   logoUrl: string;
   logoStoragePath: string | null;
+  logoDarkUrl: string;
+  logoDarkStoragePath: string | null;
   faviconUrl: string;
   faviconStoragePath: string | null;
   lightBackgroundHex: string;
@@ -104,6 +106,8 @@ export type SiteSettings = {
   homeStoryParagraphs: AboutStoryParagraph[];
   homeStoryImageUrl: string;
   homeStoryImageStoragePath: string | null;
+  homeStoryImageDarkUrl: string;
+  homeStoryImageDarkStoragePath: string | null;
   homeStoryImageAlt: string;
   homeStoryMetrics: HomeStoryMetric[];
   homeStoryPrimaryCtaLabel: string;
@@ -158,6 +162,8 @@ export type SiteSettingsRow = {
   og_tagline: string | null;
   logo_url: string | null;
   logo_storage_path: string | null;
+  logo_dark_url: string | null;
+  logo_dark_storage_path: string | null;
   favicon_url: string | null;
   favicon_storage_path: string | null;
   light_background_hex: string | null;
@@ -195,6 +201,8 @@ export type SiteSettingsRow = {
   home_story_paragraphs: unknown;
   home_story_image_url: string | null;
   home_story_image_storage_path: string | null;
+  home_story_image_dark_url: string | null;
+  home_story_image_dark_storage_path: string | null;
   home_story_image_alt: string | null;
   home_story_metrics: unknown;
   home_story_primary_cta_label: string | null;
@@ -251,6 +259,8 @@ export const siteSettingsSelect = `
   og_tagline,
   logo_url,
   logo_storage_path,
+  logo_dark_url,
+  logo_dark_storage_path,
   favicon_url,
   favicon_storage_path,
   light_background_hex,
@@ -288,6 +298,8 @@ export const siteSettingsSelect = `
   home_story_paragraphs,
   home_story_image_url,
   home_story_image_storage_path,
+  home_story_image_dark_url,
+  home_story_image_dark_storage_path,
   home_story_image_alt,
   home_story_metrics,
   home_story_primary_cta_label,
@@ -544,6 +556,39 @@ export function getEffectiveBrandMarkUrl({
   }
 
   return normalizedFaviconUrl || defaultSiteSettings.logoUrl;
+}
+
+export function getThemeAssetUrl(
+  lightUrl: string | null | undefined,
+  darkUrl: string | null | undefined,
+  theme: "light" | "dark",
+) {
+  const normalizedDarkUrl = darkUrl?.trim();
+
+  if (theme === "dark" && normalizedDarkUrl) {
+    return normalizedDarkUrl;
+  }
+
+  return lightUrl?.trim() || "";
+}
+
+export function getThemeBrandMarkUrl(
+  settings: Pick<
+    SiteSettings,
+    | "faviconUrl"
+    | "faviconStoragePath"
+    | "logoUrl"
+    | "logoStoragePath"
+    | "logoDarkUrl"
+  >,
+  theme: "light" | "dark",
+) {
+  const lightBrandMarkUrl = getEffectiveBrandMarkUrl(settings);
+
+  return (
+    getThemeAssetUrl(lightBrandMarkUrl, settings.logoDarkUrl, theme) ||
+    defaultSiteSettings.logoUrl
+  );
 }
 
 function isAboutStatIcon(value: string): value is AboutStatIcon {
@@ -970,6 +1015,8 @@ export const defaultSiteSettings: SiteSettings = {
   ogTagline: "Strategy. Design. Delivery.",
   logoUrl: "/pencil-and-hammer-mark.svg",
   logoStoragePath: null,
+  logoDarkUrl: "",
+  logoDarkStoragePath: null,
   faviconUrl: "/pencil-and-hammer-mark.svg",
   faviconStoragePath: null,
   lightBackgroundHex: "#f5f5f5",
@@ -1008,6 +1055,8 @@ export const defaultSiteSettings: SiteSettings = {
   homeStoryParagraphs: defaultHomeStoryParagraphs,
   homeStoryImageUrl: "",
   homeStoryImageStoragePath: null,
+  homeStoryImageDarkUrl: "",
+  homeStoryImageDarkStoragePath: null,
   homeStoryImageAlt: "Pencil And Hammer studio story image",
   homeStoryMetrics: defaultHomeStoryMetrics,
   homeStoryPrimaryCtaLabel: "Explore The Studio",
@@ -1086,6 +1135,8 @@ export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSetting
       "/icon.svg",
     ]),
     logoStoragePath: row?.logo_storage_path ?? null,
+    logoDarkUrl: row?.logo_dark_url?.trim() || "",
+    logoDarkStoragePath: row?.logo_dark_storage_path ?? null,
     faviconUrl: normalizeBrandAssetUrl(
       row?.favicon_url,
       defaultSiteSettings.faviconUrl,
@@ -1179,6 +1230,8 @@ export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSetting
     homeStoryParagraphs: normalizeHomeStoryParagraphs(row?.home_story_paragraphs),
     homeStoryImageUrl: row?.home_story_image_url?.trim() || "",
     homeStoryImageStoragePath: row?.home_story_image_storage_path ?? null,
+    homeStoryImageDarkUrl: row?.home_story_image_dark_url?.trim() || "",
+    homeStoryImageDarkStoragePath: row?.home_story_image_dark_storage_path ?? null,
     homeStoryImageAlt:
       row?.home_story_image_alt?.trim() || defaultSiteSettings.homeStoryImageAlt,
     homeStoryMetrics: normalizeHomeStoryMetrics(row?.home_story_metrics),

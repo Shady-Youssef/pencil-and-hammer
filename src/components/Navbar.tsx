@@ -9,7 +9,8 @@ import { Menu, X } from "lucide-react";
 import BrandLockup from "@/components/BrandLockup";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useSiteSettings } from "@/components/site/site-settings-context";
-import { getEffectiveBrandMarkUrl } from "@/lib/site";
+import { useTheme } from "@/components/theme-context";
+import { getThemeBrandMarkUrl } from "@/lib/site";
 
 const heroOverlayRoutes = new Set(["/"]);
 
@@ -41,7 +42,9 @@ function getActivePath(pathname: string) {
 
 export default function Navbar() {
   const { settings } = useSiteSettings();
-  const brandMarkUrl = getEffectiveBrandMarkUrl(settings);
+  const { theme, mounted } = useTheme();
+  const resolvedTheme = mounted ? theme : "light";
+  const brandMarkUrl = getThemeBrandMarkUrl(settings, resolvedTheme);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [indicator, setIndicator] = useState<IndicatorState>({ left: 0, width: 0 });
@@ -133,10 +136,10 @@ export default function Navbar() {
             className="max-w-full gap-2.5 sm:gap-3 lg:gap-4"
             textClassName={`${useOverlayPalette ? "text-cream" : "text-foreground"} max-w-[9.5rem] text-[0.88rem] sm:max-w-[11.75rem] sm:text-[1rem] lg:max-w-none lg:text-[1.18rem] xl:text-[1.34rem]`}
             logoClassName="object-contain object-center"
-            markClassName={`h-[3.4rem] w-[4.15rem] rounded-[1.1rem] border sm:h-[3.95rem] sm:w-[4.9rem] lg:h-[4.9rem] lg:w-[6rem] ${
+            markClassName={`h-[3.4rem] w-[4.15rem] rounded-[1.1rem] sm:h-[3.95rem] sm:w-[4.9rem] lg:h-[4.9rem] lg:w-[6rem] ${
               useOverlayPalette
-                ? "border-white/18 bg-white/92 shadow-[0_18px_34px_rgba(0,0,0,0.18)] backdrop-blur-md"
-                : "border-black/5 bg-white/94 shadow-[0_14px_28px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-white/92 dark:shadow-[0_18px_36px_rgba(0,0,0,0.24)]"
+                ? "bg-white/92 shadow-[0_18px_34px_rgba(0,0,0,0.18)] backdrop-blur-md"
+                : "bg-white/94 shadow-[0_14px_28px_rgba(0,0,0,0.12)] dark:bg-white/92 dark:shadow-[0_18px_36px_rgba(0,0,0,0.24)]"
             }`}
             fallbackTextClassName={useOverlayPalette ? "text-cream/84" : undefined}
           />

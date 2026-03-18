@@ -121,7 +121,7 @@ export default function BrandLockup({
     <span className={cn("inline-flex min-w-0 items-center gap-3", className)}>
       <span
         className={cn(
-          "relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-background/70 sm:h-10 sm:w-10",
+          "relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-background/70 sm:h-10 sm:w-10",
           markClassName,
         )}
       >

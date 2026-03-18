@@ -5,8 +5,9 @@ import { Instagram, Facebook, Linkedin, ArrowUpRight } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import BrandLockup from "@/components/BrandLockup";
 import { useSiteSettings } from "@/components/site/site-settings-context";
+import { useTheme } from "@/components/theme-context";
 import { motion } from "framer-motion";
-import { getAddressLines, getEffectiveBrandMarkUrl } from "@/lib/site";
+import { getAddressLines, getThemeBrandMarkUrl } from "@/lib/site";
 
 const footerLinks = [
   { label: "Home", href: "/" },
@@ -17,7 +18,9 @@ const footerLinks = [
 
 export default function Footer() {
   const { settings } = useSiteSettings();
-  const brandMarkUrl = getEffectiveBrandMarkUrl(settings);
+  const { theme, mounted } = useTheme();
+  const resolvedTheme = mounted ? theme : "light";
+  const brandMarkUrl = getThemeBrandMarkUrl(settings, resolvedTheme);
   const socialLinks = [
     { href: settings.instagramUrl, label: "Instagram", icon: Instagram },
     { href: settings.facebookUrl, label: "Facebook", icon: Facebook },
@@ -42,7 +45,7 @@ export default function Footer() {
               className="gap-3 sm:gap-3.5"
               textClassName="text-[1.45rem] text-foreground sm:text-[1.75rem] dark:text-cream"
               logoClassName="object-contain object-center"
-              markClassName="h-[3.25rem] w-[4rem] rounded-[1.05rem] border border-black/5 bg-white/94 shadow-[0_14px_28px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-white/92 dark:shadow-[0_18px_34px_rgba(0,0,0,0.24)] sm:h-[3.75rem] sm:w-[4.7rem]"
+              markClassName="h-[3.25rem] w-[4rem] rounded-[1.05rem] bg-white/94 shadow-[0_14px_28px_rgba(0,0,0,0.12)] dark:bg-white/92 dark:shadow-[0_18px_34px_rgba(0,0,0,0.24)] sm:h-[3.75rem] sm:w-[4.7rem]"
             />
             <p className="mt-6 max-w-md font-body text-sm leading-8 text-muted-foreground dark:text-warm-gray">
               Pencil And Hammer develops residential, hospitality, and workplace interiors with a process built around clarity, coordination, and a more refined final result.
