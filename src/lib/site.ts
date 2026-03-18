@@ -117,6 +117,13 @@ export type SiteSettings = {
   homeServices: HomeService[];
   aboutStoryTitle: string;
   aboutStoryParagraphs: AboutStoryParagraph[];
+  aboutMissionVisionEyebrow: string;
+  aboutMissionVisionTitle: string;
+  aboutMissionVisionBody: string;
+  aboutMissionTitle: string;
+  aboutMissionBody: string;
+  aboutVisionTitle: string;
+  aboutVisionBody: string;
   aboutPortraitUrl: string;
   aboutPortraitStoragePath: string | null;
   aboutPortraitAlt: string;
@@ -203,6 +210,13 @@ export type SiteSettingsRow = {
   about_story_paragraphs: unknown;
   about_story_body_primary: string | null;
   about_story_body_secondary: string | null;
+  about_mission_vision_eyebrow: string | null;
+  about_mission_vision_title: string | null;
+  about_mission_vision_body: string | null;
+  about_mission_title: string | null;
+  about_mission_body: string | null;
+  about_vision_title: string | null;
+  about_vision_body: string | null;
   about_portrait_url: string | null;
   about_portrait_storage_path: string | null;
   about_portrait_alt: string | null;
@@ -289,6 +303,13 @@ export const siteSettingsSelect = `
   about_story_paragraphs,
   about_story_body_primary,
   about_story_body_secondary,
+  about_mission_vision_eyebrow,
+  about_mission_vision_title,
+  about_mission_vision_body,
+  about_mission_title,
+  about_mission_body,
+  about_vision_title,
+  about_vision_body,
   about_portrait_url,
   about_portrait_storage_path,
   about_portrait_alt,
@@ -1001,6 +1022,16 @@ export const defaultSiteSettings: SiteSettings = {
   homeServices: defaultHomeServices,
   aboutStoryTitle: "How Pencil And Hammer Works",
   aboutStoryParagraphs: defaultAboutStoryParagraphs,
+  aboutMissionVisionEyebrow: "Mission & Vision",
+  aboutMissionVisionTitle: "Design intent should survive the realities of execution.",
+  aboutMissionVisionBody:
+    "Pencil And Hammer is built around a simple belief: strong interiors come from alignment, not handoff friction. We connect concept, technical coordination, procurement thinking, and delivery support so each decision strengthens the final space instead of compromising it.",
+  aboutMissionTitle: "Our Mission",
+  aboutMissionBody:
+    "To lead every project with one disciplined process that keeps strategy, detailing, and site execution working together from the first brief to the final handover.",
+  aboutVisionTitle: "Our Vision",
+  aboutVisionBody:
+    "To be the studio clients trust for interiors that feel calm, precise, and enduring because they are resolved with as much rigor in delivery as they are in design.",
   aboutPortraitUrl: "",
   aboutPortraitStoragePath: null,
   aboutPortraitAlt: "Pencil And Hammer team portrait",
@@ -1178,6 +1209,23 @@ export function normalizeSiteSettings(row?: SiteSettingsRow | null): SiteSetting
       row?.about_story_body_primary,
       row?.about_story_body_secondary,
     ),
+    aboutMissionVisionEyebrow:
+      row?.about_mission_vision_eyebrow?.trim() ||
+      defaultSiteSettings.aboutMissionVisionEyebrow,
+    aboutMissionVisionTitle:
+      row?.about_mission_vision_title?.trim() ||
+      defaultSiteSettings.aboutMissionVisionTitle,
+    aboutMissionVisionBody:
+      row?.about_mission_vision_body?.trim() ||
+      defaultSiteSettings.aboutMissionVisionBody,
+    aboutMissionTitle:
+      row?.about_mission_title?.trim() || defaultSiteSettings.aboutMissionTitle,
+    aboutMissionBody:
+      row?.about_mission_body?.trim() || defaultSiteSettings.aboutMissionBody,
+    aboutVisionTitle:
+      row?.about_vision_title?.trim() || defaultSiteSettings.aboutVisionTitle,
+    aboutVisionBody:
+      row?.about_vision_body?.trim() || defaultSiteSettings.aboutVisionBody,
     aboutPortraitUrl: row?.about_portrait_url?.trim() || "",
     aboutPortraitStoragePath: row?.about_portrait_storage_path ?? null,
     aboutPortraitAlt:

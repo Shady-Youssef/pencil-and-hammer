@@ -111,6 +111,13 @@ type SiteSettingsDraft = {
   homeServices: HomeService[];
   aboutStoryTitle: string;
   aboutStoryParagraphs: AboutStoryParagraph[];
+  aboutMissionVisionEyebrow: string;
+  aboutMissionVisionTitle: string;
+  aboutMissionVisionBody: string;
+  aboutMissionTitle: string;
+  aboutMissionBody: string;
+  aboutVisionTitle: string;
+  aboutVisionBody: string;
   aboutPortraitUrl: string;
   aboutPortraitStoragePath: string | null;
   aboutPortraitAlt: string;
@@ -251,6 +258,13 @@ function createDraft(settings: SiteSettings): SiteSettingsDraft {
     homeServices: settings.homeServices.map((service) => ({ ...service, deliverables: [...service.deliverables] })),
     aboutStoryTitle: settings.aboutStoryTitle,
     aboutStoryParagraphs: settings.aboutStoryParagraphs.map((paragraph) => ({ ...paragraph })),
+    aboutMissionVisionEyebrow: settings.aboutMissionVisionEyebrow,
+    aboutMissionVisionTitle: settings.aboutMissionVisionTitle,
+    aboutMissionVisionBody: settings.aboutMissionVisionBody,
+    aboutMissionTitle: settings.aboutMissionTitle,
+    aboutMissionBody: settings.aboutMissionBody,
+    aboutVisionTitle: settings.aboutVisionTitle,
+    aboutVisionBody: settings.aboutVisionBody,
     aboutPortraitUrl: settings.aboutPortraitUrl,
     aboutPortraitStoragePath: settings.aboutPortraitStoragePath,
     aboutPortraitAlt: settings.aboutPortraitAlt,
@@ -981,6 +995,13 @@ export default function SiteSettingsManager({
             about_story_paragraphs: cleanedStoryParagraphs,
             about_story_body_primary: cleanedStoryParagraphs[0]?.body ?? "",
             about_story_body_secondary: cleanedStoryParagraphs[1]?.body ?? "",
+            about_mission_vision_eyebrow: draft.aboutMissionVisionEyebrow.trim(),
+            about_mission_vision_title: draft.aboutMissionVisionTitle.trim(),
+            about_mission_vision_body: draft.aboutMissionVisionBody.trim(),
+            about_mission_title: draft.aboutMissionTitle.trim(),
+            about_mission_body: draft.aboutMissionBody.trim(),
+            about_vision_title: draft.aboutVisionTitle.trim(),
+            about_vision_body: draft.aboutVisionBody.trim(),
             about_portrait_url: draft.aboutPortraitUrl.trim(),
             about_portrait_storage_path: draft.aboutPortraitStoragePath,
             about_portrait_alt: draft.aboutPortraitAlt.trim(),
@@ -2376,6 +2397,94 @@ export default function SiteSettingsManager({
                           No story paragraphs yet. Add one to populate the left column under “Our Story”.
                         </div>
                       )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-border bg-card p-4 sm:p-6">
+                <p className="font-display text-2xl text-foreground">Mission & Vision</p>
+                <p className="mt-1 font-body text-sm text-muted-foreground">
+                  This controls the section shown between the About story and the studio stats.
+                </p>
+                <div className="mt-6 grid gap-5">
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Section Eyebrow
+                    </label>
+                    <Input
+                      value={draft.aboutMissionVisionEyebrow}
+                      onChange={(event) =>
+                        updateDraft("aboutMissionVisionEyebrow", event.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Section Title
+                    </label>
+                    <Input
+                      value={draft.aboutMissionVisionTitle}
+                      onChange={(event) =>
+                        updateDraft("aboutMissionVisionTitle", event.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      Section Body
+                    </label>
+                    <Textarea
+                      rows={5}
+                      value={draft.aboutMissionVisionBody}
+                      onChange={(event) =>
+                        updateDraft("aboutMissionVisionBody", event.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-5 lg:grid-cols-2">
+                    <div className="rounded-[1.15rem] border border-border/70 bg-background/70 p-4">
+                      <div className="space-y-2">
+                        <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                          Mission Title
+                        </label>
+                        <Input
+                          value={draft.aboutMissionTitle}
+                          onChange={(event) => updateDraft("aboutMissionTitle", event.target.value)}
+                        />
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                          Mission Body
+                        </label>
+                        <Textarea
+                          rows={5}
+                          value={draft.aboutMissionBody}
+                          onChange={(event) => updateDraft("aboutMissionBody", event.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="rounded-[1.15rem] border border-border/70 bg-background/70 p-4">
+                      <div className="space-y-2">
+                        <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                          Vision Title
+                        </label>
+                        <Input
+                          value={draft.aboutVisionTitle}
+                          onChange={(event) => updateDraft("aboutVisionTitle", event.target.value)}
+                        />
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <label className="font-body text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                          Vision Body
+                        </label>
+                        <Textarea
+                          rows={5}
+                          value={draft.aboutVisionBody}
+                          onChange={(event) => updateDraft("aboutVisionBody", event.target.value)}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
